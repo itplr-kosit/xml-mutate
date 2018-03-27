@@ -20,7 +20,7 @@ However, the maintainance of a large number of meaningful test instances often b
 
 XML-MutaTe takes a declarative non-invasive approach by allowing test writer to annotate original XML test instances with XML processing instructions. Original valid test instances can for example contain real business data. These specific instructions allow to define certain mutations which should be applied to original instances in order to generate new test instances as variations of the original instance on the fly. Moreover, a test writer can all use these instructions to make certain assertions about the validity of the mutated instances.
 
-These can for exampl look like this:
+These can look like this for example:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -66,3 +66,8 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 ## Architecture/Design
 
+There are three processing modes:
+
+1. Mutation mode: Generate mutations only
+2. Test run mode: Generate mutations and test the resulting instances
+3. And a check that xmute instructions are syntactically correct and exectuable 
