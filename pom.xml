@@ -7,18 +7,82 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>xml-mutate</name>
-
   <description>A declarative XML instance mutator and test tool</description>
-  
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- mvn compiler plugin propoerties -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- Own properties -->
+    <log4j.version>2.11.0</log4j.version>
+    <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9, 
+        the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
+    <mvn.surefire.version>2.19.1</mvn.surefire.version>
+    <mvn.exec.version>1.6.0</mvn.exec.version>
+
+  </properties>
+
+
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>  
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.1.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${mvn.surefire.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>1.1.0</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.1.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${mvn.exec.version}</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>de.kosit.XMLMutateApp</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
+
+
   <developers>
     <developer>
       <name>Renzo Kottmann</name>

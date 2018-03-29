@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xmlm check-schema x  ?>
+<?xmute check-schema x  ?>
 <ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
              xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
              xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
@@ -22,9 +22,9 @@
             </cac:PartyName>
           
             <cac:PostalAddress>
-                <?xmlm mutator="randomize-element-order" xpath="."  group="1" schemtron-invalid="bt-br-03" ?>
+                <?xmute mutator="randomize-element-order" xpath="."  group="1" schemtron-invalid="bt-br-03" ?>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
-                <?xmlm mutator="empty" xpath="." schema-valid  schemtron-invalid="bt-br-03" ?><cbc:CityName>bremen</cbc:CityName>
+                <?xmute mutator="empty" xpath="." schema-valid  schemtron-invalid="bt-br-03" ?><cbc:CityName>bremen</cbc:CityName>
                 
                 <cbc:PostalZone>12345</cbc:PostalZone>
                 <cac:Country>
