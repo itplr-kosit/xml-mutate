@@ -60,14 +60,34 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 ## List of possible mutators
 
+* Empty element
+* random element order
+* vAlues from code lists
+* values from concrete values list as given in declaration
 
 ## Features
 
+* Generate persisted mutations that is file of mutations
+* Check valid mutator declarations
+* mutators can be written in XSLT
 
 ## Architecture/Design
 
-There are three processing modes:
+There are three app runtime modes:
 
-1. Mutation mode: Generate mutations only
+1. Mutation mode (the default): Generate mutations only
 2. Test run mode: Generate mutations and test the resulting instances
-3. And a check that xmute instructions are syntactically correct and exectuable 
+3. And a check that xmute instructions are syntactically correct and exectuable
+
+### Mutation mode
+
+One mutator after the other in the order of apperance in the DOM tree.
+Each independent of the other.
+
+Per default a mutator gets executed on the next element sibling, otherwise xpath has to be defined. This xpath is then relative to the context in which the mutator is declared.
+
+### User Interface
+
+Command line interface
+* following GNU best practices and conventions
+* 
