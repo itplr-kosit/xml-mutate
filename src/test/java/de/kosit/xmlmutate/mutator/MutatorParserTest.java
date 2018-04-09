@@ -35,7 +35,7 @@ public class MutatorParserTest {
             factory = DocumentBuilderFactory.newInstance();
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            log.error("Can not create Dom Document builder reason=" + e);
+            log.error("Can not create DOM Document builder reason=" + e);
         }
 
         doc = builder.newDocument();
@@ -74,7 +74,16 @@ public class MutatorParserTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Reject XMute instruction without \"mutator\" entry")
+    void rejectNoMutator() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            MutatorParser.parse(this.createXMutePI("schema-valid=\"true\""));
+        });
+    }
+
+
+    @Test
+    @DisplayName("Reject to parse XMute instruction with an unknwn mutator name")
     
     void rejectUnknownMutator() {
         assertThrows(MutatorException.class, () -> {

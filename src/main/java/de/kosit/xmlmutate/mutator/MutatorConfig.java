@@ -7,4 +7,7 @@ package de.kosit.xmlmutate.mutator;
  */
 public interface MutatorConfig {
     
+
+    void setInstructionName (String mutatorName);
+    String getInstructionName();
 }

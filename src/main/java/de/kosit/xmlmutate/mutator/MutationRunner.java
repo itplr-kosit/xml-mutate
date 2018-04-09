@@ -92,8 +92,10 @@ public class MutationRunner {
 
                 ProcessingInstruction pi = null;
                 Node context = null;
+                Mutator mutator = null;
                 for (int i = 0; i < nodes.getLength(); i++) {
                     pi = (ProcessingInstruction) nodes.item(i);
+                    // mutator = MutatorParser.parse(pi);
                     context = (Node) xPathNextElement.evaluate(pi, XPathConstants.NODE);
                     log.debug(pi);
                     
