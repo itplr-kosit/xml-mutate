@@ -6,25 +6,25 @@ A declarative **XML** instance **Muta**ting and **Te**sting tool.
 
 There are several tools available to generate XML instance documents using XML Schema. These tools are very good in generating random documents within the constraints of the schema i.e. generating valid instances.
 The content is then most often not meaningful and do not reflect business requiremetns and business cases.
-Additionally, it is often very important to also test schema defintions against invalid instances during the development of XML schema definition languages. Only then one can make sure that certain constraints/rules 
+Additionally, it is often very important to also test schema definitions against invalid instances during the development of XML schema definition languages. Only then one can make sure that certain constraints/rules
 
 * correctly exclude unwanted content and do not include content as **False Positives**,
 * correctly inlcude all valid content and do not exclude **False Negatives**
 
 However, the maintainance of a large number of meaningful test instances often becomes cumbersome for several reasons:
 
-* One needs to manage large number os XML instances for testing
-* One needs to define new schemas or requiring invasive changes to existing schemas to annotate the XML test instances with assertions about test cases
+* One needs to manage large number of XML instances for testing
+* One needs to define new schemas or one requires invasive changes to existing schemas to annotate the XML test instances with assertions about test cases
 
 ## The declarative approach
 
-XML-MutaTe takes a declarative non-invasive approach by allowing test writer to annotate original XML test instances with XML processing instructions. Original valid test instances can for example contain real business data. These specific instructions allow to define certain mutations which should be applied to original instances in order to generate new test instances as variations of the original instance on the fly. Moreover, a test writer can all use these instructions to make certain assertions about the validity of the mutated instances.
+XML-MutaTe takes a declarative non-invasive approach by allowing test writer to annotate original XML test instances with XML processing instructions. Original valid test instances can for example contain real business data. These specific instructions allow to define certain mutations which should be applied to original instances in order to generate new test instances as variations of the original instance on the fly. Moreover, a test writer can use all these instructions to make certain assertions about the validity of the mutated instances.
 
 These can look like this for example:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<?xmute testsuite="Real bsuniss case" ?>
+<?xmute testsuite="Real business case" ?>
 <!-- namespace declartions omitted for brevity -->
 <ubl:Invoice>
     <cbc:CustomizationID>urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung_1.1</cbc:CustomizationID>
@@ -62,12 +62,12 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 * Empty element
 * random element order
-* vAlues from code lists
+* values from code lists
 * values from concrete values list as given in declaration
 
 ## Features
 
-* Generate persisted mutations that is file of mutations
+* Generate persisted mutations that is files of mutations
 * Check valid mutator declarations
 * mutators can be written in XSLT
 
@@ -81,7 +81,7 @@ There are three app runtime modes:
 
 ### Mutation mode
 
-One mutator after the other in the order of apperance in the DOM tree.
+One mutator after the other in the order of appaerance in the DOM tree.
 Each independent of the other.
 
 Per default a mutator gets executed on the next element sibling, otherwise xpath has to be defined. This xpath is then relative to the context in which the mutator is declared.
@@ -89,5 +89,5 @@ Per default a mutator gets executed on the next element sibling, otherwise xpath
 ### User Interface
 
 Command line interface
+
 * following GNU best practices and conventions
-* 
