@@ -2,6 +2,9 @@ package de.kosit.xmlmutate.mutator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Mutator
@@ -19,5 +22,17 @@ public class EmptyMutator implements Mutator {
 
     public String getName() {
         return EmptyMutator.MUTATOR_NAME;
+    }
+
+    @Override
+    public Document execute(Element context) {
+
+        log.debug("Element to remove" + context);
+        Document doc = context.getOwnerDocument();
+        Node child = context.getFirstChild();
+        log.debug("First child of context is=" + child);
+        context.removeChild(child);
+        //doc.removeChild(context.getFirstChild());
+        return doc;
     }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
 import org.w3c.dom.ProcessingInstruction;
 
 /**
@@ -17,7 +18,10 @@ public class MutatorParser {
     private final static Logger log = LogManager.getLogger(MutatorParser.class);
     public final static String PI_TARGET_NAME = "xmute";
 
+    
+
     public static Mutator parse(ProcessingInstruction pi) {
+    
         //TODO throw exception in case pi is null
 
         if (pi.getTarget() == null || "".equals(pi.getTarget())) {

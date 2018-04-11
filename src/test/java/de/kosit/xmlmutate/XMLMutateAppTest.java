@@ -32,16 +32,16 @@ public class XMLMutateAppTest {
     
     void defaultMutateRunOnSingleInstance() throws URISyntaxException   {
         log.info("testing stuff" );
-        // full file path to test xml instance although it is on classpath
+        // full file path to test xml instance valthough it is on classpath
         Class<? extends Object> clazz = this.getClass();
         assertNotNull(clazz);
         URL url = clazz.getResource("/01.01a-INVOICE_ubl.xml");
         
         assertNotNull(url, "URL is null");
-        log.info("url= " + url);
+        log.info("url= " + url.getFile() );
         //need new app instance 
         //url.getFile().toString()/
-        this.app = new XMLMutateApp(new String[] { "D:/git-repos/xml-mutator/target/test-classes/01.01a-INVOICE_ubl.xml" });
+        this.app = new XMLMutateApp(new String[] { "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml" });
         assertEquals(0, this.app.run(), "Posix return code is 0 for success");
     }
 }

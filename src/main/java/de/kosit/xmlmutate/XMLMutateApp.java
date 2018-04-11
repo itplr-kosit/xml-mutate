@@ -56,7 +56,7 @@ public class XMLMutateApp {
             break;
         }
         return exitCode;
-    } 
+    }
 
     public int runMutate() {
         log.debug("Run in mutate only mode");
@@ -74,6 +74,7 @@ public class XMLMutateApp {
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
         transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+        out.close();
     }
 
     public static void main(String[] args) throws XPathExpressionException {
