@@ -61,7 +61,8 @@ This way many kinds of mutations can be defined and combined with assertions abo
 ## List of possible mutators
 
 * Empty element
-* random element order
+* randomize element order
+* remove element
 * values from code lists
 * values from concrete values list as given in declaration
 
