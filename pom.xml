@@ -17,7 +17,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <!-- Own properties -->
     <log4j.version>2.11.0</log4j.version>
-    <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9, 
+    <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
         the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
     <mvn.surefire.version>2.19.1</mvn.surefire.version>
     <mvn.exec.version>1.6.0</mvn.exec.version>
@@ -75,7 +75,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>de.kosit.XMLMutateApp</mainClass>
+          <mainClass>de.kosit.xmlmutate.XMLMutateApp</mainClass>
         </configuration>
       </plugin>
     </plugins>
