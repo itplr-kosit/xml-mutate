@@ -20,6 +20,8 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
 
     private void defaultOutputDir() {
         outputDir = Paths.get(System.getProperty("user.home")).normalize().toAbsolutePath();
+        
+
     }
 
     public Path getOutputDir() {
@@ -30,7 +32,7 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
         if (dirName == null) {
             throw new IllegalArgumentException("Output directory name should be given");
         }
-        this.outputDir = Paths.get(dirName);
+        this.outputDir = Paths.get(dirName );
     }
 
     /**

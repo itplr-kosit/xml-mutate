@@ -41,6 +41,7 @@ public class XMLMutateApp {
         this();
         XMLMutateConfigurator mc = new XMLMutateConfigurator();
         this.config = mc.fromCommandLine(line);
+        log.debug(config);
         this.inputPathList = mc.getInputPaths();
         mc = null;
     }
@@ -60,7 +61,7 @@ public class XMLMutateApp {
 
     public int runMutate() {
         log.debug("Run in mutate only mode");
-        MutationRunner runner =  new MutationRunner(this.inputPathList);
+        MutationRunner runner =  new MutationRunner(this.inputPathList, config.getOutputDir() );
         return runner.execute();
     }
 

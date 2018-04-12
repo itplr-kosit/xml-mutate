@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathException;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
@@ -48,8 +43,24 @@ public class MutationRunner {
     private Path outputDir = null;
     private DocumentBuilder docBuilder;
 
-    public MutationRunner(List<Path> inputPathList) {
+    public MutationRunner(List<Path> inputPathList, Path outputDir) {
         this.inputPathList = inputPathList;
+        this.setOutputDir(outputDir);
+    }
+
+    private void setOutputDir(Path outputDir) {
+        if (outputDir == null) {
+            log.error("outputdir is null");
+            throw new IllegalArgumentException("Need a valid outpt dir instead of a null value");
+
+        }
+        if (!Files.isDirectory(outputDir)) {
+            throw new IllegalArgumentException("Output path must be a valid directory");
+        }
+        if ( ! Files.isWritable(outputDir)) {
+            throw new IllegalArgumentException("Output directory must be writable by user");
+        }
+        this.outputDir = outputDir;
     }
 
     private void prepareDomFactory() throws ParserConfigurationException {
@@ -61,9 +72,13 @@ public class MutationRunner {
 
     }
 
-    private void write(Document doc) {
+    private void write(Document doc, NamingStrategy name) {
+        log.debug("Writing to dir=" + outputDir);
+        log.debug("Writing to file name=" + name.getFileName());
+        Path out = Paths.get( outputDir.toString(), name.getFileName() );
+
         try {
-            XMLMutateApp.printDocument(doc, new FileOutputStream("D:/git-repos/xml-mutator/mutate-out.xml"));
+            XMLMutateApp.printDocument(doc, new FileOutputStream( out.toFile() ) );
         } catch (IOException | TransformerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -99,48 +114,27 @@ public class MutationRunner {
             docOrigin.normalize();
             docOrigin.normalizeDocument();
 
-            this.walktree(docOrigin);
+            String name = file.getFileName().toString();
+            name = name.replaceFirst("\\.xml", "");
+            log.debug("Doc name=" + name);
+            log.debug("Doc URI=" + docOrigin.getDocumentURI());
+            this.mutate(docOrigin, name);
 
-            // XPathExpression xPathAllPi = null;
-            // XPathExpression xPathNextElement = null;
-            // try {
-            //     xPathAllPi = XPathFactory.newInstance().newXPath().compile("//processing-instruction('xmute')");
-            //     xPathNextElement = XPathFactory.newInstance().newXPath()
-            //             .compile("./following-sibling::*[position() = 1 ]");
-
-            //     NodeList nodes = null;
-
-            //     nodes = (NodeList) xPathAllPi.evaluate(docOrigin.getDocumentElement(), XPathConstants.NODESET);
-
-            //     ProcessingInstruction pi = null;
-            //     Element context = null;
-            //     Mutator mutator = null;
-            //     for (int i = 0; i < nodes.getLength(); i++) {
-            //         pi = (ProcessingInstruction) nodes.item(i);
-
-            //         // mutator = MutatorParser.parse(pi);
-            //         context = (Element) xPathNextElement.evaluate(pi, XPathConstants.NODE);
-            //         mutator = MutatorParser.parse(pi);
-            //         mutator.execute(context);
-
-            //     }
-            // } catch (XPathExpressionException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            //     return 10;
-            // }
-
+            // xPathAllPi = XPathFactory.newInstance().newXPath().compile("//processing-instruction('xmute')");
+            // xPathNextElement = XPathFactory.newInstance().newXPath().compile("./following-sibling::*[position() = 1 ]");
+            // nodes = (NodeList) xPathAllPi.evaluate(docOrigin.getDocumentElement(), XPathConstants.NODESET);
+            // context = (Element) xPathNextElement.evaluate(pi, XPathConstants.NODE);
         }
         return 0;
     }
 
-    private void walktree(Document origin) {
+    private void mutate(Document origin, String documentName) {
         TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin,
                 NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
         TreeWalker elemWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_ELEMENT, null,
                 true);
         // finde pi
-        //finde next elem
+        // finde next elem
         // deep copy of elem as docfrag or any other way that decopuls it from doc
         // gib elem an mutator (with return elem and/or anyway side effect through object referece)
         // write out doc
@@ -149,7 +143,7 @@ public class MutationRunner {
         DocumentFragment origFragment = null;
         Mutator mutator = null;
         ProcessingInstruction pi = null;
-
+        int docNum = 0;
         while (piWalker.nextNode() != null) {
             pi = (ProcessingInstruction) piWalker.getCurrentNode();
             log.debug("PI=" + pi);
@@ -165,23 +159,12 @@ public class MutationRunner {
             origFragment.appendChild(mutationTargetElem.cloneNode(true));
             // mutating
             mutator.execute(mutationTargetElem);
-            this.write(origin);
-            // try {
-            //     XMLMutateApp.printDocument(origin, System.out);
-            // } catch (IOException | TransformerException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            // }
+            this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
+
             Node parent = elemWalker.parentNode();
-            log.debug("Replacing muateted with orig again. Parent of orig=" + parent);
+            log.debug("Replacing mutated with original again. Parent of original=" + parent);
             parent.replaceChild(origFragment, mutationTargetElem);
             log.debug("Printing replace origin");
-            // try {
-            //     XMLMutateApp.printDocument(origin, System.out);
-            // } catch (IOException | TransformerException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            // }
 
         }
     }
