@@ -45,6 +45,16 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
 	 */
 	public void setRunMode(String runMode) {
 		this.runMode = runMode;
-	}
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        String nl = System.lineSeparator();
+        sb.append("XML MutaTe Configuration:").append(nl);
+        sb.append("run.mode=").append(this.getRunMode()).append(nl);
+        sb.append("output.dir=").append(this.getOutputDir()).append(nl);
+        return sb.toString();
+    }
 
 }
