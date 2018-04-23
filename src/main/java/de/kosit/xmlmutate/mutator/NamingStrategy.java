@@ -1,7 +1,5 @@
 package de.kosit.xmlmutate.mutator;
 
-import org.apache.logging.log4j.LogManager;
-
 /*
  * NamingStrategy
  *
