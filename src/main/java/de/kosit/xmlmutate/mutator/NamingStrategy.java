@@ -3,7 +3,7 @@ package de.kosit.xmlmutate.mutator;
 /*
  * NamingStrategy
  *
- *  @author Renzo Kottmann
+ * @author Renzo Kottmann
  */
 public interface NamingStrategy {
 

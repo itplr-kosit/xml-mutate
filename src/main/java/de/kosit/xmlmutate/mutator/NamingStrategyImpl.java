@@ -26,14 +26,14 @@ public class NamingStrategyImpl implements NamingStrategy {
 
     private String normalize(String dirty) {
         if (sourceName != null && sourceName.isEmpty()) {
-            throw new IllegalArgumentException("The soure name should be not null and not empty!");
+            throw new IllegalArgumentException("The source name should be not null and not empty!");
         }
         return dirty.trim().toLowerCase().replace(" ", "-").replace("/", "_").replace("\\","_");
     }
 
     private void setSourceName(String sourceName) {
         if (sourceName != null && sourceName.isEmpty()) {
-            throw new IllegalArgumentException("The soure name should be not null and not empty!");
+            throw new IllegalArgumentException("The source name should be not null and not empty!");
         }
 
         this.sourceName = sourceName;
