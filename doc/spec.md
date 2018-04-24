@@ -63,6 +63,7 @@ This way many kinds of mutations can be defined and combined with assertions abo
 * Empty element
 * randomize element order
 * remove element
+* add element/attribute
 * values from code lists
 * values from concrete values list as given in declaration
 
