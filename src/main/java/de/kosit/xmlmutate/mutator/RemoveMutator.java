@@ -18,6 +18,11 @@ public class RemoveMutator implements Mutator {
     MutatorConfig config = null;
 
     RemoveMutator(MutatorConfig config) {
+        this.addConfig(config);
+    }
+
+    @Override
+    public void addConfig(MutatorConfig config) {
         this.config = config;
     }
 
@@ -33,13 +38,12 @@ public class RemoveMutator implements Mutator {
         Comment remark = doc.createComment("Removed node " + context.getTagName());
         Node parent = context.getParentNode();
         log.debug("Parent of context is=" + parent);
-        Node replaced = parent.replaceChild(remark,context);
+        Node replaced = parent.replaceChild(remark, context);
         log.debug("replaced node=" + replaced);
         // parent.appendChild(remark);
         //doc.removeChild(context.getFirstChild());
         return remark;
     }
-
 
     public Node executeNewNode(Element context) {
 

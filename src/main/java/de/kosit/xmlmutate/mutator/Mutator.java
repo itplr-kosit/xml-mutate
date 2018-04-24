@@ -1,6 +1,5 @@
 package de.kosit.xmlmutate.mutator;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -11,8 +10,10 @@ import org.w3c.dom.Node;
  */
 public interface Mutator {
 
-
     public String getName();
 
+    public void addConfig(MutatorConfig config);
+
     public Node execute(Element context);
+
 }
