@@ -22,6 +22,7 @@ public class XMLMutateAppTest {
 
     private XMLMutateApp app = null;
     private static final Logger log = Logger.getLogger(XMLMutateAppTest.class.getName());
+
     @BeforeEach
     void init() {
         this.app = new XMLMutateApp();
@@ -29,19 +30,21 @@ public class XMLMutateAppTest {
 
     @Test
     @DisplayName("Default mutate only run on a single test xml instance")
-    
-    void defaultMutateRunOnSingleInstance() throws URISyntaxException   {
-        log.info("testing stuff" );
+
+    void defaultMutateRunOnSingleInstance() throws URISyntaxException {
+        log.info("testing stuff");
         // full file path to test xml instance valthough it is on classpath
         Class<? extends Object> clazz = this.getClass();
         assertNotNull(clazz);
         URL url = clazz.getResource("/01.01a-INVOICE_ubl.xml");
-        
+
         assertNotNull(url, "URL is null");
-        log.info("url= " + url.getFile() );
-        //need new app instance 
+        log.info("url= " + url.getFile());
+        //need new app instance
         //url.getFile().toString()/
-        this.app = new XMLMutateApp(new String[] { "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml" });
+        this.app = new XMLMutateApp(
+                new String[] { "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml",
+                        "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-remove-mutation-tests.xml" });
         assertEquals(0, this.app.run(), "Posix return code is 0 for success");
     }
 }

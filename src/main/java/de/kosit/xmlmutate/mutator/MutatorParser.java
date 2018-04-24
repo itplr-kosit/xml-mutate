@@ -18,10 +18,10 @@ public class MutatorParser {
     private final static Logger log = LogManager.getLogger(MutatorParser.class);
     public final static String PI_TARGET_NAME = "xmute";
 
-    
+
 
     public static Mutator parse(ProcessingInstruction pi) {
-    
+
         //TODO throw exception in case pi is null
 
         if (pi.getTarget() == null || "".equals(pi.getTarget())) {
@@ -48,6 +48,9 @@ public class MutatorParser {
         switch (mutatorName) {
         case "empty":
             mutator = new EmptyMutator(config);
+            break;
+        case "remove":
+            mutator = new RemoveMutator(config);
             break;
 
         default:

@@ -25,14 +25,14 @@ public class EmptyMutator implements Mutator {
     }
 
     @Override
-    public Document execute(Element context) {
+    public Node execute(Element context) {
 
-        log.debug("Element to remove" + context);
+        log.debug("Element to make empty" + context);
         Document doc = context.getOwnerDocument();
         Node child = context.getFirstChild();
         log.debug("First child of context is=" + child);
         context.removeChild(child);
         //doc.removeChild(context.getFirstChild());
-        return doc;
+        return context;
     }
 }

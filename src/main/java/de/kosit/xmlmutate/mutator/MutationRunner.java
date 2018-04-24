@@ -1,8 +1,6 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,7 +55,7 @@ public class MutationRunner {
         if (!Files.isDirectory(outputDir)) {
             throw new IllegalArgumentException("Output path must be a valid directory");
         }
-        if ( ! Files.isWritable(outputDir)) {
+        if (!Files.isWritable(outputDir)) {
             throw new IllegalArgumentException("Output directory must be writable by user");
         }
         this.outputDir = outputDir;
@@ -75,10 +73,10 @@ public class MutationRunner {
     private void write(Document doc, NamingStrategy name) {
         log.debug("Writing to dir=" + outputDir);
         log.debug("Writing to file name=" + name.getFileName());
-        Path out = Paths.get( outputDir.toString(), name.getFileName() );
+        Path out = Paths.get(outputDir.toString(), name.getFileName());
 
         try {
-            XMLMutateApp.printDocument(doc, new FileOutputStream( out.toFile() ) );
+            XMLMutateApp.printDocument(doc, new FileOutputStream(out.toFile()));
         } catch (IOException | TransformerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -149,8 +147,10 @@ public class MutationRunner {
             log.debug("PI=" + pi);
 
             elemWalker.setCurrentNode(piWalker.getCurrentNode());
+
             mutationTargetElem = (Element) elemWalker.nextNode();
-            log.debug("Next elem=" + mutationTargetElem.toString());
+            // because walker also moves to parent, call after walker.nextNode() above
+            Element parent = (Element) elemWalker.parentNode();
 
             // now we know we have a valid pi and an elem
             mutator = MutatorParser.parse(pi);
@@ -158,13 +158,13 @@ public class MutationRunner {
             origFragment = origin.createDocumentFragment();
             origFragment.appendChild(mutationTargetElem.cloneNode(true));
             // mutating
-            mutator.execute(mutationTargetElem);
+            Node changed = mutator.execute(mutationTargetElem);
             this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
 
-            Node parent = elemWalker.parentNode();
-            log.debug("Replacing mutated with original again. Parent of original=" + parent);
-            parent.replaceChild(origFragment, mutationTargetElem);
-            log.debug("Printing replace origin");
+            log.debug("Replacing mutated=" + mutationTargetElem + " with original=" + origFragment.getFirstChild()
+                    + " again. Parent of original=" + parent);
+
+            parent.replaceChild(origFragment, changed);
 
         }
     }
