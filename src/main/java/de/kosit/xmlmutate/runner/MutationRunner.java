@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate.mutator;
+package de.kosit.xmlmutate.runner;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +29,8 @@ import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
 import de.kosit.xmlmutate.XMLMutateApp;
+import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.mutator.MutatorParser;
 
 /**
  * MutationRunner takes as input a list of files/paths and
@@ -72,7 +73,6 @@ public class MutationRunner {
         docFactory.setNamespaceAware(true);
         docFactory.setIgnoringElementContentWhitespace(true);
         docBuilder = docFactory.newDocumentBuilder();
-
     }
 
     private void write(Document doc, NamingStrategy name) {

@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import de.kosit.xmlmutate.mutator.MutationRunner;
+import de.kosit.xmlmutate.runner.MutationRunner;
 
 /**
  * Hello world!
