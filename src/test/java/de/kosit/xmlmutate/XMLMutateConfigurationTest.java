@@ -38,7 +38,7 @@ public class XMLMutateConfigurationTest {
 
     @Test
     void defaultRunMode() {
-        assertEquals("mutate", config.getRunMode());
+        assertEquals(RunModeEnum.GENERATE, config.getRunMode());
     }
 
     @Test

@@ -58,7 +58,7 @@ public class XMLMutateApp {
 
     public int run() {
         this.xsltCache = this.loadAllTransformer();
-        int exitCode = 1;
+        int exitCode = 0;
         switch (config.getRunMode()) {
         case GENERATE:
             this.runMutate();
