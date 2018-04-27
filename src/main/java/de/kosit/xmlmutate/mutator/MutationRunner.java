@@ -7,10 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,16 +43,18 @@ public class MutationRunner {
     private List<Path> inputPathList = new ArrayList<Path>();
     private Path outputDir = null;
     private DocumentBuilder docBuilder;
+    private Map<String,Templates> xsltCache = null;
 
-    public MutationRunner(List<Path> inputPathList, Path outputDir) {
+    public MutationRunner(List<Path> inputPathList, Path outputDir, Map<String,Templates> xsltCache) {
         this.inputPathList = inputPathList;
         this.setOutputDir(outputDir);
+        this.xsltCache = xsltCache;
     }
 
     private void setOutputDir(Path outputDir) {
         if (outputDir == null) {
             log.error("outputdir is null");
-            throw new IllegalArgumentException("Need a valid outpt dir instead of a null value");
+            throw new IllegalArgumentException("Need a valid output dir instead of a null value");
 
         }
         if (!Files.isDirectory(outputDir)) {
@@ -153,12 +158,13 @@ public class MutationRunner {
             Element parent = (Element) elemWalker.parentNode();
 
             // now we know we have a valid pi and an elem
-            mutator = MutatorParser.parse(pi);
+            mutator = MutatorParser.parse(pi,xsltCache);
             // copy elem to docfrag
             origFragment = origin.createDocumentFragment();
             origFragment.appendChild(mutationTargetElem.cloneNode(true));
             // mutating
             Node changed = mutator.execute(mutationTargetElem);
+
             this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
 
             log.debug("Replacing mutated=" + mutationTargetElem + " with original=" + origFragment.getFirstChild()

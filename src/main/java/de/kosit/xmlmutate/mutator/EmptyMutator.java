@@ -33,7 +33,6 @@ public class EmptyMutator implements Mutator {
     public Node execute(Element context) {
 
         log.debug("Element to make empty" + context);
-        Document doc = context.getOwnerDocument();
         Node child = context.getFirstChild();
         log.debug("First child of context is=" + child);
         context.removeChild(child);

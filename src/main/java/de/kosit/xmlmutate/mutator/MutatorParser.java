@@ -2,11 +2,9 @@ package de.kosit.xmlmutate.mutator;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.xml.transform.Templates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Element;
 import org.w3c.dom.ProcessingInstruction;
 
 /**
@@ -18,9 +16,12 @@ public class MutatorParser {
     private final static Logger log = LogManager.getLogger(MutatorParser.class);
     public final static String PI_TARGET_NAME = "xmute";
 
-
-
     public static Mutator parse(ProcessingInstruction pi) {
+        return parse(pi, null);
+
+    }
+
+    public static Mutator parse(ProcessingInstruction pi, Map<String, Templates> xsltCache) {
 
         //TODO throw exception in case pi is null
 
@@ -51,6 +52,9 @@ public class MutatorParser {
             break;
         case "remove":
             mutator = new RemoveMutator(config);
+            break;
+        case "add":
+            mutator = new AddElementMutator(config, xsltCache.get(mutatorName));
             break;
 
         default:
@@ -86,7 +90,7 @@ public class MutatorParser {
 
     private static MutatorConfig parseMutatorConfig(Map<String, String> dataEntries) {
         MutatorConfig config = new MutatorConfigImpl();
-        config.setInstructionName( dataEntries.get("mutator") );
+        config.setInstructionName(dataEntries.get("mutator"));
         return config;
 
     }

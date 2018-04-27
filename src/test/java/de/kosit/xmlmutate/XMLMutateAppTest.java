@@ -2,14 +2,15 @@ package de.kosit.xmlmutate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import java.net.URL;
+import javax.xml.transform.Templates;
 
+import java.net.URL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,17 @@ public class XMLMutateAppTest {
     }
 
     @Test
+    void loadallXSLT() {
+        log.info("Test loading XSLT");
+        // full file path to test xml instance valthough it is on classpath
+        Map<String, Templates> map = app.loadAllTransformer();
+        assertNotNull(map);
+        assertEquals(1, map.size());
+        assertTrue(map.containsKey("add"), "Assumed key add to be present");
+    }
+
+    @Test
+    // @Disabled
     @DisplayName("Default mutate only run on a single test xml instance")
 
     void defaultMutateRunOnSingleInstance() throws URISyntaxException {
@@ -44,7 +56,8 @@ public class XMLMutateAppTest {
         //url.getFile().toString()/
         this.app = new XMLMutateApp(
                 new String[] { "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml",
-                        "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-remove-mutation-tests.xml" });
+                        "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-remove-mutation-tests.xml",
+                        "D:/git-repos/xml-mutator/src/test/resources/ubl-invoice-add-mutation-tests.xml" });
         assertEquals(0, this.app.run(), "Posix return code is 0 for success");
     }
 }

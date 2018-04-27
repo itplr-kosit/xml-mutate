@@ -5,23 +5,30 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import de.kosit.xmlmutate.mutator.MutationRunner;
-
-
 
 /**
  * Hello world!
@@ -33,8 +40,10 @@ public class XMLMutateApp {
 
     private XMLMutateConfiguration config = null;
     private List<Path> inputPathList = new ArrayList<Path>();
+    private Map<String, Templates> xsltCache = null;
 
     public XMLMutateApp() {
+
     }
 
     public XMLMutateApp(String[] line) {
@@ -47,6 +56,7 @@ public class XMLMutateApp {
     }
 
     public int run() {
+        this.xsltCache = this.loadAllTransformer();
         int exitCode = 1;
         switch (config.getRunMode()) {
         case "mutate":
@@ -59,10 +69,39 @@ public class XMLMutateApp {
         return exitCode;
     }
 
+    protected Map<String, Templates> loadAllTransformer() {
+        final HashMap<String, Templates> map = new HashMap<String, Templates>();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        StreamSource xsltSource = new StreamSource(getClass().getResourceAsStream("/xslt/add.xslt"));
+
+        Templates templ = null;
+        try {
+            templ = transformerFactory.newTemplates(xsltSource);
+        } catch (TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            log.error("Error loadding xslt", e);
+        }
+        map.put("add", templ);
+
+        return map;
+
+    }
+
     public int runMutate() {
         log.debug("Run in mutate only mode");
-        MutationRunner runner =  new MutationRunner(this.inputPathList, config.getOutputDir() );
+        MutationRunner runner = new MutationRunner(this.inputPathList, config.getOutputDir(), this.xsltCache);
         return runner.execute();
+    }
+
+    public static void printDocument(Node node, OutputStream out)
+            throws ParserConfigurationException, IOException, TransformerException {
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.newDocument();
+        // Node adopted = doc.adoptNode(node);
+        Node imported = doc.importNode(node, true);
+        doc.appendChild(imported);
+        printDocument(doc, out);
     }
 
     public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
