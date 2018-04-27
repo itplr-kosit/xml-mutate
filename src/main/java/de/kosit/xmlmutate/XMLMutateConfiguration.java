@@ -6,5 +6,5 @@ import java.nio.file.Path;
  */
 public interface XMLMutateConfiguration {
     public Path getOutputDir();
-    public String getRunMode();
+    public RunModeEnum getRunMode();
 }

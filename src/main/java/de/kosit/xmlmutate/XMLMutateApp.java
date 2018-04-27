@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,8 +60,14 @@ public class XMLMutateApp {
         this.xsltCache = this.loadAllTransformer();
         int exitCode = 1;
         switch (config.getRunMode()) {
-        case "mutate":
-            exitCode = this.runMutate();
+        case GENERATE:
+            this.runMutate();
+            break;
+        case TEST:
+            this.runMutate();
+            break;
+        case CHECK:
+           this.check();
             break;
 
         default:
@@ -91,6 +98,10 @@ public class XMLMutateApp {
         log.debug("Run in mutate only mode");
         MutationRunner runner = new MutationRunner(this.inputPathList, config.getOutputDir(), this.xsltCache);
         return runner.execute();
+    }
+
+    public void check() {
+        throw new UnsupportedOperationException("Check needs to be implemented!!");
     }
 
     public static void printDocument(Node node, OutputStream out)
