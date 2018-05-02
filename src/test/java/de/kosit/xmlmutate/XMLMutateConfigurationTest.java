@@ -1,13 +1,15 @@
 package de.kosit.xmlmutate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,16 +26,16 @@ public class XMLMutateConfigurationTest {
     }
 
     @Test
-    @DisplayName("Check that default values are correct")
-    @Disabled
-    void defaultAppConfigTest() {
-
-    }
-
-    @Test
+    @DisplayName("Check that default OutputDir is correct")
     void defaultOutputDirTest() {
         Path cwd = Paths.get(System.getProperty("user.home")).normalize().toAbsolutePath();
         assertEquals(cwd, config.getOutputDir());
+    }
+
+    @Test
+    @DisplayName("Default XSD cache is empty")
+    void defaultXSDCache() {
+        assertFalse(this.config.hasSchema());
     }
 
     @Test

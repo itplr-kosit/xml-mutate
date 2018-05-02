@@ -61,10 +61,10 @@ public class XMLMutateApp {
         int exitCode = 0;
         switch (config.getRunMode()) {
         case GENERATE:
-            this.runMutate();
+            this.runMutate(false);
             break;
         case TEST:
-            this.runMutate();
+            this.runMutate(true);
             break;
         case CHECK:
            this.check();
@@ -94,7 +94,8 @@ public class XMLMutateApp {
 
     }
 
-    public int runMutate() {
+    public int runMutate(boolean testMutations) {
+
         log.debug("Run in mutate only mode");
         MutationRunner runner = new MutationRunner(this.inputPathList, config.getOutputDir(), this.xsltCache);
         return runner.execute();

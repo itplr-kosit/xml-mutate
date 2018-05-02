@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 
+ *
  * XMLMutateCnfigurator
  */
 public class XMLMutateConfigurator {
@@ -18,7 +18,7 @@ public class XMLMutateConfigurator {
     private List<Path> inputPathList = new ArrayList<Path>();
 
     public XMLMutateConfigurator() {
-        // The absolute default config no env, no config files 
+        // The absolute default config no env, no config files
         this.config = new XMLMutateConfigurationImpl();
     }
 
@@ -49,7 +49,12 @@ public class XMLMutateConfigurator {
             case "-m":
                 config.setRunMode(line[++i]);
                 break;
+            case "--schema":
+                String schemaName = line[++i];
+                String schemaFile = line[++i];
 
+                config.addSchema(schemaName, schemaFile);
+                break;
             default:
                 inputPathList.add(Paths.get(line[i]));
                 break;
