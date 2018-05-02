@@ -11,8 +11,11 @@ public class MutatorException extends RuntimeException {
 
     private final static Logger log = LogManager.getLogger(MutatorException.class);
 
-    MutatorException(String message) {
+    public MutatorException(String message) {
         super(message);
     }
 
+    public MutatorException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
