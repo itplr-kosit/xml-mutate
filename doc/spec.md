@@ -5,8 +5,8 @@ A declarative **XML** instance **Muta**ting and **Te**sting tool.
 ## Motivation/Background
 
 There are several tools available to generate XML instance documents using XML Schema. These tools are very good in generating random documents within the constraints of the schema i.e. generating valid instances.
-The content is then most often not meaningful and do not reflect business requiremetns and business cases.
-Additionally, it is often very important to also test schema definitions against invalid instances during the development of XML schema definition languages. Only then one can make sure that certain constraints/rules
+The generated content is most often not meaningful and do not reflect business requirements and business cases.
+However, not only during the development of XML schema definition languages it is often very important to additionally test schema definitions against invalid instances. Only then one can make sure that certain constraints/rules
 
 * correctly exclude unwanted content and do not include content as **False Positives**,
 * correctly inlcude all valid content and do not exclude **False Negatives**
@@ -18,7 +18,7 @@ However, the maintainance of a large number of meaningful test instances often b
 
 ## The declarative approach
 
-XML-MutaTe takes a declarative non-invasive approach by allowing test writer to annotate original XML test instances with XML processing instructions. Original valid test instances can for example contain real business data. These specific instructions allow to define certain mutations which should be applied to original instances in order to generate new test instances as variations of the original instance on the fly. Moreover, a test writer can use all these instructions to make certain assertions about the validity of the mutated instances.
+XML-MutaTe takes a declarative non-invasive approach by allowing test writers to annotate original XML test instances with XML processing instructions. Original valid test instances can for example contain real business data. These specific instructions allow to define certain mutations which should be applied to original instances in order to generate new test instances as variations of the original instance on the fly. Moreover, a test writer can use all those instructions to make certain assertions about the validity of the mutated instances.
 
 These can look like this for example:
 
@@ -47,14 +47,14 @@ These can look like this for example:
                 <!-- Generate new instances each with new random order of the following sibling elements-->
                 <?xmute mutator="randomize-element-order" xpath="."  group="1" schematron-invalid="bt-br-03" ?>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
-                <!-- Generate a new instance with next element being empty -->
+                <!-- Generate a new instance with next element content being empty -->
                 <?xmute mutator="empty" xpath="." schema-valid  schematron-invalid="bt-br-03" ?>
                 <cbc:CityName>bremen</cbc:CityName>
                 <!-- Rest omitted for brevity -->
 
 ```
 
-This applied to valid instances, keep them valid and the XML instances can be used as usual by just igonoring the xmute processng instructions.
+Applying this declartive approach to a valid instance, keep it valid and it can be used as usual. Because XML tools just ignore the `xmute` processing instructions.
 
 This way many kinds of mutations can be defined and combined with assertions about the validity of the mutated instances.
 
@@ -69,7 +69,7 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 ## Features
 
-* Generate persisted mutations that is files of mutations
+* Generate persisted mutations i.e. files of mutations
 * Check valid mutator declarations
 * mutators can be written in XSLT
 
@@ -77,16 +77,20 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 There are three app runtime modes:
 
-1. Mutation mode (the default): Generate mutations only
-2. Test run mode: Generate mutations and test the resulting instances
-3. And a check that xmute instructions are syntactically correct and exectuable
+1. Generate mutations mode (the default): Generate mutations only
+2. Test and generate mutations mode: Generate mutations and test the resulting instances
+3. Check mode: Check that xmute instructions are syntactically correct and exectuable
 
 ### Mutation mode
 
-One mutator after the other in the order of appaerance in the DOM tree.
+One mutator after the other in the order of appearance in the XML tree.
 Each independent of the other.
 
 Per default a mutator gets executed on the next element sibling, otherwise xpath has to be defined. This xpath is then relative to the context in which the mutator is declared.
+
+### Mutate and Test mode
+
+Mutates like in Mutation mode and also tests each generated instance against XML Schema and Schematron.
 
 ### User Interface
 
