@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 
 /**
  * Mutator
+ *
  * @author Renzo Kottmann
  */
 public class RemoveMutator implements Mutator {
@@ -21,8 +22,7 @@ public class RemoveMutator implements Mutator {
         this.addConfig(config);
     }
 
-    @Override
-    public void addConfig(MutatorConfig config) {
+    private void addConfig(MutatorConfig config) {
         this.config = config;
     }
 
@@ -41,7 +41,7 @@ public class RemoveMutator implements Mutator {
         Node replaced = parent.replaceChild(remark, context);
         log.debug("replaced node=" + replaced);
         // parent.appendChild(remark);
-        //doc.removeChild(context.getFirstChild());
+        // doc.removeChild(context.getFirstChild());
         return remark;
     }
 
@@ -55,7 +55,12 @@ public class RemoveMutator implements Mutator {
         Node replaced = parent.replaceChild(remark, context);
         log.debug("replaced node=" + replaced);
         // parent.appendChild(remark);
-        //doc.removeChild(context.getFirstChild());
+        // doc.removeChild(context.getFirstChild());
         return remark;
+    }
+
+    @Override
+    public MutatorConfig getConfig() {
+        return this.config;
     }
 }

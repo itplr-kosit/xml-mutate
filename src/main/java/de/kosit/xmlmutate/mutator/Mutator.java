@@ -12,7 +12,7 @@ public interface Mutator {
 
     public String getName();
 
-    public void addConfig(MutatorConfig config);
+    public MutatorConfig getConfig();
 
     public Node execute(Element context);
 

@@ -20,8 +20,8 @@ public class EmptyMutator implements Mutator {
         this.addConfig(config);
     }
 
-    @Override
-    public void addConfig(MutatorConfig config) {
+
+    private void addConfig(MutatorConfig config) {
         this.config = config;
     }
 
@@ -39,5 +39,11 @@ public class EmptyMutator implements Mutator {
         //doc.removeChild(context.getFirstChild());
         return context;
     }
+
+
+	@Override
+	public MutatorConfig getConfig() {
+		return this.config;
+	}
 
 }

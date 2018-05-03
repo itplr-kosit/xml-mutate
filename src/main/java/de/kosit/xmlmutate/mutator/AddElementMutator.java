@@ -25,6 +25,7 @@ import de.kosit.xmlmutate.XMLMutateApp;
 
 /**
  * AddElementMutator
+ *
  * @author Renzo Kottmann
  */
 public class AddElementMutator implements Mutator {
@@ -41,8 +42,7 @@ public class AddElementMutator implements Mutator {
         this.xslt = xslt;
     }
 
-    @Override
-    public void addConfig(MutatorConfig config) {
+    private void addConfig(MutatorConfig config) {
         this.config = config;
     }
 
@@ -92,10 +92,15 @@ public class AddElementMutator implements Mutator {
         }
 
         Node adopted = origin.adoptNode(resultChild);
-        //resultFragment.appendresultChild(result.getNode().cloneNode(true));
+        // resultFragment.appendresultChild(result.getNode().cloneNode(true));
         Node parent = context.getParentNode();
         parent.replaceChild(adopted, context);
         return adopted;
+    }
+
+    @Override
+    public MutatorConfig getConfig() {
+        return this.config;
     }
 
 }
