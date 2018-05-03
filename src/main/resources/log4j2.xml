@@ -12,13 +12,13 @@
         <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="de.kosit.xmlmutate.runner" level="warn" additivity="false">
+        <Logger name="de.kosit.xmlmutate.runner" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="de.kosit.xmlmutate.mutator" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="de.kosit.xmlmutate.mutator.MutatorParser" level="trace" additivity="false">
+        <Logger name="de.kosit.xmlmutate.mutator.MutatorParser" level="warn" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
     </Loggers>

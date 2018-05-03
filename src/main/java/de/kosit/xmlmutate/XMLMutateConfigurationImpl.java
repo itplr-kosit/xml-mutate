@@ -61,7 +61,7 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
 
     public void addSchema(String schemaName, String schemaFile) {
         Objects.requireNonNull(schemaName, "schemaName should not be null");
-        Objects.requireNonNull(schemaFile, "schemaName should not be null");
+        Objects.requireNonNull(schemaFile, "schemaFile should not be null");
 
         if (schemaName.isEmpty() ) {
             throw new IllegalArgumentException("schemaName should not be empty");

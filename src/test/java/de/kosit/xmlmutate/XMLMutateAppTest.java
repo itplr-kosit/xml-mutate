@@ -6,12 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.xml.transform.Templates;
 
 import java.net.URL;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -24,13 +25,13 @@ import org.junit.jupiter.api.Test;
 public class XMLMutateAppTest {
 
     private XMLMutateApp app = null;
-    private static final Logger log = Logger.getLogger(XMLMutateAppTest.class.getName());
+    private static final Logger log = LogManager.getLogger(XMLMutateAppTest.class);
     private static String testXMLInstance = "";
 
     @BeforeAll
     static void configure() {
 
-        XMLMutateAppTest.testXMLInstance = fileFromClasspath("ubl-invoice-add-mutation-tests.xml");
+        XMLMutateAppTest.testXMLInstance = fileFromClasspath("ubl-invoice-empty-mutation-tests.xml");
         log.info("url= " + testXMLInstance);
     }
 
@@ -67,13 +68,23 @@ public class XMLMutateAppTest {
     }
 
     @Test
+    @DisplayName("Test MutATest=mutate and test run mode")
+    void mutATestOnSingleInstance() {
+        // need new app instance for testing with CLI input
+        log.debug("Testing validation");
+        this.app = new XMLMutateApp(new String[] { "--run-mode", "test", "--schema", "ubl",
+                "D:/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd",
+                testXMLInstance });
+        assertEquals(app.getConfiguration().getRunMode(), RunModeEnum.TEST);
+    }
+
+    @Test
     // @Disabled
     @DisplayName("Default mutate only run on a single test xml instance")
 
     void defaultMutateRunOnSingleInstance() throws URISyntaxException {
 
-        // need new app instance
-        // url.getFile().toString()/
+        // need new app instance for testing with CLI inpu
         this.app = new XMLMutateApp(new String[] { testXMLInstance });
 
         assertEquals(0, this.app.run(), "Posix return code is 0 for success");

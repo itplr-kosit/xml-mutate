@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,16 +43,19 @@ public class XMLMutateApp {
     private Map<String, Templates> xsltCache = null;
 
     public XMLMutateApp() {
-
+        this.config = XMLMutateConfigurator.byDefault();
     }
 
     public XMLMutateApp(String[] line) {
         this();
-        XMLMutateConfigurator mc = new XMLMutateConfigurator();
-        this.config = mc.fromCommandLine(line);
+        this.config = XMLMutateConfigurator.fromCommandLine(line);
         log.debug(config);
-        this.inputPathList = mc.getInputPaths();
-        mc = null;
+        this.inputPathList = XMLMutateConfigurator.getInputPaths();
+
+    }
+
+    public XMLMutateConfiguration getConfiguration() {
+        return this.config;
     }
 
     public int run() {
@@ -67,7 +69,7 @@ public class XMLMutateApp {
             this.runMutate(true);
             break;
         case CHECK:
-           this.check();
+            this.check();
             break;
 
         default:
@@ -96,9 +98,9 @@ public class XMLMutateApp {
 
     public int runMutate(boolean testMutations) {
 
-        log.debug("Run in mutate only mode");
-        MutationRunner runner = new MutationRunner(this.inputPathList, config.getOutputDir(), this.xsltCache);
-        return runner.execute();
+        log.debug("Run in mutate with tests=" + testMutations);
+        MutationRunner runner = new MutationRunner(this.inputPathList, config, this.xsltCache);
+        return runner.execute(testMutations);
     }
 
     public void check() {

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import de.kosit.xmlmutate.mutator.MutatorException;
+
 /**
  * Unit test for simple App.
  */
@@ -43,13 +45,39 @@ public class XMLMutateConfigurationTest {
         assertEquals(RunModeEnum.GENERATE, config.getRunMode());
     }
 
-    @Test
-    @DisplayName("Reject that output dir with null values gets rejected")
 
-    void nullOutputDirTest() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            config.setOutputDir(null);
+    @Test
+    @DisplayName("configure schema")
+    void configureSchema() {
+        config.addSchema("ubl", "D:/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd");
+        assertTrue(config.hasSchema(), "Schema schould be available!");
+    }
+
+
+    @Test
+    @DisplayName("Reject null schema name")
+
+    void nullSchemaName() {
+        assertThrows(NullPointerException.class, () -> {
+            config.addSchema(null,null);
         });
     }
 
+    @Test
+    @DisplayName("Reject empty schema name")
+
+    void rejectEmptySchemaName() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            config.addSchema("", "");
+        });
+    }
+
+    @Test
+    @DisplayName("Reject wrong schema file")
+
+    void rejectWrongSchemaFile() {
+        assertThrows(MutatorException.class, () -> {
+            config.addSchema("ubl", "");
+        });
+    }
 }

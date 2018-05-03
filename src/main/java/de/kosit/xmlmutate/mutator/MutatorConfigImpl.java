@@ -8,12 +8,14 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * MutatorConfigImpl
+ *
  * @author Renzo Kottmann
  */
 public class MutatorConfigImpl implements MutatorConfig {
 
     private final static Logger log = LogManager.getLogger(MutatorConfigImpl.class);
 
+    private boolean schemaValid = true;
     private Map<String, String> config = null;
 
     MutatorConfigImpl() {
@@ -24,6 +26,7 @@ public class MutatorConfigImpl implements MutatorConfig {
         config.put(name, value);
     }
 
+    @Override
     public String getConfigItem(String name) {
         return config.get(name);
     }
@@ -39,10 +42,19 @@ public class MutatorConfigImpl implements MutatorConfig {
     @Override
     public String getInstructionName() {
         String name = config.get("mutator");
-        if (name == null ) {
+        if (name == null) {
             throw new IllegalStateException("No mutator name of xmute instruction given");
         }
         return name;
+    }
+
+    @Override
+    public boolean expectSchemaValid() {
+        return this.schemaValid;
+    }
+
+    public void setExpectSchemaValid(boolean valid) {
+        this.schemaValid = valid;
     }
 
 }

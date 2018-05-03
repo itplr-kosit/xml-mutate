@@ -14,31 +14,33 @@ import org.apache.logging.log4j.Logger;
  */
 public class XMLMutateConfigurator {
     private final static Logger log = LogManager.getLogger(XMLMutateConfigurator.class);
-    private XMLMutateConfigurationImpl config = null;
-    private List<Path> inputPathList = new ArrayList<Path>();
+    private static XMLMutateConfigurationImpl config = new XMLMutateConfigurationImpl();
+    private static List<Path> inputPathList = new ArrayList<Path>();
 
-    public XMLMutateConfigurator() {
-        // The absolute default config no env, no config files
-        this.config = new XMLMutateConfigurationImpl();
+    private XMLMutateConfigurator() {
+    }
+
+    public static XMLMutateConfiguration byDefault() {
+        return config;
     }
 
     /**
      * assumes files as arguments at the end only
      */
-    public XMLMutateConfiguration fromCommandLine(String[] line) {
+    public static XMLMutateConfiguration fromCommandLine(String[] line) {
         if (line == null) {
             log.debug("No command line arguments give. Return default config");
             return config;
         }
-        this.parseCommandLine(line);
+        parseCommandLine(line);
         return config;
     }
 
-    public List<Path> getInputPaths() {
+    public static List<Path> getInputPaths() {
         return inputPathList;
     }
 
-    private void parseCommandLine(String[] line) {
+    private static void parseCommandLine(String[] line) {
         String arg = "";
         for (int i = 0; i < line.length; i++) {
             arg = line[i].toLowerCase();
@@ -47,6 +49,9 @@ public class XMLMutateConfigurator {
                 config.setOutputDir(line[++i]);
                 break;
             case "-m":
+                config.setRunMode(line[++i]);
+                break;
+            case "--run-mode":
                 config.setRunMode(line[++i]);
                 break;
             case "--schema":

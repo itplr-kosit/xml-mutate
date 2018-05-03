@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.validation.Validator;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,16 +28,20 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import de.kosit.xmlmutate.XMLMutateApp;
+import de.kosit.xmlmutate.XMLMutateConfiguration;
 import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.mutator.MutatorException;
 import de.kosit.xmlmutate.mutator.MutatorParser;
 
 /**
- * MutationRunner takes as input a list of files/paths and
- * parses each input for mutation instructions and
- * executes them
+ * MutationRunner takes as input a list of files/paths and parses each input for
+ * mutation instructions and executes them
+ *
  * @author Renzo Kottmann
  */
 public class MutationRunner {
@@ -44,12 +50,18 @@ public class MutationRunner {
     private List<Path> inputPathList = new ArrayList<Path>();
     private Path outputDir = null;
     private DocumentBuilder docBuilder;
-    private Map<String,Templates> xsltCache = null;
+    private Map<String, Templates> xsltCache = null;
+    XMLMutateConfiguration config = null;
 
-    public MutationRunner(List<Path> inputPathList, Path outputDir, Map<String,Templates> xsltCache) {
+    private MutationRunner() {
+    };
+
+    public MutationRunner(List<Path> inputPathList, XMLMutateConfiguration config, Map<String, Templates> xsltCache) {
         this.inputPathList = inputPathList;
-        this.setOutputDir(outputDir);
+        this.setOutputDir(config.getOutputDir());
         this.xsltCache = xsltCache;
+        this.config = config;
+
     }
 
     private void setOutputDir(Path outputDir) {
@@ -88,16 +100,14 @@ public class MutationRunner {
         }
     }
 
-    public int execute() {
+    public int execute(final boolean testMutation) {
         log.debug("Executing Mutation runner");
-        //TODO change rethrow an own Mutationapp runtime exception
+
         try {
             this.prepareDomFactory();
         } catch (ParserConfigurationException e) {
             log.error("Could not configure dom parseer configuration", e);
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return 4;
+            throw new MutatorException("Could not configure dom parseer configuration", e);
         }
 
         Document docOrigin = null;
@@ -121,27 +131,33 @@ public class MutationRunner {
             name = name.replaceFirst("\\.xml", "");
             log.debug("Doc name=" + name);
             log.debug("Doc URI=" + docOrigin.getDocumentURI());
-            this.mutate(docOrigin, name);
+            this.mutate(docOrigin, name, testMutation);
 
-            // xPathAllPi = XPathFactory.newInstance().newXPath().compile("//processing-instruction('xmute')");
-            // xPathNextElement = XPathFactory.newInstance().newXPath().compile("./following-sibling::*[position() = 1 ]");
-            // nodes = (NodeList) xPathAllPi.evaluate(docOrigin.getDocumentElement(), XPathConstants.NODESET);
+            // xPathAllPi =
+            // XPathFactory.newInstance().newXPath().compile("//processing-instruction('xmute')");
+            // xPathNextElement =
+            // XPathFactory.newInstance().newXPath().compile("./following-sibling::*[position()
+            // = 1 ]");
+            // nodes = (NodeList) xPathAllPi.evaluate(docOrigin.getDocumentElement(),
+            // XPathConstants.NODESET);
             // context = (Element) xPathNextElement.evaluate(pi, XPathConstants.NODE);
         }
         return 0;
     }
 
-    private void mutate(Document origin, String documentName) {
+    private void mutate(Document origin, String documentName, boolean testMutation) {
         TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin,
                 NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
         TreeWalker elemWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_ELEMENT, null,
                 true);
         // finde pi
         // finde next elem
-        // deep copy of elem as docfrag or any other way that decopuls it from doc
-        // gib elem an mutator (with return elem and/or anyway side effect through object referece)
+        // deep copy of oroginal elem as docfrag or any other way that decopuls it from
+        // doc
+        // gib elem an mutator (with return elem and/or anyway side effect through
+        // object referece)
         // write out doc
-        // replace mutated elem mit vorheriger kopie
+        // replace mutated elem mit original
         Element mutationTargetElem = null;
         DocumentFragment origFragment = null;
         Mutator mutator = null;
@@ -158,7 +174,7 @@ public class MutationRunner {
             Element parent = (Element) elemWalker.parentNode();
 
             // now we know we have a valid pi and an elem
-            mutator = MutatorParser.parse(pi,xsltCache);
+            mutator = MutatorParser.parse(pi, xsltCache);
             // copy elem to docfrag
             origFragment = origin.createDocumentFragment();
             origFragment.appendChild(mutationTargetElem.cloneNode(true));
@@ -166,6 +182,18 @@ public class MutationRunner {
             Node changed = mutator.execute(mutationTargetElem);
 
             this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
+            boolean schemaValid = false;
+            if (testMutation) {
+                log.debug("Check mutated against schema");
+                schemaValid = this.testSchema(origin);
+            }
+            if (schemaValid == mutator.getConfig().expectSchemaValid()) {
+                log.debug("Mutation resulted expected outcome :) result={} and expected={}", schemaValid,
+                        mutator.getConfig().expectSchemaValid());
+            } else {
+                log.debug("Mutation resulted in UN-expected outcome :( , result={} and expected={}", schemaValid,
+                        mutator.getConfig().expectSchemaValid());
+            }
 
             log.debug("Replacing mutated=" + mutationTargetElem + " with original=" + origFragment.getFirstChild()
                     + " again. Parent of original=" + parent);
@@ -175,11 +203,49 @@ public class MutationRunner {
         }
     }
 
+    private boolean testSchema(Document doc) {
+        log.debug("Validate doc=" + doc.getNodeName());
+        Validator val = config.getSchema("ubl").newValidator();
+        List<String> valErrors = new ArrayList<String>();
+        val.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void error(SAXParseException err) throws SAXException {
+                valErrors.add(err.getMessage());
+            }
+
+            @Override
+            public void fatalError(SAXParseException err) throws SAXException {
+                valErrors.add(err.getMessage());
+            }
+
+            @Override
+            public void warning(SAXParseException err) throws SAXException {
+                valErrors.add(err.getMessage());
+            }
+        });
+        try {
+            val.validate(new DOMSource(doc));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        }
+        if (valErrors.isEmpty()) {
+            log.debug("No validation erros");
+            return true;
+        }
+        for (String var : valErrors) {
+            log.debug("valErrors=" + var);
+        }
+        return false;
+    }
+
     /**
-    * Copy an XML document, adding it as a child of the target document root
-    * @param source Document to copy
-    * @param target Document to contain copy
-    */
+     * Copy an XML document, adding it as a child of the target document root
+     *
+     * @param source Document to copy
+     * @param target Document to contain copy
+     */
     private Document copyDocument(Document source) {
         Document target = docBuilder.newDocument();
         Node node = target.importNode(source.getDocumentElement(), true);

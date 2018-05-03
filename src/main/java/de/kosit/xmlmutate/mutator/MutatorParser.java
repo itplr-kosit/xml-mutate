@@ -2,6 +2,8 @@ package de.kosit.xmlmutate.mutator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import javax.xml.transform.Templates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.w3c.dom.ProcessingInstruction;
 
 /**
  * MutatorParser
+ *
  * @author Renzo Kottmann
  */
 public class MutatorParser {
@@ -23,7 +26,9 @@ public class MutatorParser {
 
     public static Mutator parse(ProcessingInstruction pi, Map<String, Templates> xsltCache) {
 
-        //TODO throw exception in case pi is null
+        if (Objects.isNull(pi)) {
+            throw new MutatorException("Processing Instruction should not be null!!");
+        }
 
         if (pi.getTarget() == null || "".equals(pi.getTarget())) {
             throw new MutatorException("Processing Instruction has no target!!");
@@ -39,7 +44,7 @@ public class MutatorParser {
         if (data == null || "".equals(data)) {
             throw new MutatorException("Processing Instruction has no data!!");
         }
-        //from now we can expect to find a valid mutator name
+        // from now we can expect to find a valid mutator name
         Map<String, String> piData = parsePiData(data);
         MutatorConfig config = parseMutatorConfig(piData);
         String mutatorName = config.getInstructionName();
@@ -59,14 +64,14 @@ public class MutatorParser {
 
         default:
             throw new MutatorException("No valid mutator name given!");
-            //break;
+            // break;
         }
         return mutator;
     }
 
     private static Map<String, String> parsePiData(String data) {
         Map<String, String> dataEntries = new HashMap<String, String>();
-        String[] entries = data.split("\"\\s+");
+        String[] entries = data.split("\\s+");
         final String ENTRY_SEP = "=";
         String entry = "";
         String key = "";
@@ -74,22 +79,34 @@ public class MutatorParser {
         int sep_idx = 0;
         for (int i = 0; i < entries.length; i++) {
             entry = entries[i].trim();
-            log.debug("entry string={}", entry);
+            log.trace("entry string:{}", entry);
 
             if (entry.contains(ENTRY_SEP)) {
                 sep_idx = entry.indexOf(ENTRY_SEP);
                 key = entry.substring(0, sep_idx).trim().toLowerCase();
                 val = entry.substring(sep_idx + 1);
                 val = val.replace("\"", "");
+            } else {
+                key = entry.trim().toLowerCase();
+                val = "";
             }
-            log.debug("Entry key={} : val={}", key, val);
+            log.trace("Entry key={} : val={}", key, val);
             dataEntries.put(key, val);
         }
         return dataEntries;
     }
 
     private static MutatorConfig parseMutatorConfig(Map<String, String> dataEntries) {
-        MutatorConfig config = new MutatorConfigImpl();
+        MutatorConfigImpl config = new MutatorConfigImpl();
+        if (dataEntries.containsKey("schema-valid")) {
+            if (dataEntries.get("schema-valid") != null && ! dataEntries.get("schema-valid").isEmpty()) {
+                config.setExpectSchemaValid(Boolean.valueOf(dataEntries.get("schema-valid")));
+            } else {
+                //strictly speaking this elese is not necessary cause true is default
+                config.setExpectSchemaValid(true);
+            }
+
+        }
         config.setInstructionName(dataEntries.get("mutator"));
         return config;
 
