@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -15,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,28 +29,13 @@ public class XMLMutateAppTest {
     private static String testXMLInstance = "";
 
     @BeforeAll
-    static void configure() {
+    static void configure() throws IOException {
 
-        XMLMutateAppTest.testXMLInstance = fileFromClasspath("ubl-invoice-empty-mutation-tests.xml");
+        XMLMutateAppTest.testXMLInstance = XMLMutateManufactory.fileFromClasspath("ubl-invoice-add-mutation-tests.xml");
         log.info("url= " + testXMLInstance);
     }
 
-    private static String fileFromClasspath(String file) {
-        // "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml",
-        // "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-remove-mutation-tests.xml",
-        // "D:/git-repos/xml-mutator/src/test/resources/ubl-invoice-add-mutation-tests.xml"
-        // full file path to test xml instance valthough it is on classpath
-        Class<? extends Object> clazz = XMLMutateAppTest.class;
-        assertNotNull(clazz);
-        assertNotNull(file);
-        if (!file.startsWith("/")) {
-            file = "/" + file;
-        }
-        URL url = clazz.getResource(file);
 
-        assertNotNull(url, "URL is null");
-        return url.getFile().replaceFirst("/", "");
-    }
 
     @BeforeEach
     void init() {

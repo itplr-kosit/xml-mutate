@@ -1,7 +1,9 @@
 package de.kosit.xmlmutate.runner;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,8 +16,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,9 +41,18 @@ import org.xml.sax.SAXParseException;
 
 import de.kosit.xmlmutate.XMLMutateApp;
 import de.kosit.xmlmutate.XMLMutateConfiguration;
+import de.kosit.xmlmutate.XMLMutateException;
+import de.kosit.xmlmutate.XMLMutateManufactory;
 import de.kosit.xmlmutate.mutator.Mutator;
 import de.kosit.xmlmutate.mutator.MutatorException;
 import de.kosit.xmlmutate.mutator.MutatorParser;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmDestination;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
 
 /**
  * MutationRunner takes as input a list of files/paths and parses each input for
@@ -79,14 +95,6 @@ public class MutationRunner {
         this.outputDir = outputDir;
     }
 
-    private void prepareDomFactory() throws ParserConfigurationException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        docFactory.setValidating(true);
-        docFactory.setNamespaceAware(true);
-        docFactory.setIgnoringElementContentWhitespace(true);
-        docBuilder = docFactory.newDocumentBuilder();
-    }
-
     private void write(Document doc, NamingStrategy name) {
         log.debug("Writing to dir=" + outputDir);
         log.debug("Writing to file name=" + name.getFileName());
@@ -100,30 +108,14 @@ public class MutationRunner {
         }
     }
 
-    public int execute(final boolean testMutation) {
+    public int execute(final boolean testMutation) throws XMLMutateException {
         log.debug("Executing Mutation runner");
-
-        try {
-            this.prepareDomFactory();
-        } catch (ParserConfigurationException e) {
-            log.error("Could not configure dom parseer configuration", e);
-            throw new MutatorException("Could not configure dom parseer configuration", e);
-        }
 
         Document docOrigin = null;
 
         for (Path file : inputPathList) {
             Files.isReadable(file);
-
-            try {
-                docOrigin = docBuilder.parse(Files.newInputStream(file));
-
-            } catch (SAXException | IOException e) {
-                // TODO Auto-generated catch block
-                log.error("Could not Parse XML Instance", e);
-                e.printStackTrace();
-                return 4;
-            }
+            docOrigin = XMLMutateManufactory.domDocumentFromPath(file);
             docOrigin.normalize();
             docOrigin.normalizeDocument();
 
@@ -132,15 +124,6 @@ public class MutationRunner {
             log.debug("Doc name=" + name);
             log.debug("Doc URI=" + docOrigin.getDocumentURI());
             this.mutate(docOrigin, name, testMutation);
-
-            // xPathAllPi =
-            // XPathFactory.newInstance().newXPath().compile("//processing-instruction('xmute')");
-            // xPathNextElement =
-            // XPathFactory.newInstance().newXPath().compile("./following-sibling::*[position()
-            // = 1 ]");
-            // nodes = (NodeList) xPathAllPi.evaluate(docOrigin.getDocumentElement(),
-            // XPathConstants.NODESET);
-            // context = (Element) xPathNextElement.evaluate(pi, XPathConstants.NODE);
         }
         return 0;
     }
@@ -183,9 +166,11 @@ public class MutationRunner {
 
             this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
             boolean schemaValid = false;
+            boolean schematronValid = false;
             if (testMutation) {
                 log.debug("Check mutated against schema");
                 schemaValid = this.testSchema(origin);
+                schematronValid = this.testSchematron(origin);
             }
             if (schemaValid == mutator.getConfig().expectSchemaValid()) {
                 log.debug("Mutation resulted expected outcome :) result={} and expected={}", schemaValid,
@@ -201,6 +186,77 @@ public class MutationRunner {
             parent.replaceChild(origFragment, changed);
 
         }
+    }
+
+    private boolean testSchematronSaxon(Document doc) {
+        DOMSource xmlSource = new DOMSource(doc);
+        Processor processor = new Processor(false);
+        net.sf.saxon.s9api.DocumentBuilder documentBuilder = processor.newDocumentBuilder();
+        try {
+            XdmNode node = documentBuilder.build(xmlSource);
+            XsltCompiler xsltCompiler = processor.newXsltCompiler();
+            XsltExecutable schematronValidator = xsltCompiler.compile(new StreamSource(new File(
+                    "D:/git-repos/validator-configuration-xrechnung/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl")));
+            XsltTransformer transformer = schematronValidator.load();
+            transformer.setInitialContextNode(node);
+            XdmDestination output = new XdmDestination();
+            transformer.setDestination(output);
+            // processor.
+
+            transformer.transform();
+        } catch (SaxonApiException e) {
+            throw new MutatorException("saxon issue");
+        }
+        return false;
+    }
+
+    private boolean testSchematron(Document doc) {
+        log.debug("Validate doc=" + doc.getNodeName());
+        Templates schematron = null;
+        Transformer xsltTransformer = null;
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        // transformerFactory.
+        StreamSource xsltSource = new StreamSource(new File(
+                "D:/git-repos/validator-configuration-xrechnung/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl"));
+
+        try {
+            schematron = transformerFactory.newTemplates(xsltSource);
+        } catch (TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            log.error("Error loadding xslt", e);
+        }
+        try {
+            xsltTransformer = schematron.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            log.error("Could not configure schematron cheker =" + schematron, e);
+        }
+
+        DOMResult result = new DOMResult();
+        DOMSource xmlSource = new DOMSource(doc);
+        try {
+            xsltTransformer.transform(xmlSource, result);
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            log.error("Could not schematron check" + doc, e);
+        }
+        Node resultNode = result.getNode();
+        Node resultChild = resultNode.getFirstChild();
+        log.debug("Got result node=" + resultNode.getNodeName() + " of type=" + resultNode.getNodeType());
+        log.debug("Got resultChild node=" + resultChild.getNodeName() + " of type=" + resultChild.getNodeType());
+        if (resultChild.getNodeType() == Node.ELEMENT_NODE) {
+            log.debug("Is element node!");
+        }
+        try {
+            log.debug("Print schmematron result");
+            PrintStream out = new PrintStream("svrl.xml");
+
+            XMLMutateApp.printDocument((Document) resultNode, out);
+        } catch (IOException | TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private boolean testSchema(Document doc) {

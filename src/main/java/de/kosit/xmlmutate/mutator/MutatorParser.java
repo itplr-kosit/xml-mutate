@@ -98,18 +98,38 @@ public class MutatorParser {
 
     private static MutatorConfig parseMutatorConfig(Map<String, String> dataEntries) {
         MutatorConfigImpl config = new MutatorConfigImpl();
-        if (dataEntries.containsKey("schema-valid")) {
-            if (dataEntries.get("schema-valid") != null && ! dataEntries.get("schema-valid").isEmpty()) {
-                config.setExpectSchemaValid(Boolean.valueOf(dataEntries.get("schema-valid")));
-            } else {
-                //strictly speaking this elese is not necessary cause true is default
-                config.setExpectSchemaValid(true);
-            }
-
-        }
+        parseSchemaValid(dataEntries, config);
+        parseSchematron(dataEntries, config);
         config.setInstructionName(dataEntries.get("mutator"));
         return config;
 
+    }
+
+    private static String getDataValue(Map<String, String> dataEntries, String key) {
+        // TODO check dataentries not null
+        String value = dataEntries.get(key);
+        if (value == null) {
+            return "";
+        } else {
+            return value;
+        }
+    }
+
+    private static void parseSchematron(Map<String, String> dataEntries, MutatorConfigImpl config) {
+        if ( getDataValue(dataEntries, "schematron-valid").isEmpty() ) {
+            
+        }
+
+    }
+
+    private static void parseSchemaValid(Map<String, String> dataEntries, MutatorConfigImpl config) {
+
+        if (getDataValue(dataEntries, "schema-valid").isEmpty()) {
+            config.setExpectSchemaValid(true);
+        } else {
+            // strictly speaking this elese is not necessary cause true is default
+            config.setExpectSchemaValid(Boolean.valueOf(dataEntries.get("schema-valid")));
+        }
     }
 
 }
