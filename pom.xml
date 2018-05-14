@@ -16,6 +16,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <!-- Own properties -->
     <log4j.version>2.11.0</log4j.version>
+    <saxon-he.version>9.8.0-11</saxon-he.version>
     <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
         the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
     <mvn.surefire.version>2.19.1</mvn.surefire.version>
@@ -37,6 +38,12 @@
       <artifactId>junit-jupiter-api</artifactId>
       <version>5.1.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+      <version>${saxon-he.version}</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <build>
