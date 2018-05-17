@@ -14,12 +14,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.kosit.xmlmutate.XMLMutateException.Status;
+
 /**
  * XMLMutateManufactory
  */
 public class XMLMutateManufactory {
 
-    public static String fileFromClasspath(String file) throws IOException {
+    public static String fileFromClasspath(String file) {
         // "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-empty-mutation-tests.xml",
         // "D:/git-repos/xml-mutator/target/test-classes/ubl-invoice-remove-mutation-tests.xml",
         // "D:/git-repos/xml-mutator/src/test/resources/ubl-invoice-add-mutation-tests.xml"
@@ -27,12 +29,17 @@ public class XMLMutateManufactory {
         if (Objects.isNull(file)) {
             throw new XMLMutateException("File is null", XMLMutateException.Status.FILE_ERROR);
         }
+        if ("".equals(file)) {
+            throw new XMLMutateException("Filename is an empty string", XMLMutateException.Status.FILE_ERROR);
+        }
         Class<? extends Object> clazz = XMLMutateManufactory.class;
         if (!file.startsWith("/")) {
             file = "/" + file;
         }
         URL url = clazz.getResource(file);
-
+        if (Objects.isNull(url)) {
+            throw new XMLMutateException(String.format("File=%s is not in classpath", file), Status.FILE_ERROR);
+        }
         return url.getFile().replaceFirst("/", "");
     }
 

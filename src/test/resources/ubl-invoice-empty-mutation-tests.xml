@@ -7,7 +7,8 @@
     <cbc:CustomizationID>urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung_1.1</cbc:CustomizationID>
     <cbc:ID>123456XX</cbc:ID>
     <cbc:IssueDate>2016-04-04+01:00</cbc:IssueDate>
-    <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+    <!-- Wrong code according to XRechnung rules -->
+    <cbc:InvoiceTypeCode>200</cbc:InvoiceTypeCode>
     <cbc:Note>ADU</cbc:Note>
     <cbc:Note>Es gelten unsere Allgem. Geschäftsbedingungen, die Sie unter […] finden.</cbc:Note>
     <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
@@ -21,7 +22,7 @@
             <cac:PostalAddress>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
                 <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
-                <cbc:CityName>bremen</cbc:CityName>
+                <cbc:CityName></cbc:CityName>
                 <cbc:PostalZone>12345</cbc:PostalZone>
                 <cac:Country>
                     <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
