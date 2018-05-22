@@ -3,8 +3,10 @@ package de.kosit.xmlmutate.tester;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.namespace.NamespaceContext;
@@ -90,12 +92,12 @@ public class SchematronTester {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
         DocumentBuilder documentBuilder = null;
-		try {
-			documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         Document svrl = documentBuilder.newDocument();
         DOMResult result = new DOMResult(svrl);
         DOMSource xmlSource = new DOMSource(doc);
@@ -123,38 +125,38 @@ public class SchematronTester {
 
         List<TestItem> reports = new ArrayList<TestItem>();
 
-        List<String> failedAsserts = parseFailedAsserts(result.getNode());
+        Map<String, SchematronTestItemDetail> failedAsserts = parseFailedAsserts(result.getNode());
 
         // having no expectations means all should be valid, therefore having empty
         // expectation list but failed assert means all falied did not meet expectation
         if (expectation.isEmpty()) {
             log.debug("got no expectations");
-            for (String failed : failedAsserts) {
-                reports.add(new SchematronTestItem(failed, true, false));
+            for (SchematronTestItemDetail failed : failedAsserts.values()) {
+                reports.add(new SchematronTestItem(failed.getId(), true, false, failed));
             }
         }
         // if expectation.isEmpty() the following loop does not do any iteration
         for (Expectation expec : expectation) {
-            String tested = expec.of();
-            if (failedAsserts.contains(tested)) {
-                reports.add(new SchematronTestItem(tested, expec.is(), false));
+            String tested = expec.what().toLowerCase();
+            if (failedAsserts.containsKey(tested)) {
+                reports.add(new SchematronTestItem(tested, expec.is(), false, failedAsserts.get(tested)));
             } else {
-                reports.add(new SchematronTestItem(tested, expec.is(), true));
+                reports.add(new SchematronTestItem(tested, expec.is(), true, failedAsserts.get(tested)));
             }
         }
 
         return reports;
     }
 
-    private List<String> parseFailedAsserts(Node resultNode) {
+    private Map<String, SchematronTestItemDetail> parseFailedAsserts(Node resultNode) {
         log.debug("parse failed asserts");
-        List<String> failedAsserts = new ArrayList<String>();
+        Map<String, SchematronTestItemDetail> failedAsserts = new HashMap<String, SchematronTestItemDetail>();
         XPath xp = null;
         XPathExpression allFailedAsserts;
 
         try {
             xp = XPathFactory.newInstance().newXPath();
-            xp.setNamespaceContext(new NamespaceContext(){
+            xp.setNamespaceContext(new NamespaceContext() {
 
                 @Override
                 public Iterator getPrefixes(String prefix) {
@@ -180,10 +182,24 @@ public class SchematronTester {
             log.debug("Num failed asserts=" + nodes.getLength());
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
-                NamedNodeMap attr = node.getAttributes();
-                Node id = attr.getNamedItem("id");
-                log.debug("failed assert id=" + id.getNodeValue());
-                failedAsserts.add(id.getNodeValue());
+                NamedNodeMap attMap = node.getAttributes();
+                // mandatory svrl attribute
+                Node att = attMap.getNamedItem("location");
+                String location = att.getNodeValue();
+                // mandatory svrl attribute
+                att = attMap.getNamedItem("test");
+                String test = att.getNodeValue();
+
+                att = attMap.getNamedItem("id");
+                String id = (Objects.isNull(att)) ? location : att.getNodeValue();
+
+                att = attMap.getNamedItem("role");
+                String role = (Objects.isNull(att)) ? "" : att.getNodeValue();
+
+                att = attMap.getNamedItem("flag");
+                String flag = (Objects.isNull(att)) ? "" : att.getNodeValue();
+
+                failedAsserts.put(id.toLowerCase(), new SchematronTestItemDetail(id, location, test, role, flag));
             }
         } catch (XPathExpressionException e) {
             throw new MutatorException("Could not parse svrl failed asserts", e);
@@ -192,58 +208,6 @@ public class SchematronTester {
         return failedAsserts;
     }
 
-    private class SchematronTestItem implements TestItem {
-        private String what = "";
-        // chosing different boolean values such that isAsExcpectd does not result in
-        // true by default
-        private boolean expected = false;
-        private boolean actual = true;
-
-        private SchematronTestItem() {
-        }
-
-        public SchematronTestItem(String what, boolean expected, boolean actual) {
-            this.what = what;
-            this.expected = expected;
-            this.actual = actual;
-        }
-
-        public String of() {
-            return what;
-        }
-
-        public boolean expected() {
-            return expected;
-        }
-
-        public boolean actual() {
-            return actual;
-        }
-
-        public boolean asExpected() {
-            return expected == actual;
-        }
-    }
-
-    private class TestExpectation implements Expectation {
-
-        String what = "";
-        boolean valid = false;
-
-        TestExpectation(String what, boolean valid) {
-            this.what = what;
-            this.valid = valid;
-
-        }
-
-        public String of() {
-            return what;
-        }
-
-        public boolean is() {
-            return valid;
-        }
-
-    }
+    
 
 }

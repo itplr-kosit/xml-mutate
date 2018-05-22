@@ -8,6 +8,7 @@ import javax.xml.transform.Templates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.ProcessingInstruction;
+import de.kosit.xmlmutate.tester.TestExpectation;
 
 /**
  * MutatorParser
@@ -106,7 +107,6 @@ public class MutatorParser {
     }
 
     private static String getDataValue(Map<String, String> dataEntries, String key) {
-        // TODO check dataentries not null
         String value = dataEntries.get(key);
         if (value == null) {
             return "";
@@ -116,10 +116,32 @@ public class MutatorParser {
     }
 
     private static void parseSchematron(Map<String, String> dataEntries, MutatorConfigImpl config) {
-        if ( getDataValue(dataEntries, "schematron-valid").isEmpty() ) {
-            
+        if (getDataValue(dataEntries, "schematron-valid").isEmpty()) {
+            return;
+        }
+        String rulesEntry = dataEntries.get("schematron-valid");
+
+        String[] rules = rulesEntry.split(",");
+
+        String rule = "";
+        String on = "";
+        String what = "";
+        int sep_idx = 0;
+
+        for (int i = 0; i < rules.length; i++) {
+            rule = rules[i];
+            sep_idx = rule.indexOf(":");
+
+            if (sep_idx > -1) {
+                on = rule.substring(0, sep_idx).trim().toLowerCase();
+                what = rule.substring(sep_idx + 1).trim().toLowerCase();
+            } else {
+                what = rule.trim().toLowerCase();
+            }
+
         }
 
+        config.addSchematronExpectation(new TestExpectation(on, what, true) );
     }
 
     private static void parseSchemaValid(Map<String, String> dataEntries, MutatorConfigImpl config) {

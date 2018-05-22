@@ -1,10 +1,15 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import de.kosit.xmlmutate.tester.Expectation;
 
 /**
  * MutatorConfigImpl
@@ -17,6 +22,7 @@ public class MutatorConfigImpl implements MutatorConfig {
 
     private boolean schemaValid = true;
     private Map<String, String> config = null;
+    private ArrayList<Expectation> schematronExpectations = new ArrayList<Expectation>();
 
     MutatorConfigImpl() {
         config = new HashMap<String, String>();
@@ -56,5 +62,16 @@ public class MutatorConfigImpl implements MutatorConfig {
     public void setExpectSchemaValid(boolean valid) {
         this.schemaValid = valid;
     }
+
+    public void addSchematronExpectation(Expectation expectation) {
+        if (Objects.nonNull(expectation)) {
+            this.schematronExpectations.add(expectation);
+        }
+    }
+
+	@Override
+	public List<Expectation> getSchematronExpectations() {
+		return this.schematronExpectations;
+	}
 
 }

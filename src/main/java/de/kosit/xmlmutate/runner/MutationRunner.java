@@ -46,6 +46,8 @@ import de.kosit.xmlmutate.XMLMutateManufactory;
 import de.kosit.xmlmutate.mutator.Mutator;
 import de.kosit.xmlmutate.mutator.MutatorException;
 import de.kosit.xmlmutate.mutator.MutatorParser;
+import de.kosit.xmlmutate.tester.SchematronTester;
+import de.kosit.xmlmutate.tester.TestItem;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
@@ -146,6 +148,9 @@ public class MutationRunner {
         Mutator mutator = null;
         ProcessingInstruction pi = null;
         int docNum = 0;
+        String schematron = XMLMutateManufactory.fileFromClasspath("XRechnung-UBL-validation-Invoice.xsl");
+        SchematronTester st = new SchematronTester("xr-ubl-in", schematron);
+
         while (piWalker.nextNode() != null) {
             pi = (ProcessingInstruction) piWalker.getCurrentNode();
             log.debug("PI=" + pi);
@@ -166,11 +171,15 @@ public class MutationRunner {
 
             this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
             boolean schemaValid = false;
-            boolean schematronValid = false;
+
             if (testMutation) {
                 log.debug("Check mutated against schema");
                 schemaValid = this.testSchema(origin);
-                schematronValid = this.testSchematron(origin);
+
+
+
+            List<TestItem> report = st.test(origin, null);
+                // schematronValid = this.testSchematron(origin);
             }
             if (schemaValid == mutator.getConfig().expectSchemaValid()) {
                 log.debug("Mutation resulted expected outcome :) result={} and expected={}", schemaValid,

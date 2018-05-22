@@ -1,10 +1,15 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.List;
+
+import de.kosit.xmlmutate.tester.Expectation;
+
 /**
  * package de.kosit.xmlmutate.mutator;
  *
  *
  * MutatorConfig
+
  */
 public interface MutatorConfig {
 
@@ -15,4 +20,6 @@ public interface MutatorConfig {
     public String getConfigItem(String name);
 
     public boolean expectSchemaValid();
+
+    public List<Expectation> getSchematronExpectations();
 }
