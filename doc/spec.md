@@ -6,7 +6,7 @@ A declarative **XML** instance **Muta**ting and **Te**sting tool.
 
 There are several tools available to generate XML instance documents using XML Schema. These tools are very good in generating random documents within the constraints of the schema i.e. generating valid instances.
 The generated content is most often not meaningful and do not reflect business requirements and business cases.
-However, not only during the development of XML schema definition languages it is often very important to additionally test schema definitions against invalid instances. Only then one can make sure that certain constraints/rules
+However, not only during the development of XML Schema definition languages it is often very important to additionally test schema definitions against invalid instances. Only then one can make sure that certain constraints/rules
 
 * correctly exclude unwanted content and do not include content as **False Positives**,
 * correctly inlcude all valid content and do not exclude **False Negatives**
@@ -54,7 +54,7 @@ These can look like this for example:
 
 ```
 
-Applying this declartive approach to a valid instance, keep it valid and it can be used as usual. Because XML tools just ignore the `xmute` processing instructions.
+Applying this declarative approach to a valid instance, keeps it valid and it can be used as usual. Because XML tools just ignore the `xmute` processing instructions.
 
 This way many kinds of mutations can be defined and combined with assertions about the validity of the mutated instances.
 
@@ -92,7 +92,7 @@ Per default a mutator gets executed on the next element sibling, otherwise xpath
 
 Mutates like in Mutation mode and also tests each generated instance against XML Schema and Schematron.
 
-### User Interface
+### Application User Interface
 
 Command line interface
 
