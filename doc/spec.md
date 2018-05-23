@@ -97,3 +97,28 @@ Mutates like in Mutation mode and also tests each generated instance against XML
 Command line interface
 
 * following GNU best practices and conventions
+
+### XMute Instructions
+
+The general structure of an instruction is a list of key="value" declarations as shown on this example:
+
+```xml
+<?xmute mutator="randomize-element-order" xpath="."
+        group="1"
+        schema-valid schematron-invalid="bt-br-03" ?>
+```
+
+All keys are interpreted case-insensitive and no spaces are allowed between `key` and `=` and `value`. Each value must be surrounded by quotes `"`. Sometimes `value` is optional.
+
+#### Mutations
+
+`mutator` is a mandatory key(word) indicating the mutation which should take place.
+
+#### Testing
+
+Each mutation (i.e. mutated document) is validated against XML Schema and Schematron if run in default mutate and test mode.
+
+`schema-valid` and `schema-invalid` declare expectation about the outcome of XML Schema validation.
+If no symbolic name (should be but does not need to be equal to namespace prefix) is given then `schema-valid` and `schema-invalid` are expectations about the default outcome of XML Schema validation.
+
+`schematron-valid="bt-1,ubl:bt-1"` and `schematron-invalid="xrech:bt-2 ubl:bt-1"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifier and optional schematron symbolic name.
