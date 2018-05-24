@@ -54,11 +54,11 @@ public class XMLMutateAppTest {
 
     @Test
     @DisplayName("Test MutATest=mutate and test run mode")
-    void mutATestOnSingleInstance() {
+    void mutaTestOnSingleInstance() {
         // need new app instance for testing with CLI input
         log.debug("Testing validation");
         this.app = new XMLMutateApp(new String[] { "--run-mode", "test", "--schema", "ubl",
-                "D:/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd",
+                "c:/data/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd",
                 testXMLInstance });
         assertEquals(app.getConfiguration().getRunMode(), RunModeEnum.TEST);
     }

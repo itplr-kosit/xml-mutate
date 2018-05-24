@@ -49,7 +49,7 @@ public class XMLMutateConfigurationTest {
     @Test
     @DisplayName("configure schema")
     void configureSchema() {
-        config.addSchema("ubl", "D:/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd");
+        config.addSchema("ubl", "c:/data/git-repos/validator-configuration-xrechnung/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd");
         assertTrue(config.hasSchema(), "Schema schould be available!");
     }
 
