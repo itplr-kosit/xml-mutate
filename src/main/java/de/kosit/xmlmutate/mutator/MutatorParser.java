@@ -46,7 +46,8 @@ public class MutatorParser {
             throw new MutatorException("Processing Instruction has no data!!");
         }
         // from now we can expect to find a valid mutator name
-        Map<String, String> piData = parsePiData(data);
+        PiDataParser pip = new PiDataParser();
+        Map<String, String> piData = pip.parsePiData(data);
         MutatorConfig config = parseMutatorConfig(piData);
         String mutatorName = config.getInstructionName();
         log.debug("mutator name equals={}", mutatorName);
@@ -141,7 +142,7 @@ public class MutatorParser {
 
         }
 
-        config.addSchematronExpectation(new TestExpectation(on, what, true) );
+        config.addSchematronExpectation(new TestExpectation(on, what, true));
     }
 
     private static void parseSchemaValid(Map<String, String> dataEntries, MutatorConfigImpl config) {
