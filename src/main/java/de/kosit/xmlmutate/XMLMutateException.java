@@ -11,13 +11,13 @@ public class XMLMutateException extends RuntimeException {
     private Status status = Status.OK;
 
     // public XMLMutateException(String message, int statusCode) {
-    //     super(message);
-    //     this.statusCode = statusCode;
+    // super(message);
+    // this.statusCode = statusCode;
     // }
 
     // public XMLMutateException(String message, int statusCode, Throwable cause) {
-    //     super(message, cause);
-    //     this.statusCode = statusCode;
+    // super(message, cause);
+    // this.statusCode = statusCode;
     // }
 
     public XMLMutateException(String message, Status status) {
@@ -30,10 +30,12 @@ public class XMLMutateException extends RuntimeException {
         this.status = status;
     }
 
+    public int getStatusCode() {
+        return this.status.code();
+    }
+
     public static enum Status {
-        OK(0),
-        FILE_ERROR(10),
-        PARSER_ERROR(20);
+        OK(0), FILE_ERROR(10), PARSER_ERROR(20);
 
         private int value;
 

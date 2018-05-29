@@ -136,8 +136,15 @@ public class XMLMutateApp {
         log.info("Starting XML MutaTe");
 
         XMLMutateApp app = new XMLMutateApp(args);
-        int exitCode = app.run();
+        int exitCode = -1;
+        try {
+            exitCode = app.run();
+        } catch (XMLMutateException e) {
+            exitCode = e.getStatusCode();
+            log.error("Stopped app with exit code=" + exitCode, e.getCause());
 
+        }
+        log.info("Good Bye :)");
         System.exit(exitCode);
     }
 }
