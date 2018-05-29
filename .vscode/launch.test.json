@@ -1,0 +1,28 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "xml-mutate",
+                "projectName": "xml-mutate",
+                "workingDirectory": "d:\\git-repos\\xml-mutator",
+                "args": [],
+                "vmargs": [],
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "xml-mutate",
+                "projectName": "xml-mutate",
+                "workingDirectory": "d:\\git-repos\\xml-mutator",
+                "args": [],
+                "vmargs": [],
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}
