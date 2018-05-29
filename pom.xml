@@ -20,6 +20,9 @@
     <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
         the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
     <mvn.surefire.version>2.19.1</mvn.surefire.version>
+    <mvn.surefire.junit.platform.provider>1.1.0</mvn.surefire.junit.platform.provider>
+
+    <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
     <mvn.exec.version>1.6.0</mvn.exec.version>
   </properties>
   <dependencies>
@@ -55,12 +58,12 @@
           <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>1.1.0</version>
+            <version>${mvn.surefire.junit.platform.provider}</version>
           </dependency>
           <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
+            <version>${mvn.junit.engine.version}</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -68,21 +71,32 @@
           <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
+
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${mvn.exec.version}</version>
+      <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${mvn.surefire.version}</version>
+        <dependencies>
+
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>${mvn.surefire.junit.platform.provider}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${mvn.junit.engine.version}</version>
+          </dependency>
+    </dependencies>
         <executions>
           <execution>
-            <phase>verify</phase>
             <goals>
-              <goal>java</goal>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <mainClass>de.kosit.xmlmutate.XMLMutateApp</mainClass>
-        </configuration>
       </plugin>
     </plugins>
   </build>
