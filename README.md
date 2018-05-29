@@ -50,9 +50,9 @@ This is expressed by the following rules on an UBL Invoice(excerpt with differen
 <param name="BR-DE-7" value="cbc:ElectronicMail"/>
 ```
 
-However, the Schematron rules only reqire the element to be present even if it has no content.
+However, the Schematron rules only require the element to be present even if it has no content.
 
-Now, we can use a positive exmaple and XML-MutaTe to check on this. We a valid [UBL Invoice](doc/exmaple/xrechung-bug) and annotate it with the following declarations:
+Now, we can use a positive example and XML-MutaTe to check on this. We take a valid [UBL Invoice](doc/example/xrechnung-bug.xml) and annotate it with the following declarations:
 
 ```xml
 <cac:Contact>
@@ -76,7 +76,7 @@ We check this by running:
 java -jar target/xml-mutate-1.0-SNAPSHOT.jar --run-mode test --schema ubl xrechnung-conf/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd --schematron xr-ubl-in xre
 chnung-conf/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl --output-dir doc/example/ doc/example/xrechnung-bug.xml
 ```
-The report tells us that currently docuemtn with empty are accepted against our expectation:
+The following report tells us that currently documents with empty content are accepted against our expectation:
 
 ```
 Generated 3 mutations from 1 original document(s) in directory doc\example.

@@ -5,7 +5,7 @@ A declarative **XML** instance **Muta**ting and **Te**sting tool.
 ## Motivation/Background
 
 There are several tools available to generate XML instance documents using XML Schema. These tools are very good in generating random documents within the constraints of the schema i.e. generating valid instances.
-The generated content is most often not meaningful and do not reflect business requirements and business cases.
+The generated content is most often not meaningful and does not reflect business requirements and business cases.
 However, not only during the development of XML Schema definition languages it is often very important to additionally test schema definitions against invalid instances. Only then one can make sure that certain constraints/rules
 
 * correctly exclude unwanted content and do not include content as **False Positives**,
