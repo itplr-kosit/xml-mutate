@@ -109,6 +109,7 @@ public class MutatorParser {
         MutatorConfigImpl config = new MutatorConfigImpl();
         parseSchemaValid(dataEntries, config);
         parseSchematron(dataEntries, config);
+        parseSchematronInvalid(dataEntries, config);
         config.setInstructionName(dataEntries.get("mutator"));
         return config;
 
@@ -146,10 +147,37 @@ public class MutatorParser {
             } else {
                 what = rule.trim().toLowerCase();
             }
-
+            config.addSchematronExpectation(new TestExpectation(on, what, true));
         }
 
-        config.addSchematronExpectation(new TestExpectation(on, what, true));
+    }
+
+    private static void parseSchematronInvalid(Map<String, String> dataEntries, MutatorConfigImpl config) {
+        if (getDataValue(dataEntries, "schematron-invalid").isEmpty()) {
+            return;
+        }
+        String rulesEntry = dataEntries.get("schematron-invalid");
+
+        String[] rules = rulesEntry.split(",");
+
+        String rule = "";
+        String on = "";
+        String what = "";
+        int sep_idx = 0;
+
+        for (int i = 0; i < rules.length; i++) {
+            rule = rules[i];
+            sep_idx = rule.indexOf(":");
+
+            if (sep_idx > -1) {
+                on = rule.substring(0, sep_idx).trim().toLowerCase();
+                what = rule.substring(sep_idx + 1).trim().toLowerCase();
+            } else {
+                what = rule.trim().toLowerCase();
+            }
+            config.addSchematronExpectation(new TestExpectation(on, what, false));
+        }
+
     }
 
     private static void parseSchemaValid(Map<String, String> dataEntries, MutatorConfigImpl config) {
