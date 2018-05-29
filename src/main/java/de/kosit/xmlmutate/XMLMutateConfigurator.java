@@ -60,6 +60,12 @@ public class XMLMutateConfigurator {
 
                 config.addSchema(schemaName, schemaFile);
                 break;
+            case "--schematron":
+                String schematronName = line[++i];
+                String schematronFile = line[++i];
+
+                config.addSchematron(schematronName, schematronFile);
+                break;
             default:
                 inputPathList.add(Paths.get(line[i]));
                 break;

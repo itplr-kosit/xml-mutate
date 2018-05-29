@@ -14,6 +14,7 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 
 import de.kosit.xmlmutate.mutator.MutatorException;
+import de.kosit.xmlmutate.tester.SchematronTester;
 
 /**
  * XMLMutateConfig
@@ -23,11 +24,13 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
     private Path outputDir = null;
     private RunModeEnum runMode = null;
     private Map<String, Schema> xsdCache = null;
+    private Map<String, SchematronTester> schematronCache = null;
 
     public XMLMutateConfigurationImpl() {
         this.defaultOutputDir();
         this.runMode = RunModeEnum.GENERATE;
         this.xsdCache = new HashMap<String, Schema>();
+        this.schematronCache = new HashMap<String, SchematronTester>();
     }
 
     private void defaultOutputDir() {
@@ -63,7 +66,7 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
         Objects.requireNonNull(schemaName, "schemaName should not be null");
         Objects.requireNonNull(schemaFile, "schemaFile should not be null");
 
-        if (schemaName.isEmpty() ) {
+        if (schemaName.isEmpty()) {
             throw new IllegalArgumentException("schemaName should not be empty");
         }
 
@@ -75,6 +78,22 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
             throw new MutatorException("Could not parse Schema file=" + schemaFile, e);
         }
         xsdCache.put(schemaName, schema);
+    }
+
+    public void addSchematron(String schematronName, String schematronFile) {
+        Objects.requireNonNull(schematronName, "schematronName should not be null");
+        Objects.requireNonNull(schematronFile, "schematronFile should not be null");
+
+        if (schematronName.isEmpty()) {
+            throw new IllegalArgumentException("schematronName should not be empty");
+        }
+
+        if (schematronFile.isEmpty()) {
+            throw new IllegalArgumentException("schematronFile should not be empty");
+        }
+        SchematronTester st = new SchematronTester(schematronName, schematronFile);
+
+        schematronCache.put(schematronName, st);
     }
 
     @Override
@@ -89,9 +108,8 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
 
     @Override
     public boolean hasSchema() {
-        return ! xsdCache.isEmpty();
+        return !xsdCache.isEmpty();
     }
-
 
     @Override
     public String toString() {
@@ -103,5 +121,24 @@ public class XMLMutateConfigurationImpl implements XMLMutateConfiguration {
         return sb.toString();
     }
 
+    @Override
+    public SchematronTester getSchematronTester(String schematronName) {
+        return schematronCache.get(schematronName);
+    }
+
+    @Override
+    public boolean hasSchematron(String schematronName) {
+        return schematronCache.containsKey(schematronName);
+    }
+
+    @Override
+    public boolean hasSchematron() {
+        return !schematronCache.isEmpty();
+    }
+
+    @Override
+    public Map<String, SchematronTester> getAllSchematronTester() {
+        return schematronCache;
+    }
 
 }

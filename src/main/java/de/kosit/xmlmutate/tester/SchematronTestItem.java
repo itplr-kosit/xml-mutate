@@ -48,4 +48,12 @@ public class SchematronTestItem implements TestItem {
         return this.detail;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("Test of ").append(this.of()).append(" result:").append(System.lineSeparator()).append("Expected: ")
+                .append(this.expected()).append(" Actual: ").append(this.actual()).append(System.lineSeparator())
+                .append("As Expected? ").append(this.asExpected());
+
+        return sb.toString();
+    }
 }

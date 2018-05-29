@@ -8,6 +8,8 @@ import javax.xml.transform.Templates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.ProcessingInstruction;
+
+import de.kosit.xmlmutate.tester.SchematronTester;
 import de.kosit.xmlmutate.tester.TestExpectation;
 
 /**
@@ -26,6 +28,11 @@ public class MutatorParser {
     }
 
     public static Mutator parse(ProcessingInstruction pi, Map<String, Templates> xsltCache) {
+        return parse(pi, xsltCache, null);
+    }
+
+    public static Mutator parse(ProcessingInstruction pi, Map<String, Templates> xsltCache,
+            Map<String, SchematronTester> schematrons) {
 
         if (Objects.isNull(pi)) {
             throw new MutatorException("Processing Instruction should not be null!!");

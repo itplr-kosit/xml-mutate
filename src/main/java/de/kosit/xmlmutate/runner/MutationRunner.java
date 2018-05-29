@@ -13,8 +13,6 @@ import java.util.Map;
 
 import javax.xml.validation.Validator;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -69,7 +67,8 @@ public class MutationRunner {
     private Path outputDir = null;
     private DocumentBuilder docBuilder;
     private Map<String, Templates> xsltCache = null;
-    XMLMutateConfiguration config = null;
+    private XMLMutateConfiguration config = null;
+    private MutateReport report = null;
 
     private MutationRunner() {
     };
@@ -79,6 +78,8 @@ public class MutationRunner {
         this.setOutputDir(config.getOutputDir());
         this.xsltCache = xsltCache;
         this.config = config;
+        this.report = new MutateReportText();
+        this.report.addConfig(config);
 
     }
 
@@ -114,7 +115,7 @@ public class MutationRunner {
         log.debug("Executing Mutation runner");
 
         Document docOrigin = null;
-
+        int numDoc = 0;
         for (Path file : inputPathList) {
             Files.isReadable(file);
             docOrigin = XMLMutateManufactory.domDocumentFromPath(file);
@@ -126,7 +127,16 @@ public class MutationRunner {
             log.debug("Doc name=" + name);
             log.debug("Doc URI=" + docOrigin.getDocumentURI());
             this.mutate(docOrigin, name, testMutation);
+            numDoc++;
         }
+        report.setNumDoc(numDoc);
+        try {
+            report.write(this.outputDir.toString(), "MutaTe-Report.txt");
+        } catch (IOException e) {
+            throw new XMLMutateException("Could not write report to" + this.outputDir,
+                    XMLMutateException.Status.FILE_ERROR);
+        }
+
         return 0;
     }
 
@@ -148,8 +158,9 @@ public class MutationRunner {
         Mutator mutator = null;
         ProcessingInstruction pi = null;
         int docNum = 0;
-        String schematron = XMLMutateManufactory.fileFromClasspath("XRechnung-UBL-validation-Invoice.xsl");
-        SchematronTester st = new SchematronTester("xr-ubl-in", schematron);
+        // String schematron =
+        // XMLMutateManufactory.fileFromClasspath("XRechnung-UBL-validation-Invoice.xsl");
+        // SchematronTester st = new SchematronTester("xr-ubl-in", schematron);
 
         while (piWalker.nextNode() != null) {
             pi = (ProcessingInstruction) piWalker.getCurrentNode();
@@ -168,33 +179,43 @@ public class MutationRunner {
             origFragment.appendChild(mutationTargetElem.cloneNode(true));
             // mutating
             Node changed = mutator.execute(mutationTargetElem);
-
-            this.write(origin, new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum)));
+            NamingStrategy namingStrategy = new NamingStrategyImpl().byId(documentName, String.valueOf(++docNum));
+            this.write(origin, namingStrategy);
             boolean schemaValid = false;
 
             if (testMutation) {
                 log.debug("Check mutated against schema");
                 schemaValid = this.testSchema(origin);
+                Map<String, SchematronTester> schematronTester = config.getAllSchematronTester();
 
+                for (SchematronTester st : schematronTester.values()) {
+                    List<TestItem> testReport = st.test(origin, mutator.getConfig().getSchematronExpectations());
+                    this.report.addDocumentReport(namingStrategy.getName(), testReport);
 
+                }
 
-            List<TestItem> report = st.test(origin, null);
-                // schematronValid = this.testSchematron(origin);
             }
+            String schemaTestStatement = "";
             if (schemaValid == mutator.getConfig().expectSchemaValid()) {
-                log.debug("Mutation resulted expected outcome :) result={} and expected={}", schemaValid,
-                        mutator.getConfig().expectSchemaValid());
+                schemaTestStatement = String.format("Mutation has expected outcome :) result=%s and expected=%s",
+                        schemaValid, mutator.getConfig().expectSchemaValid());
+
             } else {
-                log.debug("Mutation resulted in UN-expected outcome :( , result={} and expected={}", schemaValid,
+                schemaTestStatement = String.format(
+                        "Mutation resulted in UN-expected outcome :( , result=%s and expected=%s", schemaValid,
                         mutator.getConfig().expectSchemaValid());
+
             }
+            this.report.addSchemaTestSatement(namingStrategy.getName(), schemaTestStatement);
+            log.debug(schemaTestStatement);
 
             log.debug("Replacing mutated=" + mutationTargetElem + " with original=" + origFragment.getFirstChild()
                     + " again. Parent of original=" + parent);
 
             parent.replaceChild(origFragment, changed);
 
-        }
+        } // end mutations
+        this.report.addToMutationCount(docNum);
     }
 
     private boolean testSchematronSaxon(Document doc) {
