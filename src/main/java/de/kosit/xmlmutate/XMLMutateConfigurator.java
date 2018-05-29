@@ -28,8 +28,8 @@ public class XMLMutateConfigurator {
      * assumes files as arguments at the end only
      */
     public static XMLMutateConfiguration fromCommandLine(String[] line) {
-        if (line == null) {
-            log.debug("No command line arguments give. Return default config");
+        if (line == null || line.length < 1) {
+            log.debug("No command line arguments given. Return default config");
             return config;
         }
         parseCommandLine(line);
@@ -38,6 +38,11 @@ public class XMLMutateConfigurator {
 
     public static List<Path> getInputPaths() {
         return inputPathList;
+    }
+
+    private static void printHelp() {
+        System.out.println("This is not helpful yet!");
+
     }
 
     private static void parseCommandLine(String[] line) {
@@ -65,6 +70,10 @@ public class XMLMutateConfigurator {
                 String schematronFile = line[++i];
 
                 config.addSchematron(schematronName, schematronFile);
+                break;
+            case "--help":
+                printHelp();
+                System.exit(0);
                 break;
             default:
                 inputPathList.add(Paths.get(line[i]));
