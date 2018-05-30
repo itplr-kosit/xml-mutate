@@ -25,9 +25,9 @@ java -jar target/xml-mutate-1.0-SNAPSHOT.jar --help
 
 ## Concrete Example
 
-Usually XML Schemas and Schematrons get checked against positive test instances i.e. XML documents which are valid.
+Usually, XML Schemas and Schematrons get checked against positive test instances i.e. XML documents which are valid.
 
-Now, let's take a positive example and add Mutations and Tests in such a way that it makes explicit a bug in XRechnung Schematron, which can hardly be found by testing positive examples alone.
+Now, let's take a positive example and add Mutations and Tests in such a way that it makes explicit a bug in XRechnung Schematron, which can hardly be found by testing using positive examples alone.
 
 The [XRechnung Standard 1.1](https://www.xoev.de/die_standards/xrechnung/xrechnung_versionen/xrechnung_version_1_1-15369) states on p. 49f. that Business Group (=Gruppe) "Seller Contact" should exist and have `Seller contact point BT-41`, `Seller contact telephone number BT-42`, and `Seller contact email address BT-43`. This is further expressed on p.65 with
 
@@ -40,7 +40,7 @@ werden. vollständig (Schematron)
 BR-DE-7 Das Element „Seller contact email address“ (BT-43) muss übermittelt werden. vollständig (Schematron)
 ```
 
-This is expressed by the following rules on an UBL Invoice(excerpt with different order from [XRechnung Schematron file](https://raw.githubusercontent.com/itplr-kosit/xrechnung-schematron/xrechnung-1_1-schematron-2017-12-19/validation/schematron/ubl-inv/UBL/XRechnung-UBL-model.sch)):
+This is expressed by the following rules on an UBL Invoice (excerpt with different order from [XRechnung Schematron file](https://raw.githubusercontent.com/itplr-kosit/xrechnung-schematron/xrechnung-1_1-schematron-2017-12-19/validation/schematron/ubl-inv/UBL/XRechnung-UBL-model.sch)):
 
 ```xml
 <param name="BG-6_SELLER_CONTACT" value="//ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact"/>
@@ -52,7 +52,7 @@ This is expressed by the following rules on an UBL Invoice(excerpt with differen
 
 However, the Schematron rules only require the element to be present even if it has no content.
 
-Now, we can use a positive example and XML-MutaTe to check on this. We take a valid [UBL Invoice](doc/example/xrechnung-bug.xml) and annotate it with the following declarations:
+Now, we can use a positive example and XML-MutaTe it to check this issue. We take a valid [UBL Invoice](doc/example/xrechnung-bug.xml) and annotate it with the following declarations:
 
 ```xml
 <cac:Contact>
@@ -67,16 +67,16 @@ Now, we can use a positive example and XML-MutaTe to check on this. We take a va
 </cac:Contact>
 ```
 
-It means each declarations results in a new (mutated document) where the content of the following element is made empty and we expect it to validate against UBL XML Schema but we expect that the XRechnung Schematron does not validate.
+The XML-MutaTe takes each declaration and mutates the document where the content of the next element is made empty. Additionally, we declared to expect it to validate against UBL XML Schema (keyword `schema-valid`) but we expect that the XRechnung Schematron does not validate against specific rules (e.g. `schematron-invalid="BR-DE-5"`).
 
 We check this by running:
-
 
 ```shell
 java -jar target/xml-mutate-1.0-SNAPSHOT.jar --run-mode test --schema ubl xrechnung-conf/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd --schematron xr-ubl-in xre
 chnung-conf/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl --output-dir doc/example/ doc/example/xrechnung-bug.xml
 ```
-The following report tells us that currently documents with empty content are accepted against our expectation:
+
+The following report tells us that documents with empty content are accepted against our declared expectation:
 
 ```
 Generated 3 mutations from 1 original document(s) in directory doc\example.
