@@ -25,7 +25,7 @@ These can look like this for example:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <?xmute testsuite="Real business case" ?>
-<!-- namespace declartions omitted for brevity -->
+<!-- namespace declarations omitted for brevity -->
 <ubl:Invoice>
     <cbc:CustomizationID>urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung_1.1</cbc:CustomizationID>
     <cbc:ID>123456XX</cbc:ID>
@@ -64,8 +64,10 @@ This way many kinds of mutations can be defined and combined with assertions abo
 * randomize element order
 * remove element
 * add element/attribute
-* values from code lists
-* values from concrete values list as given in declaration
+* change text content from code lists
+* change text content from concrete values list as given in declaration
+
+[Documentation of available Mutators](../doc/mutator.md).
 
 ## Features
 
@@ -100,7 +102,7 @@ Command line interface
 
 ### XMute Instructions
 
-The general structure of an instruction is a list of key="value" declarations as shown on this example:
+The general structure of an instruction is a list of `key="value"` declarations as shown in this example:
 
 ```xml
 <?xmute mutator="randomize-element-order" xpath="."
@@ -108,17 +110,19 @@ The general structure of an instruction is a list of key="value" declarations as
         schema-valid schematron-invalid="bt-br-03" ?>
 ```
 
-All keys are interpreted case-insensitive and no spaces are allowed between `key` and `=` and `value`. Each value must be surrounded by quotes `"`. Sometimes `value` is optional.
+All keys are interpreted case-insensitive. Each value must be surrounded by quotes `"`. Sometimes `value` is optional.
 
 #### Mutations
 
-`mutator` is a mandatory key(word) indicating the mutation which should take place.
+One and only one `mutator` key(word) is mandatory where value is the name of the mutator to be applied e.g. `mutator="empty"`.
+
+There might be additonal key=value pairs configuring the behaviour of the mutator.
 
 #### Testing
 
 Each mutation (i.e. mutated document) is validated against XML Schema and Schematron if run in default mutate and test mode.
 
-`schema-valid` and `schema-invalid` declare expectation about the outcome of XML Schema validation.
+`schema-valid` and `schema-invalid` declare expectations about the outcome of an XML Schema validation.
 If no symbolic name (should be but does not need to be equal to namespace prefix) is given then `schema-valid` and `schema-invalid` are expectations about the default outcome of XML Schema validation.
 
 `schematron-valid="bt-1,ubl:bt-1"` and `schematron-invalid="xrech:bt-2 ubl:bt-1"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifier and optional schematron symbolic name.
