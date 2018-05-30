@@ -102,7 +102,9 @@ Command line interface
 
 ### XMute Instructions
 
-The general structure of an instruction is a list of `key="value"` declarations as shown in this example:
+Only XML processing instructions with name `xmute` are processed.
+
+The general data structure of an instruction is a list of `key="value"` configuration items as shown in this example:
 
 ```xml
 <?xmute mutator="randomize-element-order" xpath="."
@@ -110,19 +112,19 @@ The general structure of an instruction is a list of `key="value"` declarations 
         schema-valid schematron-invalid="bt-br-03" ?>
 ```
 
-All keys are interpreted case-insensitive. Each value must be surrounded by quotes `"`. Sometimes `value` is optional.
+All item keys are interpreted case-insensitive. Each item value must be surrounded by quotes `"`. Sometimes `value` is optional.
 
 #### Mutations
 
 One and only one `mutator` key(word) is mandatory where value is the name of the mutator to be applied e.g. `mutator="empty"`.
 
-There might be additonal key=value pairs configuring the behaviour of the mutator.
+There might be additonal key=value items configuring the behaviour of the mutator.
 
 #### Testing
 
 Each mutation (i.e. mutated document) is validated against XML Schema and Schematron if run in default mutate and test mode.
 
-`schema-valid` and `schema-invalid` declare expectations about the outcome of an XML Schema validation.
+`schema-valid` and `schema-invalid` items declare expectations about the outcome of an XML Schema validation.
 If no symbolic name (should be but does not need to be equal to namespace prefix) is given then `schema-valid` and `schema-invalid` are expectations about the default outcome of XML Schema validation.
 
 `schematron-valid="bt-1,ubl:bt-1"` and `schematron-invalid="xrech:bt-2 ubl:bt-1"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifier and optional schematron symbolic name.

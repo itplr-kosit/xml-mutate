@@ -9,7 +9,7 @@ Purpose: Removes all contet from an element.
 
 Default: Removes all content from next element.
 
-Required declarations: none
+Required items: none
 
 Example:
 
@@ -23,7 +23,7 @@ Purpose: Removes an element.
 
 Default: Removes next element.
 
-Required declarations: none
+Required items: none
 
 Example:
 
@@ -35,9 +35,9 @@ Purpose: Changes text content of an element or attribute.
 
 Default: Changes text content of next element with values given in `values` separated by comma `,`.
 
-Required declarations: "values"
+Required items: "values"
 
-Optional declarations: "separator"
+Optional items: "separator"
 
 Example:
 
