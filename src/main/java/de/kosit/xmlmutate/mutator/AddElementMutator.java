@@ -2,10 +2,6 @@ package de.kosit.xmlmutate.mutator;
 
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -17,7 +13,6 @@ import javax.xml.transform.dom.DOMSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -28,22 +23,17 @@ import de.kosit.xmlmutate.XMLMutateApp;
  *
  * @author Renzo Kottmann
  */
-public class AddElementMutator implements Mutator {
+public class AddElementMutator extends AbstractMutator {
 
     private final static Logger log = LogManager.getLogger(AddElementMutator.class);
 
     private final static String MUTATOR_NAME = "add";
 
-    private MutatorConfig config = null;
     private Templates xslt = null;
 
     public AddElementMutator(MutatorConfig config, Templates xslt) {
         this.addConfig(config);
         this.xslt = xslt;
-    }
-
-    private void addConfig(MutatorConfig config) {
-        this.config = config;
     }
 
     @Override
@@ -96,11 +86,6 @@ public class AddElementMutator implements Mutator {
         Node parent = context.getParentNode();
         parent.replaceChild(adopted, context);
         return adopted;
-    }
-
-    @Override
-    public MutatorConfig getConfig() {
-        return this.config;
     }
 
 }

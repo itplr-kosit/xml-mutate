@@ -70,7 +70,9 @@ public class MutatorParser {
         case "add":
             mutator = new AddElementMutator(config, xsltCache.get(mutatorName));
             break;
-
+        // case "ch-txt":
+        // mutator = new ChangeTextMutator(config);
+        // break;
         default:
             throw new MutatorException("No valid mutator name given!");
             // break;

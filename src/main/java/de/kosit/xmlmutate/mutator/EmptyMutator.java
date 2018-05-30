@@ -2,27 +2,21 @@ package de.kosit.xmlmutate.mutator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
  * Mutator
+ *
  * @author Renzo Kottmann
  */
-public class EmptyMutator implements Mutator {
+public class EmptyMutator extends AbstractMutator {
 
     private final static Logger log = LogManager.getLogger(Mutator.class);
     private final static String MUTATOR_NAME = "empty";
-    MutatorConfig config = null;
 
     EmptyMutator(MutatorConfig config) {
         this.addConfig(config);
-    }
-
-
-    private void addConfig(MutatorConfig config) {
-        this.config = config;
     }
 
     public String getName() {
@@ -36,14 +30,8 @@ public class EmptyMutator implements Mutator {
         Node child = context.getFirstChild();
         log.debug("First child of context is=" + child);
         context.removeChild(child);
-        //doc.removeChild(context.getFirstChild());
+        // doc.removeChild(context.getFirstChild());
         return context;
     }
-
-
-	@Override
-	public MutatorConfig getConfig() {
-		return this.config;
-	}
 
 }

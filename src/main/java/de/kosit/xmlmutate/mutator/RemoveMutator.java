@@ -12,18 +12,13 @@ import org.w3c.dom.Node;
  *
  * @author Renzo Kottmann
  */
-public class RemoveMutator implements Mutator {
+public class RemoveMutator extends AbstractMutator {
 
     private final static Logger log = LogManager.getLogger(Mutator.class);
     private final static String MUTATOR_NAME = "remove";
-    MutatorConfig config = null;
 
     RemoveMutator(MutatorConfig config) {
         this.addConfig(config);
-    }
-
-    private void addConfig(MutatorConfig config) {
-        this.config = config;
     }
 
     public String getName() {
@@ -59,8 +54,4 @@ public class RemoveMutator implements Mutator {
         return remark;
     }
 
-    @Override
-    public MutatorConfig getConfig() {
-        return this.config;
-    }
 }
