@@ -72,8 +72,12 @@ The XML-MutaTe takes each declaration and mutates the document where the content
 We check this by running:
 
 ```shell
-java -jar target/xml-mutate-1.0-SNAPSHOT.jar --run-mode test --schema ubl xrechnung-conf/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd --schematron xr-ubl-in xre
-chnung-conf/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl --output-dir doc/example/ doc/example/xrechnung-bug.xml
+java -jar target/xml-mutate-1.0-SNAPSHOT.jar \
+  --run-mode test \
+  --schema ubl xrechnung-conf/build/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd \
+  --schematron xr-ubl-in xrechnung-conf/build/resources/xrechnung/1.1/xsl/XRechnung-UBL-validation-Invoice.xsl \
+  --output-dir doc/example/ \
+  doc/example/xrechnung-bug.xml
 ```
 
 The following report tells us that documents with empty content are accepted against our declared expectation:
