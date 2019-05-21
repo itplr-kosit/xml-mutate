@@ -1,19 +1,17 @@
 package de.kosit.xmlmutate.mutator;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
- * package de.kosit.xmlmutate.mutator;Mutator
- *
- *
+ * Zentrales Interface für
+ * 
+ * @author Andreas Penski
  */
 public interface Mutator {
 
-    public String getName();
+    String getName();
 
-    public MutatorConfig getConfig();
-
-    public Node execute(Element context);
+    void mutate(MutationContext context, MutationConfig config);
 
 }

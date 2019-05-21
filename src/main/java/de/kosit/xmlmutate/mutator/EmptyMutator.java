@@ -1,49 +1,50 @@
 package de.kosit.xmlmutate.mutator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
 
+import lombok.extern.slf4j.Slf4j;
+
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+
 /**
- * Mutator
+ * Mutator, der ein Element leert. Enthält es Unterelemente, werden diese entfernt. Enthält es Text, werden diese
+ * entfernt.
+ * 
  * @author Renzo Kottmann
+ * @author Andreas Penski
  */
-public class EmptyMutator implements Mutator {
+@Slf4j
+public class EmptyMutator extends BaseMutator {
 
-    private final static Logger log = LogManager.getLogger(Mutator.class);
     private final static String MUTATOR_NAME = "empty";
-    MutatorConfig config = null;
 
-    EmptyMutator(MutatorConfig config) {
-        this.addConfig(config);
-    }
-
-
-    private void addConfig(MutatorConfig config) {
-        this.config = config;
-    }
-
+    @Override
     public String getName() {
         return EmptyMutator.MUTATOR_NAME;
     }
 
     @Override
-    public Node execute(Element context) {
-
+    public void mutate(final MutationContext context, final MutationConfig config) {
         log.debug("Element to make empty" + context);
-        Node child = context.getFirstChild();
-        log.debug("First child of context is=" + child);
-        context.removeChild(child);
-        //doc.removeChild(context.getFirstChild());
-        return context;
+        final Node target = context.getTarget();
+        log.debug("First target of context is=" + target);
+        final List<Node> childs = streamElements(target.getChildNodes()).collect(Collectors.toList());
+
+        if (childs.size() > 0) {
+            final Comment comment = wrap(context.getDocument().createComment("Emptied: \n"), childs);
+            childs.forEach(target::removeChild);
+            target.appendChild(comment);
+        } else {
+            final Comment comment = context.getDocument().createComment("Emptied: " + target.getNodeValue());
+            target.setNodeValue(null);
+            target.appendChild(comment);
+        }
+
     }
-
-
-	@Override
-	public MutatorConfig getConfig() {
-		return this.config;
-	}
 
 }
