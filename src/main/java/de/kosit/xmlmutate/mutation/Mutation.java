@@ -33,6 +33,12 @@ public class Mutation {
 
     private String errorMessage;
 
+    /**
+     * Constructor.
+     * 
+     * @param context der {@link MutationContext}
+     * @param identifier ein Name / Bezeichner für die Mutation
+     */
     public Mutation(final MutationContext context, final String identifier) {
         this.context = context;
         this.identifier = identifier;
@@ -48,6 +54,10 @@ public class Mutation {
 
     public boolean isValid() {
         return state.ordinal() >= State.VALIDATED.ordinal() && this.result.isValid();
+    }
+
+    public boolean isErroneous() {
+        return state == State.ERROR;
     }
 
     public enum State {

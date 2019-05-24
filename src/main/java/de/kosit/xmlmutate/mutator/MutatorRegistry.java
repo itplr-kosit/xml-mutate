@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate.mutation;
+package de.kosit.xmlmutate.mutator;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.mutation.NameGenerator;
+import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 
 /**
  * Registry für Mutator-Instanzen.
@@ -16,6 +18,9 @@ import de.kosit.xmlmutate.mutator.Mutator;
  */
 public class MutatorRegistry {
 
+    /**
+     * Interner Struktur für Lazy-Initialisierung eines Singleton.
+     */
     private static class RegistryHolder {
 
         private static final MutatorRegistry REGISTRY;
@@ -27,13 +32,17 @@ public class MutatorRegistry {
 
     }
 
-    private Map<String, Mutator> MUTATORS;
+    private Map<String, Mutator> mutators;
 
-    private Map<String, MutationGenerator> GENERATORS;
+    private Map<String, MutationGenerator> generators;
 
-    void initialize() {
-        this.MUTATORS = initMutators();
-        this.GENERATORS = initGenerators();
+    private MutatorRegistry() {
+        // hide, singleton!
+    }
+
+    private void initialize() {
+        this.mutators = initMutators();
+        this.generators = initGenerators();
     }
 
     private static Map<String, Mutator> initMutators() {
@@ -74,8 +83,8 @@ public class MutatorRegistry {
      * @param name der Name des Mutators
      * @return der Mutator oder null wenn kein Mutator mit dem angegebenen Namen existiert
      */
-    public static Mutator getMutator(final String name) {
-        return getInstance().MUTATORS.get(name);
+    public Mutator getMutator(final String name) {
+        return this.mutators.get(name);
     }
 
     /**
@@ -84,12 +93,18 @@ public class MutatorRegistry {
      * @param name der Name des Generators
      * @return der Generator oder null wenn kein Generator mit dem angegebenen Namen existiert
      */
-    public static MutationGenerator getGenerator(final String name) {
-        return getInstance().GENERATORS.get(name);
+    public MutationGenerator getGenerator(final String name) {
+        final MutationGenerator mutationGenerator = this.generators.get(name);
+        return mutationGenerator != null ? mutationGenerator : this.generators.get(DefaultMutationGenerator.NAME);
 
     }
 
-    public static synchronized MutatorRegistry getInstance() {
+    /**
+     * Zugriff auf die singuläre Instanz.
+     * 
+     * @return die Registry
+     */
+    public static MutatorRegistry getInstance() {
         return RegistryHolder.REGISTRY;
 
     }

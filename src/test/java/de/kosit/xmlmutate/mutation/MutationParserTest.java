@@ -23,7 +23,7 @@ public class MutationParserTest {
 
     private final MutationParser parser = new MutationParser(new SequenceNameGenerator());
 
-    private MutationContext createContex(final String piString) {
+    private MutationContext createContext(final String piString) {
         final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
         final Element root = doc.createElement("root");
         doc.appendChild(root);
@@ -36,7 +36,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Simple Test")
     public void simple() {
-        final MutationContext context = createContex("mutator=remove");
+        final MutationContext context = createContext("mutator=remove");
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
@@ -45,7 +45,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test quoted parameter")
     public void quotedParameter() {
-        final MutationContext context = createContex("mutator=remove \"test\"=\"value value\" test2=\"value value\" \"test3\"=value");
+        final MutationContext context = createContext("mutator=remove \"test\"=\"value value\" test2=\"value value\" \"test3\"=value");
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
@@ -56,7 +56,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test comma separated parameter")
     public void commaSeparated() {
-        final MutationContext context = createContex("mutator=remove key=\"val1,val2\"");
+        final MutationContext context = createContext("mutator=remove key=\"val1,val2\"");
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
@@ -67,7 +67,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test Multiple  parameter declaration")
     public void testMultipleParameter() {
-        final MutationContext context = createContex("mutator=remove key=val key=val2");
+        final MutationContext context = createContext("mutator=remove key=val key=val2");
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
@@ -78,7 +78,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test unknown mutator")
     public void testUnknowMutator() {
-        final MutationContext context = createContex("mutator=unknown");
+        final MutationContext context = createContext("mutator=unknown");
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
@@ -88,7 +88,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test no mutator configuration")
     public void testNoMutator() {
-        final MutationContext context = createContex("schema-valid");
+        final MutationContext context = createContext("schema-valid");
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
@@ -98,7 +98,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test parsing error")
     public void testParsingError() {
-        final MutationContext context = createContex("mutator=remove schema-val");
+        final MutationContext context = createContext("mutator=remove schema-val");
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
@@ -108,7 +108,7 @@ public class MutationParserTest {
     @Test
     @DisplayName("Test no target identification possible")
     public void testNoTarget() {
-        final MutationContext context = createContex("mutator=remove");
+        final MutationContext context = createContext("mutator=remove");
         // remove target
         context.getParentElement().removeChild(context.getTarget());
 

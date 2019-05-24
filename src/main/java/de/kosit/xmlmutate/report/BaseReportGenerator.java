@@ -7,8 +7,15 @@ import de.kosit.xmlmutate.mutation.Mutation;
 /**
  * @author Andreas Penski
  */
+
 public abstract class BaseReportGenerator implements ReportGenerator {
 
+    /**
+     * Zählit die Validen Mutationen innerhalb einer Liste mit Mutationen.
+     * 
+     * @param mutations die Mutationen.
+     * @return Anzahl valider
+     */
     protected static long aggregateValid(final List<Mutation> mutations) {
         return mutations.stream().filter(Mutation::isValid).count();
     }

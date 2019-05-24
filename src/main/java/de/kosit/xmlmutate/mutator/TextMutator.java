@@ -13,8 +13,8 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.mutation.MutatorRegistry;
 import de.kosit.xmlmutate.mutation.NameGenerator;
+import de.kosit.xmlmutate.runner.Services;
 
 /**
  *
@@ -100,7 +100,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         final Mutation m = new Mutation(cloneContext, this.nameGenerator.generateName("", baseName));
         cloneConfig.getProperties().put(LENGTH_PARAM, length);
         m.setConfiguration(cloneConfig);
-        m.setMutator(MutatorRegistry.getMutator(NAME));
+        m.setMutator(Services.getRegistry().getMutator(NAME));
 
         return m;
 

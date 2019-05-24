@@ -15,6 +15,8 @@ import lombok.Setter;
 import de.init.kosit.commons.SyntaxError;
 
 /**
+ * Mutationsergebnis aus den diversen Schritten.
+ * 
  * @author Andreas Penski
  */
 @Getter
@@ -47,6 +49,11 @@ public class MutationResult {
         this.schematronResult.put(schematron, out);
     }
 
+    /**
+     * Evaluier
+     * 
+     * @return
+     */
     public boolean isExpectationCompliant() {
         return this.expectationResult.entrySet().stream().allMatch(Entry::getValue);
     }

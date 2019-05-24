@@ -1,7 +1,6 @@
 package de.kosit.xmlmutate.cmd;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -11,17 +10,19 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.kosit.xmlmutate.mutation.MutationRunner;
-import de.kosit.xmlmutate.mutation.RunnerConfig;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
-import de.kosit.xmlmutate.report.TextReportGenerator;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.RunnerConfig.Builder;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
+ * Basis Klasse für den Kommandozeilenaufruf.
+ * 
  * @author Andreas Penski
  */
 public class XmlMutate implements Callable<Integer> {
@@ -35,6 +36,9 @@ public class XmlMutate implements Callable<Integer> {
 
     @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "The target folder, where artefakts are generated.")
     private Map<String, Path> schematrons;
+
+    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    private RunMode mode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
@@ -52,19 +56,13 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private RunnerConfig prepareConfig() throws IOException {
-        final RunnerConfig config = new RunnerConfig();
-        config.setNameGenerator(new SequenceNameGenerator());
-        config.setReportGenerator(new TextReportGenerator(new PrintWriter(System.out)));
-        config.setDocuments(prepareDocuments());
-
+        Files.createDirectories(this.target);
         // target folder
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        Files.createDirectories(this.target);
-        config.setTargetFolder(this.target);
-        config.setSchematronRules(prepareSchematron());
-        return config;
+        return Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron()).build();
+
     }
 
     private List<Schematron> prepareSchematron() {

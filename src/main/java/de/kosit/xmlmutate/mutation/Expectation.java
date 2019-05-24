@@ -1,19 +1,37 @@
 package de.kosit.xmlmutate.mutation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.oclc.purl.dsdl.svrl.FailedAssert;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Expectation
+ * Daten über das erwartete Schematron-Validierungsergebnis NACH der Mutation.
  */
 @AllArgsConstructor
 @Getter
 public class Expectation {
 
+    /**
+     * Der (Kurz-)Name der Schematron-Quelle (falls bei der Validierung mehrere Scripte verwendet werden)
+     */
     private final String schematronSource;
 
+    /**
+     * Der Name der Regel die geprüft werden soll
+     */
     private final String ruleName;
 
+    /**
+     * 
+     */
     private final boolean expectedResult;
 
     /**
@@ -36,4 +54,20 @@ public class Expectation {
     public boolean mustFail() {
         return this.expectedResult;
     }
+
+    public boolean evaluate(final MutationResult result) {
+        final Collection<SchematronOutput> targets;
+        if (getSchematronSource() != null) {
+            final Optional<SchematronOutput> schematronResult = result.getSchematronResult(getSchematronSource());
+            targets = schematronResult.map(Collections::singletonList).orElseGet(ArrayList::new);
+        } else {
+            targets = result.getSchematronResult().values();
+        }
+
+        // TODO prüfen ob das auch bei keinem Schematron match stimmt
+        final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts).flatMap(List::stream)
+                .filter(f -> f.getId().equals(ruleName())).findAny();
+        return (failed.isPresent() && mustFail()) || (!failed.isPresent() && !mustFail());
+    }
+
 }

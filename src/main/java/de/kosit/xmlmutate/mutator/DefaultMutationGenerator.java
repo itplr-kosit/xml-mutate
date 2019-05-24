@@ -1,9 +1,17 @@
-package de.kosit.xmlmutate.mutation;
+package de.kosit.xmlmutate.mutator;
 
 import java.util.Collections;
 import java.util.List;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.mutation.NameGenerator;
+import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Default Generator. Greift immer dann, wenn für den Mutator kein besondere Generator benötigt wird.
@@ -18,10 +26,10 @@ public class DefaultMutationGenerator implements MutationGenerator {
     private final NameGenerator nameGenerator;
 
     @Override
-    public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
+    public List<Mutation> generateMutations(@NonNull final MutationConfig config, @NonNull final MutationContext context) {
         final Mutation m = new Mutation(context, this.nameGenerator.generateName());
         m.setConfiguration(config);
-        m.setMutator(MutatorRegistry.getMutator(config.getMutatorName()));
+        m.setMutator(Services.getRegistry().getMutator(config.getMutatorName()));
         return Collections.singletonList(m);
     }
 

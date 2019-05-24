@@ -1,5 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -7,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -26,16 +29,18 @@ public class MutationContext {
 
     private Node target;
 
-    public MutationContext(final ProcessingInstruction pi, final String name) {
+    public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
+        if (pi == null || isBlank(name)) {
+            throw new IllegalArgumentException("PI and name must be set");
+        }
         this.pi = pi;
         this.documentName = name;
         this.originalFragment = createFragment();
     }
 
-    MutationContext(final ProcessingInstruction pi, final String name, final DocumentFragment fragment) {
-        this.pi = pi;
-        this.documentName = name;
-        this.originalFragment = fragment;
+    public void setTarget(final Node element) {
+
+        this.target = element;
     }
 
     public Node getTarget() {
@@ -57,20 +62,31 @@ public class MutationContext {
 
     private DocumentFragment createFragment() {
         final DocumentFragment fragment = this.pi.getOwnerDocument().createDocumentFragment();
-        final Node target = getTarget();
-        if (target != null) {
-            fragment.appendChild(target.cloneNode(true));
+        final Node targetElement = getTarget();
+        if (targetElement != null) {
+            fragment.appendChild(targetElement.cloneNode(true));
             return fragment;
         }
         return null;
     }
 
+    /**
+     * Gibt das Document zurück, das hinter dem PI steht.
+     * 
+     * @return Document
+     */
     public Document getDocument() {
         return this.pi.getOwnerDocument();
     }
 
+    /**
+     * Gibt das Parent Element des PI zurück. Ist das PI über vor dem Root-Element angesiedelt, so ist parent null
+     * 
+     * @return das parent Element
+     */
     public Element getParentElement() {
-        return (Element) getPi().getParentNode();
+        final Node parentNode = getPi().getParentNode();
+        return parentNode instanceof Element ? (Element) parentNode : null;
     }
 
     /**

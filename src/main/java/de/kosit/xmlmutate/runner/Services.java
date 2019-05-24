@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate;
+package de.kosit.xmlmutate.runner;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
@@ -8,6 +8,7 @@ import de.init.kosit.commons.schematron.SchematronService;
 import de.init.kosit.commons.transform.ExecutableRepository;
 import de.init.kosit.commons.transform.TransformationService;
 import de.init.kosit.commons.validate.SchemaValidationService;
+import de.kosit.xmlmutate.mutator.MutatorRegistry;
 
 /**
  * Common Service Definition.
@@ -17,15 +18,17 @@ import de.init.kosit.commons.validate.SchemaValidationService;
 
 public class Services {
 
-    public static final ExecutableRepository xsltRepository;
+    public static ExecutableRepository xsltRepository;
 
-    public static final ConversionService conversionService;
+    public static ConversionService conversionService;
 
-    public static final SchemaValidationService schemaValidatonService;
+    public static SchemaValidationService schemaValidatonService;
 
-    public static final TransformationService transformService;
+    public static TransformationService transformService;
 
-    public static final SchematronService schematronService;
+    public static SchematronService schematronService;
+
+    private static final MutatorRegistry registry = MutatorRegistry.getInstance();
 
     static {
         xsltRepository = new ExecutableRepository(ObjectFactory.createProcessor());
@@ -36,5 +39,9 @@ public class Services {
                 ObjectFactory.createProcessor());
         schematronService = new SchematronService(xsltRepository, transformService);
 
+    }
+
+    public static MutatorRegistry getRegistry() {
+        return registry;
     }
 }

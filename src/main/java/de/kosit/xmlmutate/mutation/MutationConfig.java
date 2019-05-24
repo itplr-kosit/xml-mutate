@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Konfigurationsoptionen für eine bestimmte Mutation.
+ * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im XML-Dokument hinterlegte
+ * {@link org.w3c.dom.ProcessingInstruction} Information bestimmt.
  * 
  * @author Andreas Penski
  */

@@ -25,8 +25,14 @@ import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.PropertyContext;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.SchemaKeywordContext;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.SchematronKeywordContext;
+import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
+import de.kosit.xmlmutate.mutator.MutatorRegistry;
+import de.kosit.xmlmutate.runner.Services;
 
 /**
+ * Parser für die Evaluierung von {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser basiert auf
+ * einer ANTLR4-Grammatik.
+ * 
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
@@ -36,9 +42,9 @@ public class MutationParser {
     @RequiredArgsConstructor
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
-        private final MutationContext context;
+        private static final char COLON = ':';
 
-        private final MutatorRegistry registry = MutatorRegistry.getInstance();
+        private final MutationContext context;
 
         private final MutationConfig config = new MutationConfig();
 
@@ -68,26 +74,27 @@ public class MutationParser {
 
         @Override
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
-            String value = unquote(ctx.value().getText());
-            int colonPos = value.indexOf(':');
-            String ruleName = colonPos > 0 ? value.substring(colonPos + 1) : value;
-            String sourceName = colonPos > 0 ? value.substring(0, colonPos) : Schematron.DEFAULT_NAME;
+            final String value = unquote(ctx.value().getText());
+            final int colonPos = value.indexOf(COLON);
+            final String ruleName = colonPos > 0 ? value.substring(colonPos + 1) : value;
+            final String sourceName = colonPos > 0 ? value.substring(0, colonPos) : Schematron.DEFAULT_NAME;
             this.config.addExpectation(new Expectation(sourceName, ruleName, ctx.assertion().getText().equals("valid")));
         }
 
         @Override
         public void exitMutation(final de.kosit.xmlmutate.mutation.parser.MutationParser.MutationContext ctx) {
             if (validate()) {
-                MutationGenerator generator = MutatorRegistry.getGenerator(this.config.getMutatorName());
+                final MutatorRegistry registry = Services.getRegistry();
+                MutationGenerator generator = registry.getGenerator(this.config.getMutatorName());
                 if (generator == null) {
-                    generator = MutatorRegistry.getGenerator(DefaultMutationGenerator.NAME);
+                    generator = registry.getGenerator(DefaultMutationGenerator.NAME);
                 }
                 this.mutations = generator.generateMutations(this.config, this.context);
             }
         }
 
         private boolean validate() {
-            if (this.config.getMutatorName() == null || MutatorRegistry.getMutator(this.config.getMutatorName()) == null) {
+            if (this.config.getMutatorName() == null || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
                 this.mutations = (createErroMutation(this.context,
                         MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
             }
