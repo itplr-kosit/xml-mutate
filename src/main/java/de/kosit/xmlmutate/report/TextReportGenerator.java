@@ -62,6 +62,8 @@ public class TextReportGenerator extends BaseReportGenerator {
                     mutation.getMutator().getName(), mutation.isValid() ? "successful" : "unsucessful"));
             if (mutation.isInvalid()) {
                 this.writer.write("fehler ausgeben\n");
+            } else {
+                this.writer.write("\n");
             }
         }
 

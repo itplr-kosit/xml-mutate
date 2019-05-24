@@ -28,8 +28,6 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import de.kosit.xmlmutate.runner.MutationRunner;
-
 /**
  * Hello world!
  *
@@ -38,19 +36,20 @@ public class XMLMutateApp {
 
     private final static Logger log = LogManager.getLogger(XMLMutateApp.class);
 
-    private XMLMutateConfiguration config = null;
-    private List<Path> inputPathList = new ArrayList<Path>();
+    private final XMLMutateConfiguration config = null;
+
+    private final List<Path> inputPathList = new ArrayList<Path>();
     private Map<String, Templates> xsltCache = null;
 
     public XMLMutateApp() {
-        this.config = XMLMutateConfigurator.byDefault();
+        // this.config = XMLMutateConfigurator.byDefault();
     }
 
-    public XMLMutateApp(String[] line) {
+    public XMLMutateApp(final String[] line) {
         this();
-        this.config = XMLMutateConfigurator.fromCommandLine(line);
-        log.debug(config);
-        this.inputPathList = XMLMutateConfigurator.getInputPaths();
+        // this.config = XMLMutateConfigurator.fromCommandLine(line);
+        log.debug(this.config);
+        // this.inputPathList = XMLMutateConfigurator.getInputPaths();
 
     }
 
@@ -60,16 +59,16 @@ public class XMLMutateApp {
 
     public int run() {
         this.xsltCache = this.loadAllTransformer();
-        int exitCode = 0;
-        switch (config.getRunMode()) {
+        final int exitCode = 0;
+        switch (this.config.getRunMode()) {
         case GENERATE:
-            this.runMutate(false);
+                XMLMutateApp.runMutate(false);
             break;
         case TEST:
-            this.runMutate(true);
+                XMLMutateApp.runMutate(true);
             break;
         case CHECK:
-            this.check();
+                XMLMutateApp.check();
             break;
 
         default:
@@ -80,13 +79,13 @@ public class XMLMutateApp {
 
     protected Map<String, Templates> loadAllTransformer() {
         final HashMap<String, Templates> map = new HashMap<String, Templates>();
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        StreamSource xsltSource = new StreamSource(getClass().getResourceAsStream("/xslt/add.xslt"));
+        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        final StreamSource xsltSource = new StreamSource(getClass().getResourceAsStream("/xslt/add.xslt"));
 
         Templates templ = null;
         try {
             templ = transformerFactory.newTemplates(xsltSource);
-        } catch (TransformerConfigurationException e) {
+        } catch (final TransformerConfigurationException e) {
             // TODO Auto-generated catch block
             log.error("Error loadding xslt", e);
         }
@@ -96,31 +95,32 @@ public class XMLMutateApp {
 
     }
 
-    public int runMutate(boolean testMutations) {
+    public static int runMutate(final boolean testMutations) {
 
         log.debug("Run in mutate with tests=" + testMutations);
-        MutationRunner runner = new MutationRunner(this.inputPathList, config, this.xsltCache);
-        return runner.execute(testMutations);
+        // final MutationRunner runner = new MutationRunner(this.inputPathList, this.config, this.xsltCache);
+        // return runner.execute(testMutations);
+        return 0;
     }
 
-    public void check() {
+    public static void check() {
         throw new UnsupportedOperationException("Check needs to be implemented!!");
     }
 
-    public static void printDocument(Node node, OutputStream out)
+    public static void printDocument(final Node node, final OutputStream out)
             throws ParserConfigurationException, IOException, TransformerException {
 
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = builder.newDocument();
+        final DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        final Document doc = builder.newDocument();
         // Node adopted = doc.adoptNode(node);
-        Node imported = doc.importNode(node, true);
+        final Node imported = doc.importNode(node, true);
         doc.appendChild(imported);
         printDocument(doc, out);
     }
 
-    public static void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
+    public static void printDocument(final Document doc, final OutputStream out) throws IOException, TransformerException {
+        final TransformerFactory tf = TransformerFactory.newInstance();
+        final Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -131,15 +131,15 @@ public class XMLMutateApp {
         out.close();
     }
 
-    public static void main(String[] args) throws XPathExpressionException {
+    public static void main(final String[] args) throws XPathExpressionException {
 
         log.info("Starting XML MutaTe");
 
-        XMLMutateApp app = new XMLMutateApp(args);
+        final XMLMutateApp app = new XMLMutateApp(args);
         int exitCode = -1;
         try {
             exitCode = app.run();
-        } catch (XMLMutateException e) {
+        } catch (final XMLMutateException e) {
             exitCode = e.getStatusCode();
             log.error("Stopped app with exit code=" + exitCode, e.getCause());
 

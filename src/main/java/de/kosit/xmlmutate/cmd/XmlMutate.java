@@ -6,12 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.kosit.xmlmutate.mutation.MutationRunner;
 import de.kosit.xmlmutate.mutation.RunnerConfig;
+import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 import de.kosit.xmlmutate.report.TextReportGenerator;
 
@@ -28,11 +30,11 @@ public class XmlMutate implements Callable<Integer> {
             defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-s", "--schema" }, paramLabel = "*.xsd", description = "The schema, that should be checked.")
+    @Option(names = { "-x", "--schema" }, paramLabel = "*.xsd", description = "The schema, that should be checked.")
     private Path schemaLocation;
 
-    @Option(names = { "-v", "--schematron" }, paramLabel = "FOLDER", description = "The target folder, where artefakts are generated.")
-    private Path[] schematrons;
+    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "The target folder, where artefakts are generated.")
+    private Map<String, Path> schematrons;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
@@ -61,7 +63,13 @@ public class XmlMutate implements Callable<Integer> {
         }
         Files.createDirectories(this.target);
         config.setTargetFolder(this.target);
+        config.setSchematronRules(prepareSchematron());
         return config;
+    }
+
+    private List<Schematron> prepareSchematron() {
+        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri())).collect(Collectors.toList());
+
     }
 
     private List<Path> prepareDocuments() {

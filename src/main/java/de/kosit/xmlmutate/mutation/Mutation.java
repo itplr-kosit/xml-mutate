@@ -47,11 +47,11 @@ public class Mutation {
     }
 
     public boolean isValid() {
-        return this.state == State.VALIDATED && this.result.isValid();
+        return state.ordinal() >= State.VALIDATED.ordinal() && this.result.isValid();
     }
 
     public enum State {
-        CREATED, MUTATED, VALIDATED, CHECKED, ERROR;
+        ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
     }
 
 }

@@ -1,9 +1,9 @@
 package de.kosit.xmlmutate.mutation;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.Templates;
 import javax.xml.validation.Schema;
 
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class RunnerConfig {
 
     private Schema schema;
 
-    private Templates schematronRules;
+    private List<Schematron> schematronRules = new ArrayList<>();
 
     private ReportGenerator reportGenerator;
 

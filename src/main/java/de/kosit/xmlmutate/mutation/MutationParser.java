@@ -68,7 +68,11 @@ public class MutationParser {
 
         @Override
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
-            // TODO muss noch umgesetzt werden
+            String value = unquote(ctx.value().getText());
+            int colonPos = value.indexOf(':');
+            String ruleName = colonPos > 0 ? value.substring(colonPos + 1) : value;
+            String sourceName = colonPos > 0 ? value.substring(0, colonPos) : Schematron.DEFAULT_NAME;
+            this.config.addExpectation(new Expectation(sourceName, ruleName, ctx.assertion().getText().equals("valid")));
         }
 
         @Override

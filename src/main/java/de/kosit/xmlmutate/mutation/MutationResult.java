@@ -1,14 +1,18 @@
 package de.kosit.xmlmutate.mutation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.tester.Expectation;
 
 /**
  * @author Andreas Penski
@@ -17,7 +21,7 @@ import de.kosit.xmlmutate.tester.Expectation;
 @Setter
 public class MutationResult {
 
-    private List<String> schematronViolations;
+    private Map<Schematron, SchematronOutput> schematronResult = new HashMap<>();
 
     private List<SyntaxError> schemaValidationErrors = new ArrayList<>();
 
@@ -25,18 +29,36 @@ public class MutationResult {
 
     private ValidationState schematronValidation = ValidationState.UNPROCESSED;
 
-    private Map<Expectation, String> expectationViolations;
+    private Map<Expectation, Boolean> expectationResult = new HashMap<>();
 
     public boolean isValid() {
         return isSchemaValid() && isSchematronValid();
     }
 
     private boolean isSchemaValid() {
-        return this.schemaValidation == ValidationState.VALID;
+        return this.schemaValidation == ValidationState.VALID || this.schemaValidation == ValidationState.UNPROCESSED;
     }
 
     public boolean isSchematronValid() {
-        return this.schematronValidation == ValidationState.VALID;
+        return this.schematronValidation == ValidationState.VALID || this.schematronValidation == ValidationState.UNPROCESSED;
+    }
+
+    public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
+        this.schematronResult.put(schematron, out);
+    }
+
+    public boolean isExpectationCompliant() {
+        return this.expectationResult.entrySet().stream().allMatch(Entry::getValue);
+    }
+
+    /**
+     *
+     * @param schematronSource
+     * @return
+     */
+    public Optional<SchematronOutput> getSchematronResult(final String schematronSource) {
+        return this.schematronResult.entrySet().stream().filter(e -> e.getKey().getName().equals(schematronSource)).map(Entry::getValue)
+                                    .findFirst();
     }
 
     public enum ValidationState {

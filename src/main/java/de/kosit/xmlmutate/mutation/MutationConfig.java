@@ -9,8 +9,6 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-import de.kosit.xmlmutate.tester.Expectation;
-
 /**
  * Konfigurationsoptionen für eine bestimmte Mutation.
  * 
@@ -24,24 +22,24 @@ public class MutationConfig {
 
     private boolean expectSchemaValid;
 
-    private List<Expectation> schematronExpectations;
+    private List<Expectation> schematronExpectations = new ArrayList<>();
 
     private String mutatorName;
 
     public void add(final String keyword, final Object value) {
-        final Object existing = properties.get(keyword);
+        final Object existing = this.properties.get(keyword);
         if (existing != null) {
             final Collection list;
             if (Collection.class.isAssignableFrom(existing.getClass())) {
                 list = (Collection) existing;
             } else {
                 list = new ArrayList();
-                properties.put(keyword, list);
+                this.properties.put(keyword, list);
             }
             // noinspection unchecked
             list.add(value);
         } else {
-            properties.put(keyword, value);
+            this.properties.put(keyword, value);
         }
 
     }
@@ -54,4 +52,7 @@ public class MutationConfig {
         return c;
     }
 
+    public void addExpectation(final Expectation valid) {
+        schematronExpectations.add(valid);
+    }
 }
