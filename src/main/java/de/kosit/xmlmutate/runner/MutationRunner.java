@@ -61,6 +61,7 @@ public class MutationRunner {
         try {
             return pairFuture.get();
         } catch (final InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
             throw new IllegalStateException("Error awaiting result", e);
         }
     }
@@ -78,10 +79,11 @@ public class MutationRunner {
     }
 
     private void process(final Mutation mutation) {
+        log.info("Running mutation {}", mutation.getIdentifier());
         this.configuration.getActions().forEach(a -> {
             if (!mutation.isErroneous()) {
-                log.info("Running mutation {}", mutation.getIdentifier());
                 try {
+                    log.error("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                     a.run(mutation);
                 } catch (final MutationException e) {
                     log.error(MessageFormat.format("Error running action {0} in mutation {1} ", a.getClass().getName(),
@@ -104,16 +106,12 @@ public class MutationRunner {
         while (piWalker.nextNode() != null) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
-                final MutationContext context = createContext(documentName, pi);
+                final MutationContext context = new MutationContext(pi, documentName);
                 final List<Mutation> mutations = this.parser.parse(context);
                 all.addAll(mutations);
             }
         }
         return all;
-    }
-
-    private static MutationContext createContext(final String documentName, final ProcessingInstruction pi) {
-        return new MutationContext(pi, documentName);
     }
 
     private static Document readDocument(final Path path) {

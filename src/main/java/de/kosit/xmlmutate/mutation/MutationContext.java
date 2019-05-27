@@ -27,7 +27,7 @@ public class MutationContext {
 
     private final DocumentFragment originalFragment;
 
-    private Node target;
+    private Node specificTarget;
 
     public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
         if (pi == null || isBlank(name)) {
@@ -38,8 +38,8 @@ public class MutationContext {
         this.originalFragment = createFragment();
     }
 
-    public void setTarget(final Node element) {
-        this.target = element;
+    public void setSpecificTarget(final Node element) {
+        this.specificTarget = element;
     }
 
     public int getLevel() {
@@ -52,10 +52,10 @@ public class MutationContext {
     }
 
     public Node getTarget() {
-        if (this.target == null) {
+        if (this.specificTarget == null) {
             return findTarget();
         }
-        return this.target;
+        return this.specificTarget;
     }
 
     private Element findTarget() {

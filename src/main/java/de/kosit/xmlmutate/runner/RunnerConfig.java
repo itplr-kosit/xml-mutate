@@ -66,7 +66,7 @@ public class RunnerConfig {
             return this;
         }
 
-        public Builder withExecutor(ExecutorService service) {
+        public Builder withExecutor(final ExecutorService service) {
             this.config.setExecutorService(service);
             return this;
 
@@ -81,8 +81,8 @@ public class RunnerConfig {
             this.config.getActions().add(new ResetAction());
             this.config.getActions().add(new RemoveCommentAction());
 
-            if (config.getExecutorService() == null) {
-                config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+            if (this.config.getExecutorService() == null) {
+                this.config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
             }
 
             return this.config;

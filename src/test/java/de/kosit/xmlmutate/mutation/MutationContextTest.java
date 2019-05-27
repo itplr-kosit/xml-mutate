@@ -24,6 +24,8 @@ import com.google.common.base.Charsets;
 import de.init.kosit.commons.ObjectFactory;
 
 /**
+ * Testet die Parser-Funktionalitäten
+ * 
  * @author Andreas Penski
  */
 public class MutationContextTest {
@@ -111,7 +113,7 @@ public class MutationContextTest {
         });
         final Element specific = context.getDocument().createElement("specific");
         context.getPi().getNextSibling().appendChild(specific);
-        context.setTarget(specific);
+        context.setSpecificTarget(specific);
         assertThat(context.getTarget()).isNotNull();
         assertThat(context.getTarget().getNodeType()).isEqualTo(Node.ELEMENT_NODE);
         assertThat(context.getTarget().getNodeName()).isEqualTo("specific");

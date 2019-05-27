@@ -31,7 +31,7 @@ public class RemoveMutator extends BaseMutator {
         log.debug("Parent of context is=" + parent);
         final Node replaced = parent.replaceChild(remark, context.getTarget());
         log.debug("replaced node=" + replaced);
-        context.setTarget(remark);
+        context.setSpecificTarget(remark);
     }
 
 }

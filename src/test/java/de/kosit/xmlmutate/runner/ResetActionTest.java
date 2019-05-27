@@ -33,8 +33,8 @@ public class ResetActionTest {
         final Mutation mutation = new Mutation(createContext("mutator=remove"), RandomStringUtils.randomAlphanumeric(5));
 
         Assertions.assertThrows(MutationException.class, () -> {
-            mutation.getContext()
-                    .setTarget(de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument().createElement("newNe"));
+            mutation.getContext().setSpecificTarget(
+                    de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument().createElement("newNe"));
             this.action.run(mutation);
         });
     }
@@ -46,7 +46,7 @@ public class ResetActionTest {
         Assertions.assertThrows(MutationException.class, () -> {
             final Node target = mutation.getContext().getTarget();
             final Node removed = mutation.getContext().getPi().getParentNode().removeChild(target);
-            mutation.getContext().setTarget(removed);
+            mutation.getContext().setSpecificTarget(removed);
             this.action.run(mutation);
         });
     }

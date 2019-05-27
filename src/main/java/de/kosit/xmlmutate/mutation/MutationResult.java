@@ -50,7 +50,7 @@ public class MutationResult {
     }
 
     /**
-     * Evaluier
+     * Evaluiert den
      * 
      * @return
      */

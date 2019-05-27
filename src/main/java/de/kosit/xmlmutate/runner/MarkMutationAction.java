@@ -23,10 +23,10 @@ class MarkMutationAction {
         @Override
         public void run(final Mutation mutation) {
             final Comment comment = mutation.getContext().getDocument()
-                    .createComment(MessageFormat.format(" This is the active mutation configuration: {0} ", mutation.getIdentifier()));
+                    .createComment(MessageFormat.format("This is the active mutation configuration: {0} ", mutation.getIdentifier()));
             final Text textNode = mutation.getContext().getDocument().createTextNode("\n");
-            mutation.getContext().getParentElement().insertBefore(comment, mutation.getContext().getTarget());
-            mutation.getContext().getParentElement().insertBefore(textNode, mutation.getContext().getTarget());
+            mutation.getContext().getParentElement().insertBefore(comment, mutation.getContext().getPi());
+            mutation.getContext().getParentElement().insertBefore(textNode, mutation.getContext().getPi());
         }
 
     }
@@ -38,9 +38,9 @@ class MarkMutationAction {
 
             final Element parent = mutation.getContext().getParentElement();
             final ProcessingInstruction pi = mutation.getContext().getPi();
-            final Node lf = pi.getNextSibling();
+            final Node lf = pi.getPreviousSibling();
             parent.removeChild(lf);
-            final Node comment = pi.getNextSibling();
+            final Node comment = pi.getPreviousSibling();
             parent.removeChild(comment);
 
         }
