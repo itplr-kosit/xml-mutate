@@ -106,6 +106,5 @@ public class MutatorRegistry {
      */
     public static MutatorRegistry getInstance() {
         return RegistryHolder.REGISTRY;
-
     }
 }

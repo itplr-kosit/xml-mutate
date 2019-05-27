@@ -19,6 +19,8 @@ import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
+ * Serialisiert das mutierte {@link org.w3c.dom.Document} in eine Datei.
+ * 
  * @author Andreas Penski
  */
 @RequiredArgsConstructor

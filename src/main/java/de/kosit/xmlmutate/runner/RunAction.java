@@ -5,7 +5,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 /**
  * @author Andreas Penski
  */
-public interface RunAction {
+interface RunAction {
 
     void run(Mutation mutation);
 }

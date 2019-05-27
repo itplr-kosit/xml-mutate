@@ -38,6 +38,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
     private final TextGenerator textGenerator = new TextGenerator();
 
     public TextMutator() {
+        // der Mutator braucht den namen nicht, nur der Generator.
         this.nameGenerator = null;
     }
 

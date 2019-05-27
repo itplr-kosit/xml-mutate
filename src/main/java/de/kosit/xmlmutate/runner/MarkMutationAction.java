@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -36,11 +37,16 @@ class MarkMutationAction {
         public void run(final Mutation mutation) {
 
             final Element parent = mutation.getContext().getParentElement();
-            final Node lf = mutation.getContext().getPi().getNextSibling();
+            final ProcessingInstruction pi = mutation.getContext().getPi();
+            final Node lf = pi.getNextSibling();
             parent.removeChild(lf);
-            final Node comment = mutation.getContext().getPi().getNextSibling();
+            final Node comment = pi.getNextSibling();
             parent.removeChild(comment);
 
         }
+    }
+
+    private MarkMutationAction() {
+        // hide
     }
 }

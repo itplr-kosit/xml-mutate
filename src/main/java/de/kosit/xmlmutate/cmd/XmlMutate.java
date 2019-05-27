@@ -7,6 +7,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,8 +52,10 @@ public class XmlMutate implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        final MutationRunner runner = new MutationRunner(prepareConfig());
+        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
         runner.run();
+        executor.shutdown();
         return 0;
     }
 

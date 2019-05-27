@@ -50,10 +50,9 @@ public class ValidateAction implements RunAction {
     }
 
     private void schemaValidation(final Mutation mutation) {
-        final Schema schema = getSchema();
-        if (schema != null) {
-            final Result<Boolean, SyntaxError> result = Services.schemaValidatonService.validate(schema,
-                    mutation.getContext().getDocument());
+        if (this.schema != null) {
+            final Result<Boolean, SyntaxError> result = Services.schemaValidatonService.validate(this.schema,
+                                                                                                 mutation.getContext().getDocument());
             mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
             mutation.getResult().setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
         }

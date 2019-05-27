@@ -39,8 +39,16 @@ public class MutationContext {
     }
 
     public void setTarget(final Node element) {
-
         this.target = element;
+    }
+
+    public int getLevel() {
+        int level = 0;
+        Node current = this.pi;
+        while ((current = current.getParentNode()) != null) {
+            level++;
+        }
+        return level;
     }
 
     public Node getTarget() {

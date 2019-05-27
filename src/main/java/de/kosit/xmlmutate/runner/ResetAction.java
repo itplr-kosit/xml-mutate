@@ -7,11 +7,11 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
- * Diese Aktion stellt die ursprünglichen Zustand des {@link Document} wieder her.
+ * Diese Aktion stellt den ursprünglichen Zustand des {@link Document} wieder her.
  * 
  * @author Andreas Penski
  */
-public class ResetAction implements RunAction {
+class ResetAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {

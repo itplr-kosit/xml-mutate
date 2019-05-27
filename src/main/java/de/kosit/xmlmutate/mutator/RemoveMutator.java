@@ -10,6 +10,8 @@ import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
+ * Dieser Mutator entfernt das Ziel-Element aus dem Dokument bzw. ersetz es durch einen Kommentar.
+ * 
  * @author Andreas Penski
  */
 @Slf4j

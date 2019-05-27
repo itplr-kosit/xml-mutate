@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
+import static de.kosit.xmlmutate.mutation.ObjectFactory.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
@@ -7,11 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.ProcessingInstruction;
 
-import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
@@ -22,16 +19,6 @@ import de.kosit.xmlmutate.mutation.Mutation.State;
 public class MutationParserTest {
 
     private final MutationParser parser = new MutationParser(new SequenceNameGenerator());
-
-    private MutationContext createContext(final String piString) {
-        final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
-        final Element root = doc.createElement("root");
-        doc.appendChild(root);
-        final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", piString);
-        root.appendChild(pi);
-        root.appendChild(doc.createElement("target"));
-        return new MutationContext(pi, "test");
-    }
 
     @Test
     @DisplayName("Simple Test")

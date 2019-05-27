@@ -5,10 +5,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -41,18 +41,18 @@ public class MutationRunner {
 
     private final MutationParser parser;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService executorService;
 
-    public MutationRunner(final RunnerConfig configuration) {
+    public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
         this.parser = new MutationParser(configuration.getNameGenerator());
+        this.executorService = executorService;
     }
 
     public void run() {
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
         this.configuration.getReportGenerator().generate(results);
-        this.executorService.shutdown();
 
     }
 
@@ -67,19 +67,29 @@ public class MutationRunner {
     private Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
             final Document d = readDocument(path);
-            return new ImmutablePair<>(path, processDocument(d, path.getFileName().toString()));
+            final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
+            // Processing erfolgt sortiert
+            process(mutations.stream().sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
+                    .collect(Collectors.toList()));
+            return new ImmutablePair<>(path, mutations);
         });
 
     }
 
     private void process(final Mutation mutation) {
-        if (mutation.getState() != State.ERROR) {
-            log.info("Running mutation {}", mutation.getIdentifier());
-            this.configuration.getActions().forEach(a -> a.run(mutation));
-        }
+        this.configuration.getActions().forEach(a -> {
+            if (mutation.getState() != State.ERROR) {
+                log.info("Running mutation {}", mutation.getIdentifier());
+                a.run(mutation);
+            }
+        });
     }
 
-    private List<Mutation> processDocument(final Document origin, final String documentName) {
+    private void process(final List<Mutation> mutations) {
+        mutations.forEach(this::process);
+    }
+
+    private List<Mutation> parseMutations(final Document origin, final String documentName) {
         final List<Mutation> all = new ArrayList<>();
         final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null,
                 true);
@@ -88,11 +98,9 @@ public class MutationRunner {
             if (pi.getTarget().equals("xmute")) {
                 final MutationContext context = createContext(documentName, pi);
                 final List<Mutation> mutations = this.parser.parse(context);
-                mutations.forEach(this::process);
                 all.addAll(mutations);
             }
         }
-
         return all;
     }
 

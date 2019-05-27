@@ -1,9 +1,10 @@
-package de.kosit.xmlmutate.mutation;
+package de.kosit.xmlmutate.runner;
 
 /**
  * @author Andreas Penski
  */
 public class MutationRunnerTest {
 
-    // TODO
+    // @Test
+    // public void test
 }

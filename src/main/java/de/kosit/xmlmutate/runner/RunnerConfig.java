@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.validation.Schema;
 
@@ -64,6 +66,12 @@ public class RunnerConfig {
             return this;
         }
 
+        public Builder withExecutor(ExecutorService service) {
+            this.config.setExecutorService(service);
+            return this;
+
+        }
+
         public RunnerConfig build() {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
@@ -72,6 +80,11 @@ public class RunnerConfig {
             this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
             this.config.getActions().add(new ResetAction());
             this.config.getActions().add(new RemoveCommentAction());
+
+            if (config.getExecutorService() == null) {
+                config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+            }
+
             return this.config;
         }
 
@@ -97,5 +110,7 @@ public class RunnerConfig {
     private List<RunAction> actions = new ArrayList<>();
 
     private List<Schematron> schematronRules = new ArrayList<>();
+
+    private ExecutorService executorService;
 
 }
