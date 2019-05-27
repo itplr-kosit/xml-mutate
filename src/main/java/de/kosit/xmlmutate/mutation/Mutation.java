@@ -53,11 +53,11 @@ public class Mutation {
     }
 
     public boolean isValid() {
-        return state.ordinal() >= State.VALIDATED.ordinal() && this.result.isValid();
+        return this.state.ordinal() >= State.VALIDATED.ordinal() && this.result.isValid();
     }
 
     public boolean isErroneous() {
-        return state == State.ERROR;
+        return this.state == State.ERROR;
     }
 
     public enum State {

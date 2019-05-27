@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -68,7 +69,7 @@ public class MutationRunner {
         return this.executorService.submit(() -> {
             final Document d = readDocument(path);
             final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
-            // Processing erfolgt sortiert
+            // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
             process(mutations.stream().sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
                     .collect(Collectors.toList()));
             return new ImmutablePair<>(path, mutations);
@@ -78,9 +79,16 @@ public class MutationRunner {
 
     private void process(final Mutation mutation) {
         this.configuration.getActions().forEach(a -> {
-            if (mutation.getState() != State.ERROR) {
+            if (!mutation.isErroneous()) {
                 log.info("Running mutation {}", mutation.getIdentifier());
-                a.run(mutation);
+                try {
+                    a.run(mutation);
+                } catch (final MutationException e) {
+                    log.error(MessageFormat.format("Error running action {0} in mutation {1} ", a.getClass().getName(),
+                            mutation.getIdentifier()), e);
+                    mutation.setErrorMessage(e.getLocalizedMessage());
+                    mutation.setState(State.ERROR);
+                }
             }
         });
     }
