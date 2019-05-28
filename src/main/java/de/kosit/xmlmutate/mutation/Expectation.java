@@ -70,4 +70,8 @@ public class Expectation {
         return (failed.isPresent() && mustFail()) || (!failed.isPresent() && !mustFail());
     }
 
+    public String evaluateMessage(final MutationResult result) {
+        return null;
+    }
+
 }

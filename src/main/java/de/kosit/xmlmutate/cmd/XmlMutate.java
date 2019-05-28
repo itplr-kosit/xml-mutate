@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.MutationRunner;
 import de.kosit.xmlmutate.runner.RunMode;
@@ -47,6 +49,7 @@ public class XmlMutate implements Callable<Integer> {
 
     public static void main(final String[] args) {
         final int i = CommandLine.call(new XmlMutate(), args);
+        AnsiConsole.systemInstall();
         System.exit(i);
     }
 

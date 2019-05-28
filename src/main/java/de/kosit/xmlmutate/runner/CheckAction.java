@@ -13,7 +13,11 @@ public class CheckAction implements RunAction {
     @Override
     public void run(final Mutation mutation) {
         mutation.getConfiguration().getSchematronExpectations().forEach(e -> {
-            mutation.getResult().getExpectationResult().put(e, e.evaluate(mutation.getResult()));
+            final boolean valid = e.evaluate(mutation.getResult());
+            mutation.getResult().getExpectationResult().put(e, valid);
+            if (!valid) {
+                mutation.setErrorMessage("failed expectation assert");
+            }
         });
         mutation.setState(State.CHECKED);
     }
