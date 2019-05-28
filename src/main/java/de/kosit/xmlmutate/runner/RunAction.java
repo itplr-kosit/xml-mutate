@@ -15,5 +15,5 @@ interface RunAction {
      * @param mutation die Mutation
      * @throws MutationException bei einem Verarbeitungsfehler
      */
-    void run(Mutation mutation) throws MutationException;
+    void run(Mutation mutation);
 }

@@ -57,7 +57,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
         if (this.nameGenerator != null) {
             final List<Mutation> l = new ArrayList<>();
-            // l.add(noMutation(config, context));
+            l.add(noMutation(config, context));
             l.addAll(maxLengthMutations(config, context));
             l.addAll(minLengthMutations(config, context));
             return l;

@@ -15,7 +15,9 @@ public enum ErrorCode implements NamedError {
 
     WRONG_OWNER("Target Node is not in the correct document. Can not reset original state"),
 
-    WRONG_PARENT("There is structural error. Parents are not the same, but this is expected");
+    WRONG_PARENT("There is structural error. Parents are not the same, but this is expected"),
+
+    STRUCTURAL_MISMATCH("Structural mismatch: {0}");
 
     @Getter
     private final String template;

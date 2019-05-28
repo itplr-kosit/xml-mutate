@@ -11,6 +11,8 @@ import org.w3c.dom.Node;
 import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
+ * Testet das Resetten des Dokuments.
+ * 
  * @author Andreas Penski
  */
 public class ResetActionTest {

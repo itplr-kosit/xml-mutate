@@ -30,7 +30,7 @@ public class MutationContext {
     private Node specificTarget;
 
     public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
-        if (pi == null || isBlank(name)) {
+        if (isBlank(name)) {
             throw new IllegalArgumentException("PI and name must be set");
         }
         this.pi = pi;

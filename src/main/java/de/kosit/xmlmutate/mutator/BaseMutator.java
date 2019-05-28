@@ -19,6 +19,8 @@ import org.w3c.dom.NodeList;
 import de.init.kosit.commons.ObjectFactory;
 
 /**
+ * Basisklasse für Mutatoren.
+ * 
  * @author Andreas Penski
  */
 public abstract class BaseMutator implements Mutator {

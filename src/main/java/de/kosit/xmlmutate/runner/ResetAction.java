@@ -7,14 +7,14 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
- * Diese Aktion stellt den ursprünglichen Zustand des {@link Document} wieder her.
+ * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s wieder her.
  * 
  * @author Andreas Penski
  */
 class ResetAction implements RunAction {
 
     @Override
-    public void run(final Mutation mutation) throws MutationException {
+    public void run(final Mutation mutation) {
         final MutationContext context = mutation.getContext();
         final Node parent = context.getPi().getParentNode();
         if (parent == null || context.getTarget() == null) {
