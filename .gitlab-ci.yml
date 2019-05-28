@@ -1,4 +1,4 @@
-image: maven:latest
+image: maven:3-jdk-8-alpine
 
 variables:
   MAVEN_CLI_OPTS: " --batch-mode -Dmaven.repo.local=repository -Dfile.encoding=UTF-8"
