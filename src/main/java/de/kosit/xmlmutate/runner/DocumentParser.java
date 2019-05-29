@@ -12,11 +12,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -57,26 +55,22 @@ public class DocumentParser {
 
         @Override
         public void comment(final char[] ch, final int start, final int length) {
-            addTextIfNeeded();
-            final Comment c = this.doc.createComment(new String(ch));
-            if (this.elementStack.isEmpty()) { // Is this the root element?
-                this.doc.appendChild(c);
-            } else {
-                final Element parentEl = this.elementStack.peek();
-                parentEl.appendChild(c);
-            }
+            append(this.doc.createComment(new String(ch)));
         }
 
         @Override
         public void processingInstruction(final String target, final String data) {
             addTextIfNeeded();
-            final ProcessingInstruction pi = this.doc.createProcessingInstruction(target, data);
-            pi.setUserData(LINE_NUMBER_KEY_NAME, String.valueOf(this.locator.getLineNumber()), null);
+            append(this.doc.createProcessingInstruction(target, data));
+        }
+
+        private void append(final Node node) {
+            node.setUserData(LINE_NUMBER_KEY_NAME, String.valueOf(this.locator.getLineNumber()), null);
             if (this.elementStack.isEmpty()) { // Is this the root element?
-                this.doc.appendChild(pi);
+                this.doc.appendChild(node);
             } else {
                 final Element parentEl = this.elementStack.peek();
-                parentEl.appendChild(pi);
+                parentEl.appendChild(node);
             }
         }
 
@@ -94,13 +88,7 @@ public class DocumentParser {
         @Override
         public void endElement(final String uri, final String localName, final String qName) {
             addTextIfNeeded();
-            final Element closedEl = this.elementStack.pop();
-            if (this.elementStack.isEmpty()) { // Is this the root element?
-                this.doc.appendChild(closedEl);
-            } else {
-                final Element parentEl = this.elementStack.peek();
-                parentEl.appendChild(closedEl);
-            }
+            append(this.elementStack.pop());
         }
 
         @Override
@@ -111,9 +99,9 @@ public class DocumentParser {
         // Outputs text accumulated under the current node
         private void addTextIfNeeded() {
             if (this.textBuffer.length() > 0) {
-                final Element el = this.elementStack.peek();
+                final Element e1 = this.elementStack.peek();
                 final Node textNode = this.doc.createTextNode(this.textBuffer.toString());
-                el.appendChild(textNode);
+                e1.appendChild(textNode);
                 this.textBuffer.delete(0, this.textBuffer.length());
             }
         }
