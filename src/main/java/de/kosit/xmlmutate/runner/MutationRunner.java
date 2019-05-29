@@ -1,8 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -13,8 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilder;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Document;
@@ -22,17 +17,17 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
-import org.xml.sax.SAXException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
+ * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
+ * 
  * @author Andreas Penski
  */
 @Slf4j
@@ -68,11 +63,13 @@ public class MutationRunner {
 
     private Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
-            final Document d = readDocument(path);
+            final Document d = DocumentParser.readDocument(path);
             final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
             // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
-            process(mutations.stream().sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
-                    .collect(Collectors.toList()));
+            // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem Kontext gerissen werden.
+            final List<Mutation> sorted = mutations.stream()
+                    .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder())).collect(Collectors.toList());
+            process(sorted);
             return new ImmutablePair<>(path, mutations);
         });
 
@@ -114,13 +111,4 @@ public class MutationRunner {
         return all;
     }
 
-    private static Document readDocument(final Path path) {
-        final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
-        try ( final InputStream input = Files.newInputStream(path) ) {
-            return builder.parse(input);
-        } catch (final SAXException | IOException e) {
-            log.error("Error opening document {}", path, e);
-            throw new IllegalArgumentException("Can not open Document " + path, e);
-        }
-    }
 }

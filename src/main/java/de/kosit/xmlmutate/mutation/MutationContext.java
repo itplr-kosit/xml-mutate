@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import de.kosit.xmlmutate.runner.DocumentParser;
+
 /**
  * Der Kontext der Mutation. Alle nötigen Artefakte um die Position innerhalb des Zieldokuments zu bestimmen.
  * 
@@ -29,6 +31,12 @@ public class MutationContext {
 
     private Node specificTarget;
 
+    /**
+     * Constructor.
+     * 
+     * @param pi die {@link ProcessingInstruction} die mit diesem Kontext verbunden ist
+     * @param name der Name der Mutation
+     */
     public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
         if (isBlank(name)) {
             throw new IllegalArgumentException("PI and name must be set");
@@ -38,10 +46,33 @@ public class MutationContext {
         this.originalFragment = createFragment();
     }
 
+    /**
+     * Setzt ein spezifisches Zielelement. Dies ist z.B. dann nötig, wenn das eigentlich Zielelement aus dem Dokument
+     * entfernt wird oder sich die Struktur anderweitig ändert.
+     * 
+     * @param element das neue Zielelement
+     */
     public void setSpecificTarget(final Node element) {
         this.specificTarget = element;
     }
 
+    /**
+     * Ermittelt die Zeilennummer aus der sich dieser Kontext ergibt. Dieser muss nicht zwingend vorhanden sein und ist
+     * abhängig vom Parsing des {@link Document}.
+     * 
+     * @see DocumentParser
+     * @return die Zeilennummer oder -1 wenn diese nicht zu ermitteln ist
+     */
+    public int getLineNumber() {
+        final Object userData = this.pi.getUserData(DocumentParser.LINE_NUMBER_KEY_NAME);
+        return userData != null ? Integer.parseInt(userData.toString()) : -1;
+    }
+
+    /**
+     * Gibt die Verschachtelungs-Tiefe der {@link ProcessingInstruction} innerhalb des DOM zurück.
+     * 
+     * @return Tiefe
+     */
     public int getLevel() {
         int level = 0;
         Node current = this.pi;
@@ -51,6 +82,11 @@ public class MutationContext {
         return level;
     }
 
+    /**
+     * Gibt den Zielknoten der Mutation zurück. Default ist das der {@link ProcessingInstruction} folgende {@link Element}.
+     * 
+     * @return Zielknoten
+     */
     public Node getTarget() {
         if (this.specificTarget == null) {
             return findTarget();

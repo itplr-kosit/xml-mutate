@@ -39,6 +39,9 @@ import de.kosit.xmlmutate.runner.Services;
 @Slf4j
 public class MutationParser {
 
+    /**
+     * Integration mit dem ANTLR4-Parser
+     */
     @RequiredArgsConstructor
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
@@ -95,12 +98,12 @@ public class MutationParser {
 
         private boolean validate() {
             if (this.config.getMutatorName() == null || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
-                this.mutations = (createErroMutation(this.context,
+                this.mutations = (createErrorMutation(this.context,
                         MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
             }
 
             if (this.context.getTarget() == null) {
-                this.mutations = createErroMutation(this.context,
+                this.mutations = createErrorMutation(this.context,
                         MessageFormat.format("No mutation can be found for {0}. Is PI last " + "element?", this.context.getDocumentName()));
             }
             return this.mutations == null;
@@ -140,11 +143,11 @@ public class MutationParser {
             return new ArrayList<>(l.getMutations());
         } catch (final Exception e) {
             log.error("Error parsing {}", context.getPi().getData(), e);
-            return createErroMutation(context, e.getMessage());
+            return createErrorMutation(context, e.getMessage());
         }
     }
 
-    private List<Mutation> createErroMutation(final MutationContext context, final String message) {
+    private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
         final Mutation m = new Mutation(context, MutationParser.this.nameGenerator.generateName());
         m.setState(State.ERROR);
         m.setErrorMessage(message);

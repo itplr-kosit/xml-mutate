@@ -140,8 +140,8 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private void generateReport(final Mutation mutation) throws IOException {
 
-        final Format format = format().repeat("_", 67);
-        format.writeln(this.writer);
+        final Format format = format();
+        format.append("Line " + mutation.getContext().getLineNumber(), 10).write(this.writer);
         format.append("|" + mutation.getIdentifier(), 20);
 
         if (mutation.getState() == State.ERROR) {
