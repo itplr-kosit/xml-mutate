@@ -1,6 +1,4 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.kosit</groupId>
     <artifactId>xml-mutate</artifactId>
@@ -22,11 +20,11 @@
             the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
         <mvn.surefire.version>2.19.1</mvn.surefire.version>
         <mvn.surefire.junit.platform.provider>1.1.0</mvn.surefire.junit.platform.provider>
-
+        
         <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
-
+    
     <repositories>
         <repository>
             <id>project.local</id>
@@ -34,7 +32,7 @@
             <url>file:${project.basedir}/libs</url>
         </repository>
     </repositories>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -99,7 +97,7 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -152,13 +150,13 @@
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
-
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${mvn.surefire.version}</version>
                 <dependencies>
-
+                    
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
@@ -188,8 +186,8 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-
-                            <mainClass>de.kosit.xmlmutate.XMLMutateApp</mainClass>
+                            
+                            <mainClass>de.kosit.xmlmutate.cli.XmlMutate</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -199,7 +197,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-
+                    
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
@@ -210,7 +208,7 @@
                             </excludes>
                         </filter>
                     </filters>
-
+                    
                 </configuration>
                 <executions>
                     <execution>
@@ -220,7 +218,7 @@
                         </goals>
                     </execution>
                 </executions>
-
+                
             </plugin>
         </plugins>
     </build>
