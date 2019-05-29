@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate.cmd;
+package de.kosit.xmlmutate.cli;
 
 import java.io.IOException;
 import java.nio.file.Files;

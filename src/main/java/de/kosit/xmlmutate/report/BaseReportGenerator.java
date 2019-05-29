@@ -11,7 +11,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 public abstract class BaseReportGenerator implements ReportGenerator {
 
     /**
-     * Zählit die Validen Mutationen innerhalb einer Liste mit Mutationen.
+     * Zählt die Validen Mutationen innerhalb einer Liste mit Mutationen.
      * 
      * @param mutations die Mutationen.
      * @return Anzahl valider

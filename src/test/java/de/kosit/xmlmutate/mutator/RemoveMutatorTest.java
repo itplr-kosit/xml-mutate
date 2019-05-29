@@ -1,7 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
-import static de.kosit.xmlmutate.mutation.ObjectFactory.createConfig;
-import static de.kosit.xmlmutate.mutation.ObjectFactory.createContext;
+import static de.kosit.xmlmutate.TestHelper.createConfig;
+import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -25,7 +25,7 @@ public class RemoveMutatorTest {
 
     @Test
     public void simpleRemove() {
-        final MutationContext context = createContext("mutator=remove");
+        final MutationContext context = createContext();
         final Node origTarget = context.getTarget();
         this.mutator.mutate(context, createConfig());
         assertThat(context.getTarget().getNodeType()).isEqualTo(Node.COMMENT_NODE);
@@ -34,7 +34,7 @@ public class RemoveMutatorTest {
 
     @Test
     public void testUnexisting() {
-        final MutationContext context = createContext("mutator=remove");
+        final MutationContext context = createContext();
         context.getParentElement().removeChild(context.getTarget());
         assertThrows(MutationException.class, () -> {
             this.mutator.mutate(context, createConfig());
@@ -43,7 +43,7 @@ public class RemoveMutatorTest {
 
     @Test
     public void testRemoveWrongElement() {
-        final MutationContext context = createContext("mutator=remove");
+        final MutationContext context = createContext();
         final Element wrongElement = ObjectFactory.createDocumentBuilder(false).newDocument().createElement("someOtherElement");
         context.setSpecificTarget(wrongElement);
         assertThrows(MutationException.class, () -> {

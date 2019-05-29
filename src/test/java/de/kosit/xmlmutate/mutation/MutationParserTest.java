@@ -1,6 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
-import static de.kosit.xmlmutate.mutation.ObjectFactory.createContext;
+import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;

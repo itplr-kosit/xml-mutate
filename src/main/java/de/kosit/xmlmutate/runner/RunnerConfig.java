@@ -105,7 +105,7 @@ public class RunnerConfig {
 
     private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
 
-    public NameGenerator nameGenerator = new SequenceNameGenerator();
+    private NameGenerator nameGenerator = new SequenceNameGenerator();
 
     private List<RunAction> actions = new ArrayList<>();
 
