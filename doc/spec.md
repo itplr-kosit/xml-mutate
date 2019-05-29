@@ -37,7 +37,7 @@ These can look like this for example:
     <cbc:TaxCurrencyCode>EUR</cbc:TaxCurrencyCode>
     <cbc:BuyerReference>04011000-12345-34</cbc:BuyerReference>
     <!-- Generate a new instances with next element removed-->
-    <?xmute mutator="remove-element" group="1" recursive="yes"?>
+    <?xmute mutator="remove-element" group="1" description="dieses soll x testen" recursive="yes" if="" ?>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
@@ -66,6 +66,14 @@ This way many kinds of mutations can be defined and combined with assertions abo
 * add element/attribute
 * change text content from code lists
 * change text content from concrete values list as given in declaration
+  * man koennte auch ein file angeben mit einem Value pro Zeile
+* laengen muator
+* character mutator: generiere sequenz von charactern, die aber Regeln entsprechen oder auch voellig random (koennte den laengen mutator beinhalten)
+* xslt mutator
+* eigene java based mutator (plugin maessig)
+
+Externalisieren von mutator "content" (da womit ein  mutator arbeiten soll) in externe files a la yaml etc
+
 
 [Documentation of available Mutators](../doc/mutator.md).
 
