@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.RequiredArgsConstructor;
 
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -28,6 +30,8 @@ public class CodeMutationGenerator implements MutationGenerator {
     private static final String PROP_VALUES = "values";
 
     private static final String PROP_GENERICODE = "genericode";
+
+    private static final String SEPERATOR = ",";
 
     private final NameGenerator nameGenerator;
 
@@ -51,15 +55,17 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
-        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(",")).map(s -> {
-            final MutationConfig cloned = config.cloneConfig();
-            cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
-            final Mutation m = new Mutation(context.cloneContext(), this.nameGenerator.generateName(context.getDocumentName(), s.trim()));
-            m.setConfiguration(cloned);
-            m.setMutator(MutatorRegistry.getInstance().getMutator(getName()));
-            return m;
+        return config.resolveList(PROP_VALUES).stream()
+                .flatMap(e -> Arrays.stream(e.toString().split(SEPERATOR)).filter(StringUtils::isNotEmpty).map(s -> {
+                    final MutationConfig cloned = config.cloneConfig();
+                    cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
+                    final Mutation m = new Mutation(context.cloneContext(),
+                            this.nameGenerator.generateName(context.getDocumentName(), s.trim()));
+                    m.setConfiguration(cloned);
+                    m.setMutator(MutatorRegistry.getInstance().getMutator(getName()));
+                    return m;
 
-        })).collect(Collectors.toList());
+                })).collect(Collectors.toList());
     }
 
     @Override
