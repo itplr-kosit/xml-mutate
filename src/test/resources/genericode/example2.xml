@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gc:CodeList xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:xoev-cl="http://xoev.de/schemata/genericode/1_0"
+             xmlns:xoev-cl-2="http://xoev.de/schemata/genericode/2">
+    <Annotation>
+        <Description><!--Metadaten entsprechend XÖV-Handbuch 2.0-->
+            <xoev-cl:beschreibung>Beschreibt das Geschlecht einer Person.</xoev-cl:beschreibung>
+            <xoev-cl:datumgueltigkeitab>2019-05-01</xoev-cl:datumgueltigkeitab>
+            <!--Metadaten entsprechend XÖV-Handbuch 2.1-->
+            <xoev-cl-2:nameKurz>Geschlecht</xoev-cl-2:nameKurz>
+            <xoev-cl-2:beschreibung-codeliste>Beschreibt das Geschlecht einer Person.</xoev-cl-2:beschreibung-codeliste>
+            <xoev-cl-2:herausgebernameKurz>KoSIT</xoev-cl-2:herausgebernameKurz>
+            <xoev-cl-2:datumGueltigkeitAb>2019-05-01</xoev-cl-2:datumGueltigkeitAb>
+            <xoev-cl-2:versionXOEVHandbuch>2.1</xoev-cl-2:versionXOEVHandbuch>
+            <xoev-cl-2:aenderungZurVorversion>Aufgrund gesetzlicher Vorgaben wurde Geschlecht 'divers' hinzugefügt
+            </xoev-cl-2:aenderungZurVorversion>
+        </Description>
+    </Annotation>
+    <Identification>
+        <ShortName>geschlecht</ShortName>
+        <LongName xml:lang="de">Geschlecht</LongName>
+        <Version>2</Version>
+        <CanonicalUri>urn:de:xauslaender:codelist:geschlecht</CanonicalUri>
+        <CanonicalVersionUri>urn:de:xauslaender:codelist:geschlecht_2</CanonicalVersionUri>
+        <Agency>
+            <ShortName>KoSIT</ShortName>
+            <LongName xml:lang="de">Koordinierungsstelle für IT-Standards</LongName>
+        </Agency>
+    </Identification>
+    <ColumnSet>
+        <Column Id="Schlüssel" Use="required">
+            <ShortName>Schlüssel</ShortName>
+            <LongName>Schlüssel</LongName>
+            <Data Type="string" />
+        </Column>
+        <Column Id="Wert" Use="required">
+            <ShortName>Wert</ShortName>
+            <LongName>Wert</LongName>
+            <Data Type="string" />
+        </Column>
+        <Key Id="codeKey">
+            <Annotation>
+                <AppInfo>
+                    <xoev-cl:xoev-code />
+                    <xoev-cl-2:xoev-code />
+                </AppInfo>
+            </Annotation>
+            <ShortName>codeKey</ShortName>
+            <ColumnRef Ref="Schlüssel" />
+        </Key>
+    </ColumnSet>
+    <SimpleCodeList>
+        <Row>
+            <Value ColumnRef="Schlüssel">
+                <SimpleValue>d</SimpleValue>
+            </Value>
+            <Value ColumnRef="Wert">
+                <SimpleValue>divers</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="Schlüssel">
+                <SimpleValue>m</SimpleValue>
+            </Value>
+            <Value ColumnRef="Wert">
+                <SimpleValue>männlich</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="Schlüssel">
+                <SimpleValue>w</SimpleValue>
+            </Value>
+            <Value ColumnRef="Wert">
+                <SimpleValue>weiblich</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="Schlüssel">
+                <SimpleValue>x</SimpleValue>
+            </Value>
+            <Value ColumnRef="Wert">
+                <SimpleValue>keine Angabe</SimpleValue>
+            </Value>
+        </Row>
+    </SimpleCodeList>
+</gc:CodeList>

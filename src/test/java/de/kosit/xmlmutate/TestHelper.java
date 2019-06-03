@@ -2,6 +2,8 @@ package de.kosit.xmlmutate;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -27,6 +29,12 @@ import de.kosit.xmlmutate.mutation.MutationContext;
  * @author Andreas Penski
  */
 public class TestHelper {
+
+    public static final String SRC_TEST_RESOURCES_STR = "src/test/resources/";
+
+    public static final URI SRC_TEST_RESOURCES = URI.create(SRC_TEST_RESOURCES_STR);
+
+    public static final URI TEST_ROOT = Paths.get(SRC_TEST_RESOURCES_STR).toUri();
 
     private static final Consumer<Element> NOOP = whatever -> {
     };

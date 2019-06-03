@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gc:CodeList xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:xoev-cl-2="http://xoev.de/schemata/genericode/2">
+    <Annotation>
+        <Description>
+            <xoev-cl-2:nameKurz>AusschreibungAnlass</xoev-cl-2:nameKurz>
+            <xoev-cl-2:beschreibung-codeliste>Der Anlass einer Ausschreibung.</xoev-cl-2:beschreibung-codeliste>
+            <xoev-cl-2:herausgebernameKurz>BVA</xoev-cl-2:herausgebernameKurz>
+            <xoev-cl-2:datumGueltigkeitAb>2019-04-22</xoev-cl-2:datumGueltigkeitAb>
+            <xoev-cl-2:versionXOEVHandbuch>2.1</xoev-cl-2:versionXOEVHandbuch>
+        </Description>
+    </Annotation>
+    <Identification>
+        <ShortName>Code.AZR.AusschreibungAnlassArt</ShortName>
+        <LongName xml:lang="en">AusschreibungAnlassArt</LongName>
+        <Version>2</Version>
+        <CanonicalUri>urn:de:xauslaender:codelist:azr:artdesanlassesderausschreibung</CanonicalUri>
+        <CanonicalVersionUri>urn:de:xauslaender:codelist:azr:artdesanlassesderausschreibung_2</CanonicalVersionUri>
+        <Agency>
+            <LongName xml:lang="de">Bundesverwaltungsamt</LongName>
+        </Agency>
+    </Identification>
+    <ColumnSet>
+        <Column Id="code" Use="required">
+            <ShortName>code</ShortName>
+            <LongName>Code</LongName>
+            <Data Type="string" />
+        </Column>
+        <Column Id="beschreibung" Use="optional">
+            <ShortName>beschreibung</ShortName>
+            <LongName>Beschreibung</LongName>
+            <Data Type="string" />
+        </Column>
+        <Key Id="codeKey">
+            <Annotation>
+                <AppInfo>
+                    <xoev-cl-2:xoev-code />
+                </AppInfo>
+            </Annotation>
+            <ShortName>codeKey</ShortName>
+            <ColumnRef Ref="code" />
+        </Key>
+    </ColumnSet>
+    <SimpleCodeList>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>01</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Straftat</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>02</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Strafvollstreckung</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>03</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Unterbringung</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>04</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Ausweisung / Abschiebung / Zurückschiebung</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>05</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>vermisst</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>07</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Grenzfahndung</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>11</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Gefahrenabwehr</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>12</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Zeuge und Auskunftsperson</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>13</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>entwichener Strafgefangener</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>16</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Asylverfahrensgesetz</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>21</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Katastrophenvermisst</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>22</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Zurückschiebung</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>97</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Terror gefährdete Person</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>98</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>Terror Verdächtiger</SimpleValue>
+            </Value>
+        </Row>
+        <Row>
+            <Value ColumnRef="code">
+                <SimpleValue>99</SimpleValue>
+            </Value>
+            <Value ColumnRef="beschreibung">
+                <SimpleValue>nicht konkretisiert</SimpleValue>
+            </Value>
+        </Row>
+    </SimpleCodeList>
+</gc:CodeList>
