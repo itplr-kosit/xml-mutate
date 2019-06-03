@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
@@ -21,7 +20,7 @@ import de.kosit.xmlmutate.runner.MutationException;
  */
 public class CodeMutationGeneratorSimpleTest {
 
-    private final CodeMutationGenerator generator = new CodeMutationGenerator(new SequenceNameGenerator());
+    private final CodeMutationGenerator generator = new CodeMutationGenerator();
 
     @Test
     public void testSimpleValue() {

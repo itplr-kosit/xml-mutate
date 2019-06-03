@@ -7,7 +7,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
- * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s wieder her.
+ * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s nach der Mutation wieder her.
  * 
  * @author Andreas Penski
  */

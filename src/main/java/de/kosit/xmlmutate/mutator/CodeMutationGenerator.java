@@ -9,22 +9,19 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.RequiredArgsConstructor;
-
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Erzeugt Mutationen für eine definierte Liste mit Code-Werten. Die Liste kann eine simple
  * 
  * @author Andreas Penski
  */
-@RequiredArgsConstructor
 public class CodeMutationGenerator implements MutationGenerator {
 
     private static final String PROP_VALUES = "values";
@@ -32,8 +29,6 @@ public class CodeMutationGenerator implements MutationGenerator {
     private static final String PROP_GENERICODE = "genericode";
 
     private static final String SEPERATOR = ",";
-
-    private final NameGenerator nameGenerator;
 
     @Override
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
@@ -60,7 +55,7 @@ public class CodeMutationGenerator implements MutationGenerator {
                     final MutationConfig cloned = config.cloneConfig();
                     cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
                     final Mutation m = new Mutation(context.cloneContext(),
-                            this.nameGenerator.generateName(context.getDocumentName(), s.trim()));
+                            Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()));
                     m.setConfiguration(cloned);
                     m.setMutator(MutatorRegistry.getInstance().getMutator(getName()));
                     return m;

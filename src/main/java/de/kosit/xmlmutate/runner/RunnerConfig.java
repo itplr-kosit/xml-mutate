@@ -12,9 +12,7 @@ import javax.xml.validation.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 import de.kosit.xmlmutate.report.ReportGenerator;
 import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
@@ -61,10 +59,6 @@ public class RunnerConfig {
             return this;
         }
 
-        public Builder withNameGenerator(final NameGenerator generator) {
-            this.config.setNameGenerator(generator);
-            return this;
-        }
 
         public Builder withExecutor(final ExecutorService service) {
             this.config.setExecutorService(service);
@@ -104,8 +98,6 @@ public class RunnerConfig {
     private Schema schema;
 
     private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
-
-    private NameGenerator nameGenerator = new SequenceNameGenerator();
 
     private List<RunAction> actions = new ArrayList<>();
 

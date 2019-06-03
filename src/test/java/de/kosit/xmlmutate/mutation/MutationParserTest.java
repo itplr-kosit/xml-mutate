@@ -18,7 +18,7 @@ import de.kosit.xmlmutate.mutation.Mutation.State;
  */
 public class MutationParserTest {
 
-    private final MutationParser parser = new MutationParser(new SequenceNameGenerator());
+    private final MutationParser parser = new MutationParser();
 
     @Test
     @DisplayName("Simple Test")

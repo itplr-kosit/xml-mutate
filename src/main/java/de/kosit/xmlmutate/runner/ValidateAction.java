@@ -19,6 +19,8 @@ import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
 
 /**
+ * Validierung-Schritt.
+ * 
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class ValidateAction implements RunAction {
         long failedAssertCount = 0;
 
         for (final Schematron s : getSchematronRules()) {
-            final SchematronOutput out = Services.schematronService.validate(s.getUri(), mutation.getContext().getDocument());
+            final SchematronOutput out = Services.getSchematronService().validate(s.getUri(), mutation.getContext().getDocument());
             failedAssertCount += out.getFailedAsserts().size();
             mutation.getResult().addSchematronResult(s, out);
         }
@@ -51,8 +53,8 @@ public class ValidateAction implements RunAction {
 
     private void schemaValidation(final Mutation mutation) {
         if (this.schema != null) {
-            final Result<Boolean, SyntaxError> result = Services.schemaValidatonService.validate(this.schema,
-                                                                                                 mutation.getContext().getDocument());
+            final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema,
+                    mutation.getContext().getDocument());
             mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
             mutation.getResult().setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
         }

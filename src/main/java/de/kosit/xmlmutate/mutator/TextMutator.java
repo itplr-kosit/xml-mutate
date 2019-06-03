@@ -13,7 +13,6 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
@@ -33,14 +32,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
 
     private static final int DEFAULT_MAX_LENGTH = 10000;
 
-    private final NameGenerator nameGenerator;
-
     private final TextGenerator textGenerator = new TextGenerator();
-
-    public TextMutator() {
-        // der Mutator braucht den namen nicht, nur der Generator.
-        this.nameGenerator = null;
-    }
 
     @Override
     public String getName() {
@@ -55,14 +47,11 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
 
     @Override
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
-        if (this.nameGenerator != null) {
-            final List<Mutation> l = new ArrayList<>();
-            l.add(noMutation(config, context));
-            l.addAll(maxLengthMutations(config, context));
-            l.addAll(minLengthMutations(config, context));
-            return l;
-        }
-        throw new IllegalStateException("No name generator supplied. Configuration error");
+        final List<Mutation> l = new ArrayList<>();
+        l.add(noMutation(config, context));
+        l.addAll(maxLengthMutations(config, context));
+        l.addAll(minLengthMutations(config, context));
+        return l;
     }
 
     private Mutation noMutation(final MutationConfig config, final MutationContext context) {
@@ -98,7 +87,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
 
     private Mutation create(final MutationConfig cloneConfig, final MutationContext cloneContext, final int length) {
         final String baseName = "length-" + length;
-        final Mutation m = new Mutation(cloneContext, this.nameGenerator.generateName("", baseName));
+        final Mutation m = new Mutation(cloneContext, Services.getNameGenerator().generateName("", baseName));
         cloneConfig.getProperties().put(LENGTH_PARAM, length);
         m.setConfiguration(cloneConfig);
         m.setMutator(Services.getRegistry().getMutator(NAME));

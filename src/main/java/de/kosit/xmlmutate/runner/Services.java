@@ -8,6 +8,8 @@ import de.init.kosit.commons.schematron.SchematronService;
 import de.init.kosit.commons.transform.ExecutableRepository;
 import de.init.kosit.commons.transform.TransformationService;
 import de.init.kosit.commons.validate.SchemaValidationService;
+import de.kosit.xmlmutate.mutation.NameGenerator;
+import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
 
 /**
@@ -18,17 +20,19 @@ import de.kosit.xmlmutate.mutator.MutatorRegistry;
 
 public class Services {
 
-    public static ExecutableRepository xsltRepository;
+    private static final ExecutableRepository xsltRepository;
 
-    public static ConversionService conversionService;
+    private static final ConversionService conversionService;
 
-    public static SchemaValidationService schemaValidatonService;
+    private static final SchemaValidationService schemaValidatonService;
 
-    public static TransformationService transformService;
+    private static final TransformationService transformService;
 
-    public static SchematronService schematronService;
+    public static final SchematronService schematronService;
 
     private static final MutatorRegistry registry = MutatorRegistry.getInstance();
+
+    private static final NameGenerator nameGenerator = new SequenceNameGenerator();
 
     static {
         xsltRepository = new ExecutableRepository(ObjectFactory.createProcessor());
@@ -38,10 +42,21 @@ public class Services {
         transformService = new TransformationService(conversionService, schemaValidatonService, xsltRepository,
                 ObjectFactory.createProcessor());
         schematronService = new SchematronService(xsltRepository, transformService);
+    }
 
+    public static SchemaValidationService getSchemaValidatonService() {
+        return schemaValidatonService;
+    }
+
+    public static SchematronService getSchematronService() {
+        return schematronService;
     }
 
     public static MutatorRegistry getRegistry() {
         return registry;
+    }
+
+    public static NameGenerator getNameGenerator() {
+        return nameGenerator;
     }
 }

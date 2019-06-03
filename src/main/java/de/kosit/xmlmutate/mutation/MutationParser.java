@@ -117,12 +117,10 @@ public class MutationParser {
 
         @Override
         public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line,
-                final int charPositionInLine, final String msg, final RecognitionException e) throws ParseCancellationException {
+                final int charPositionInLine, final String msg, final RecognitionException e) {
             throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
-
-    private final NameGenerator nameGenerator;
 
     /**
      * Parsed den gegebenen Kontext
@@ -148,7 +146,7 @@ public class MutationParser {
     }
 
     private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
-        final Mutation m = new Mutation(context, MutationParser.this.nameGenerator.generateName());
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setState(State.ERROR);
         m.setErrorMessage(message);
         return Collections.singletonList(m);

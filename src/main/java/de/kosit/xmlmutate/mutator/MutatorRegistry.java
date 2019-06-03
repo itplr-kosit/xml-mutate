@@ -8,8 +8,6 @@ import java.util.Set;
 import org.reflections.Reflections;
 
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.mutation.NameGenerator;
-import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 
 /**
  * Registry für Mutator-Instanzen.
@@ -67,7 +65,7 @@ public class MutatorRegistry {
         final Set<Class<? extends MutationGenerator>> mutatorClasses = new Reflections("de").getSubTypesOf(MutationGenerator.class);
         mutatorClasses.forEach(c -> {
             try {
-                final MutationGenerator mutator = c.getDeclaredConstructor(NameGenerator.class).newInstance(new SequenceNameGenerator());
+                final MutationGenerator mutator = c.getDeclaredConstructor().newInstance();
                 map.put(mutator.getName(), mutator);
 
             } catch (final ReflectiveOperationException e) {

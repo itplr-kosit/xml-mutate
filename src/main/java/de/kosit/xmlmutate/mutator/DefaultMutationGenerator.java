@@ -10,7 +10,6 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
@@ -23,11 +22,10 @@ public class DefaultMutationGenerator implements MutationGenerator {
 
     public static final String NAME = DefaultMutationGenerator.class.getSimpleName();
 
-    private final NameGenerator nameGenerator;
 
     @Override
     public List<Mutation> generateMutations(@NonNull final MutationConfig config, @NonNull final MutationContext context) {
-        final Mutation m = new Mutation(context, this.nameGenerator.generateName());
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setConfiguration(config);
         m.setMutator(Services.getRegistry().getMutator(config.getMutatorName()));
         return Collections.singletonList(m);

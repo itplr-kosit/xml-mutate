@@ -41,7 +41,7 @@ public class MutationRunner {
 
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
-        this.parser = new MutationParser(configuration.getNameGenerator());
+        this.parser = new MutationParser();
         this.executorService = executorService;
     }
 
