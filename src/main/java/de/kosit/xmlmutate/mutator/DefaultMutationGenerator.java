@@ -14,7 +14,7 @@ import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
- * Default Generator. Greift immer dann, wenn für den Mutator kein besondere Generator benötigt wird.
+ * Default Generator. Greift immer dann, wenn für den Mutator kein besonderer Generator benötigt wird.
  * 
  * @author Andreas Penski
  */

@@ -17,7 +17,7 @@ public enum ErrorCode implements NamedError {
 
     WRONG_PARENT("There is structural error. Parents are not the same, but this is expected"),
 
-    STRUCTURAL_MISMATCH("Structural mismatch: {0}");
+    STRUCTURAL_MISMATCH("Structural mismatch: {0}"), CONFIGURATION_ERRROR("Configuration error: {0}");
 
     @Getter
     private final String template;

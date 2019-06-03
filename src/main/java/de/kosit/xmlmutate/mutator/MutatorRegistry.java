@@ -71,7 +71,7 @@ public class MutatorRegistry {
                 map.put(mutator.getName(), mutator);
 
             } catch (final ReflectiveOperationException e) {
-                throw new IllegalStateException("Can not initialize mutators, e");
+                throw new IllegalStateException("Can not initialize mutators", e);
             }
         });
         return map;

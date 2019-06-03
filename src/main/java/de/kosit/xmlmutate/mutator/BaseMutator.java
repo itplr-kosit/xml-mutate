@@ -44,8 +44,10 @@ public abstract class BaseMutator implements Mutator {
         return stream(list, new short[] { Node.ELEMENT_NODE });
     }
 
-    protected static Stream<Node> stream(final NodeList list, final short[] types) {
-        return IntStream.range(0, list.getLength()).mapToObj(list::item).filter(n -> ArrayUtils.contains(types, n.getNodeType()));
+    protected static Stream<Node> stream(final NodeList list, final short... types) {
+
+        return IntStream.range(0, list.getLength()).mapToObj(list::item)
+                .filter(n -> types.length == 0 || ArrayUtils.contains(types, n.getNodeType()));
     }
 
     protected static String nodeToString(final Node node) {

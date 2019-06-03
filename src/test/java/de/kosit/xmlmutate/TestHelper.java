@@ -77,7 +77,7 @@ public class TestHelper {
     }
 
     public static Stream<Node> streamElements(final NodeList list) {
-        return stream(list, new short[] { Node.ELEMENT_NODE });
+        return stream(list, Node.ELEMENT_NODE);
     }
 
     public static Stream<Node> stream(final NodeList list, final short... types) {
