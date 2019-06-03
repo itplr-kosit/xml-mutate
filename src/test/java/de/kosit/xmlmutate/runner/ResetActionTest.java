@@ -21,7 +21,7 @@ public class ResetActionTest {
 
     @Test
     public void testSimpleReset() {
-        final Mutation mutation = new Mutation(createContext("mutator=remove"), RandomStringUtils.randomAlphanumeric(5));
+        final Mutation mutation = new Mutation(createContext(), RandomStringUtils.randomAlphanumeric(5));
         final String nodeName = mutation.getContext().getTarget().getNodeName();
         mutation.getContext().getParentElement().replaceChild(mutation.getContext().getDocument().createElement("newElement"),
                 mutation.getContext().getTarget());
@@ -32,7 +32,7 @@ public class ResetActionTest {
 
     @Test
     public void testWrongTargetDocument() {
-        final Mutation mutation = new Mutation(createContext("mutator=remove"), RandomStringUtils.randomAlphanumeric(5));
+        final Mutation mutation = new Mutation(createContext(), RandomStringUtils.randomAlphanumeric(5));
 
         Assertions.assertThrows(MutationException.class, () -> {
             mutation.getContext().setSpecificTarget(
@@ -43,7 +43,7 @@ public class ResetActionTest {
 
     @Test
     public void testOrphanTarget() {
-        final Mutation mutation = new Mutation(createContext("mutator=remove"), RandomStringUtils.randomAlphanumeric(5));
+        final Mutation mutation = new Mutation(createContext(), RandomStringUtils.randomAlphanumeric(5));
 
         Assertions.assertThrows(MutationException.class, () -> {
             final Node target = mutation.getContext().getTarget();

@@ -29,7 +29,7 @@ public class CodeMutator extends BaseMutator {
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
         final Node target = resolveTarget(context, config);
-        if (stream(target.getChildNodes()).count() > 0) {
+        if (streamElements(target.getChildNodes()).count() > 0) {
             throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Found complex content, but was expecting a single text value");
         }
         target.setTextContent(config.getProperties().get(INTERNAL_PROP_VALUE).toString());
