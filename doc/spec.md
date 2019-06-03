@@ -116,7 +116,6 @@ The general data structure of an instruction is a list of `key="value"` configur
 
 ```xml
 <?xmute mutator="randomize-element-order" xpath="."
-        group="1"
         schema-valid schematron-invalid="bt-br-03" ?>
 ```
 
@@ -126,7 +125,7 @@ All item keys are interpreted case-insensitive. Each item value must be surround
 
 One and only one `mutator` key(word) is mandatory where value is the name of the mutator to be applied e.g. `mutator="empty"`.
 
-There might be additonal key=value items configuring the behaviour of the mutator.
+There might be additional `key=value` items configuring the behavior of the mutator.
 
 #### Testing
 
@@ -136,3 +135,40 @@ Each mutation (i.e. mutated document) is validated against XML Schema and Schema
 If no symbolic name (should be but does not need to be equal to namespace prefix) is given then `schema-valid` and `schema-invalid` are expectations about the default outcome of XML Schema validation.
 
 `schematron-valid="bt-1,ubl:bt-1"` and `schematron-invalid="xrech:bt-2 ubl:bt-1"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifier and optional schematron symbolic name.
+
+### Mutate and Testing Reuslt Report
+
+Each run MT-Run (muatate and Test Run) generates a report about the mutations generated and the test results.
+* It should be basically be valid Markdown for copy and paste
+
+
+Per original Document the output stdout looks as follows:
+
+
+xrechnung-bug.xml
+
+3 mutations: 1 expected and 2 unexpected test results
+
+| No  | Line | Exp. | XSD Valid | XSD Exp. | Sch    | Sch Exp | Description        |
+| --- | ---- | ---- | --------- | -------- | ------ | ------- | ------------------ |
+| 1   | 44   | Y    | Y         | Y        | BT1: Y | Y       | Is X correct       |
+| 2   | 46   | Y    | Y         | N        | T4: N  | N       | B should not match |
+| 3   | 48   | N    | N         | Y        | Xf: Y  | Y       | is cool            |
+
+with columns:
+
+* No = Number
+* Line
+* Exp. = Are all expectation matched
+* XSD Valid = Is mutation valid against Schema?
+* XSD Exp = Is result as expected?
+* Sch = Is mutation valid against Schemtron Rule?
+* Sch Exp. = Is Schematron result as Expected?
+* Description = Description of test case
+
+
+Open questions:
+
+* Do we differetiate between mutate only run and report or treat it the same as muatate and test report?
+* How do we report many schematron results per mutation?
+* Can we just have `XSD` as column header, knowing it is about valid or not valid XSD Schema?

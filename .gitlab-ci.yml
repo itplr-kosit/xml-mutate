@@ -1,0 +1,22 @@
+image: maven:3-jdk-8-alpine
+
+variables:
+  MAVEN_CLI_OPTS: " --batch-mode -Dmaven.repo.local=repository -Dfile.encoding=UTF-8"
+
+cache:
+  paths:
+    - repository
+
+build:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS verify
+
+  artifacts:
+    name: mutator
+    paths:
+      - target/*.jar
+    reports:
+      junit:
+        - target/surefire-reports/*.xml
+        - target/failsafe-reports/*.xml
