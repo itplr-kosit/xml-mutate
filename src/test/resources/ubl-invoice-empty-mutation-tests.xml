@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ubl:Invoice
-    xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
     xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 http://docs.oasis-open.org/ubl/os-UBL-2.1/xsd/maindoc/UBL-Invoice-2.1.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 http://docs.oasis-open.org/ubl/os-UBL-2.1/xsd/maindoc/UBL-Invoice-2.1.xsd">
     <cbc:CustomizationID>urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung_1.1</cbc:CustomizationID>
     <cbc:ID>123456XX</cbc:ID>
     <cbc:IssueDate>2016-04-04+01:00</cbc:IssueDate>
@@ -22,13 +22,14 @@
             <cac:PostalAddress>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
                 <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
-                <cbc:CityName></cbc:CityName>
-                <cbc:PostalZone>12345</cbc:PostalZone>
+                <cbc:CityName/>
+                <cbc:PostalZone >12345</cbc:PostalZone>
                 <cac:Country>
                     <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
                     <cbc:IdentificationCode>DE</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
+            
             <cac:PartyTaxScheme>
                 <cbc:CompanyID>DE 123456789</cbc:CompanyID>
                 <cac:TaxScheme>
@@ -89,7 +90,8 @@
         </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
-        <cbc:LineExtensionAmount currencyID="EUR">314.86</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR"
+            >314.86</cbc:LineExtensionAmount>
         <cbc:TaxExclusiveAmount currencyID="EUR">314.86</cbc:TaxExclusiveAmount>
         <cbc:TaxInclusiveAmount currencyID="EUR">336.9</cbc:TaxInclusiveAmount>
         <cbc:PayableAmount currencyID="EUR">336.9</cbc:PayableAmount>
@@ -98,7 +100,8 @@
         <cbc:ID>Zeitschrift [...]</cbc:ID>
         <cbc:Note>Die letzte Lieferung im Rahmen des abgerechneten Abonnements erfolgt in 12/2016 Lieferung erfolgt / erfolgte direkt vom Verlag</cbc:Note>
         <cbc:InvoicedQuantity unitCode="PP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">288.79</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR"
+            >288.79</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2016-01-01+01:00</cbc:StartDate>
             <cbc:EndDate>2016-12-31+01:00</cbc:EndDate>
@@ -130,7 +133,8 @@
     <cac:InvoiceLine>
         <cbc:ID>Porto + Versandkosten</cbc:ID>
         <cbc:InvoicedQuantity unitCode="PP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">26.07</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR"
+            >26.07</cbc:LineExtensionAmount>
         <cac:Item>
             <cbc:Name>Porto + Versandkosten</cbc:Name>
             <cac:ClassifiedTaxCategory>
