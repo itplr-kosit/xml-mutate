@@ -33,8 +33,7 @@ public class CodeFactoryTest {
 
     @Test
     public void testWrongKey() {
-        final List<Code> result = CodeFactory.resolveCodes(TEST_ROOT.resolve("genericode/example2.xml"), "doesNotExist");
-        assertThat(result).isEmpty();
+        assertThrows(MutationException.class, () -> CodeFactory.resolveCodes(TEST_ROOT.resolve("genericode/example2.xml"), "doesNotExist"));
     }
 
     @Test
