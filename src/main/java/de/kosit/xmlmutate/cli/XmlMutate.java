@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.xml.validation.Schema;
+
 import org.fusesource.jansi.AnsiConsole;
 
 import de.kosit.xmlmutate.mutation.Schematron;
@@ -19,6 +21,7 @@ import de.kosit.xmlmutate.runner.MutationRunner;
 import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerConfig.Builder;
+import de.kosit.xmlmutate.runner.Services;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -68,8 +71,16 @@ public class XmlMutate implements Callable<Integer> {
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        return Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron()).build();
+        return Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron())
+                .checkSchema(prepareSchema()).build();
 
+    }
+
+    private Schema prepareSchema() {
+        if (this.schemaLocation != null) {
+            return Services.getSchemaRepository().createSchema(this.schemaLocation.toUri());
+        }
+        return null;
     }
 
     private List<Schematron> prepareSchematron() {

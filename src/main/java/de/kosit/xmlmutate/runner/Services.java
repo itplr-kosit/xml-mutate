@@ -7,6 +7,7 @@ import de.init.kosit.commons.convert.ConversionService;
 import de.init.kosit.commons.schematron.SchematronService;
 import de.init.kosit.commons.transform.ExecutableRepository;
 import de.init.kosit.commons.transform.TransformationService;
+import de.init.kosit.commons.validate.SchemaRepository;
 import de.init.kosit.commons.validate.SchemaValidationService;
 import de.kosit.xmlmutate.mutation.NameGenerator;
 import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
@@ -34,6 +35,8 @@ public class Services {
 
     private static final NameGenerator nameGenerator = new SequenceNameGenerator();
 
+    private static final SchemaRepository schemaRepository;
+
     static {
         xsltRepository = new ExecutableRepository(ObjectFactory.createProcessor());
         conversionService = new ConversionService();
@@ -42,6 +45,7 @@ public class Services {
         transformService = new TransformationService(conversionService, schemaValidatonService, xsltRepository,
                 ObjectFactory.createProcessor());
         schematronService = new SchematronService(xsltRepository, transformService);
+        schemaRepository = new SchemaRepository();
     }
 
     public static SchemaValidationService getSchemaValidatonService() {
@@ -58,5 +62,9 @@ public class Services {
 
     public static NameGenerator getNameGenerator() {
         return nameGenerator;
+    }
+
+    public static SchemaRepository getSchemaRepository() {
+        return schemaRepository;
     }
 }

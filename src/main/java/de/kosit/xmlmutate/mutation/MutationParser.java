@@ -56,6 +56,9 @@ public class MutationParser {
 
         @Override
         public void exitProperty(final PropertyContext ctx) {
+            if (ctx.key() == null || ctx.value() == null) {
+                throw new IllegalArgumentException("Error parsing property: " + ctx.getText());
+            }
             this.config.add(unquote(ctx.key().getText()), unquote(ctx.value().getText()));
         }
 

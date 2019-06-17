@@ -3,30 +3,352 @@ package de.kosit.xmlmutate.report;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fusesource.jansi.AnsiRenderer;
 import org.fusesource.jansi.AnsiRenderer.Code;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.mutation.Expectation;
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 
 /**
+ * A {@link ReportGenerator} that prints results to the console.
+ * 
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
 @Slf4j
 public class TextReportGenerator extends BaseReportGenerator {
+
+    /**
+     * A definition / configuration for a column with a result table.
+     */
+    @Getter
+    private static class ColumnDefinition {
+
+        private static final int MAX_LENGTH = 80;
+
+        private final String name;
+
+        private int length;
+
+        private final int definedLength;
+
+        private final int maxLines;
+
+        /**
+         * Constructor.
+         * 
+         * @param name the name of the column
+         */
+        public ColumnDefinition(final String name) {
+            this(name, -1, 3);
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param name the name of the column
+         * @param length the max length of the column
+         */
+        public ColumnDefinition(final String name, final int length) {
+            this(name, length, 3);
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param name the name of the column
+         * @param length the max length of the column
+         * @param maxLines the max lines per cell
+         */
+        public ColumnDefinition(final String name, final int length, final int maxLines) {
+            this.name = name;
+            this.definedLength = length;
+            this.maxLines = maxLines;
+        }
+
+        /**
+         * Returns the actual max length of the column
+         * 
+         * @return max length
+         */
+        public int getLength() {
+            return this.definedLength > 0 ? this.definedLength : this.length;
+        }
+
+        /**
+         * Sets a calculated length for the column.
+         * 
+         * @param length the length
+         */
+        public void setLength(final int length) {
+            if (this.definedLength < 0 && getLength() < length) {
+                this.length = length;
+            }
+            if (length > MAX_LENGTH) {
+                this.length = MAX_LENGTH;
+            }
+        }
+
+    }
+
+    /**
+     * A grid / table for printing results.
+     */
+    private static class Grid {
+
+        private final List<ColumnDefinition> definitions = new ArrayList<>();
+
+        private final List<Cell> values = new ArrayList<>();
+
+        /**
+         * Constructor.
+         * 
+         * @param def {@link ColumnDefinition}s
+         */
+        public Grid(final ColumnDefinition... def) {
+            Stream.of(def).forEach(this::addColumn);
+        }
+
+        private String generateGridStart() {
+            return IntStream.range(0, getLineLength() + this.definitions.size()).mapToObj(i -> "_").collect(Collectors.joining("")) + "\n";
+        }
+
+        private String generateGridEnd() {
+            return IntStream.range(0, getLineLength() + this.definitions.size()).mapToObj(i -> "_").collect(Collectors.joining("")) + "\n";
+        }
+
+        private String generateHeader() {
+            return "|"
+                    + this.definitions.stream().map(d -> StringUtils.rightPad(d.getName(), d.getLength())).collect(Collectors.joining("|"))
+                    + "|\n";
+        }
+
+        /**
+         * Adds new a column definition.
+         * 
+         * @param def definitions
+         * @return this grid
+         */
+        public Grid addColumn(final ColumnDefinition def) {
+            this.definitions.add(def);
+            return this;
+        }
+
+        private void calculateLength() {
+            IntStream.range(0, this.definitions.size()).forEach(i -> {
+                final ColumnDefinition def = this.definitions.get(i);
+                final List<Cell> column = getColumn(i);
+                final int maxLength = column.stream().mapToInt(cell -> {
+                    return cell.getText().stream().mapToInt(Text::getLength).sum();
+                }).max().orElse(0);
+
+                def.setLength(maxLength < def.getName().length() ? def.getName().length() : maxLength);
+
+            });
+        }
+
+        public List<Cell> getColumn(final int index) {
+
+            return IntStream.range(0, this.values.size()).filter(n -> n % this.definitions.size() == index).mapToObj(this.values::get)
+                    .collect(Collectors.toList());
+        }
+
+        public Grid addCell(final Cell cell) {
+            this.values.add(cell);
+            return this;
+        }
+
+        public Grid addCell(final Text... text) {
+            return addCell(new Cell(Arrays.asList(text)));
+        }
+
+        public Grid addCell(final Object cell, final Code... codes) {
+            final Format f = new Format();
+            f.addCodes(codes);
+            final Text t = new Text(cell, f);
+            return addCell(new Cell(t));
+        }
+
+        public Grid addCell(final Object cell) {
+            return addCell(cell, DEFAULT_FORMAT.textColor);
+        }
+
+        private Collection<List<Cell>> prepareLines() {
+            final AtomicInteger counter = new AtomicInteger();
+            final int chunkSize = this.definitions.size();
+            return this.values.stream().collect(Collectors.groupingBy(it -> counter.getAndIncrement() / chunkSize)).values();
+        }
+
+        public String print() {
+            final StringBuilder b = new StringBuilder();
+            calculateLength();
+            b.append(generateGridStart());
+            b.append(generateHeader());
+            prepareLines().forEach(line -> {
+                b.append(printLine(line));
+            });
+
+            b.append(generateGridEnd());
+            return b.toString();
+        }
+
+        private String printLine(final List<Cell> line) {
+            final StringBuilder b = new StringBuilder();
+            int virtualLine = 0;
+            while (true) {
+                final StringBuilder current = new StringBuilder();
+                final int bound = this.definitions.size();
+                for (int i = 0; i < bound; i++) {
+                    final ColumnDefinition def = this.definitions.get(i);
+                    current.append("|");
+                    current.append(line.get(i).toString(virtualLine, def));
+                }
+                current.append("|");
+                if (isEmpty(current) || virtualLine >= getMaxVirtualLine()) {
+                    break;
+                }
+                b.append(current.toString());
+                virtualLine++;
+                b.append("\n");
+            }
+            return b.toString();
+
+        }
+
+        private boolean isEmpty(final StringBuilder current) {
+            return current.toString().replaceAll("\\|", "").trim().length() == 0;
+        }
+
+        private int getMaxVirtualLine() {
+            return this.definitions.stream().mapToInt(ColumnDefinition::getMaxLines).max().orElseThrow(IllegalAccessError::new);
+        }
+
+        private int getLineLength() {
+            return this.definitions.stream().map(ColumnDefinition::getLength).reduce(0, Integer::sum);
+        }
+
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    private static class Cell {
+
+        private final Format format = DEFAULT_FORMAT;
+
+        private final List<Text> text;
+
+        public Cell(final Text txt) {
+            this.text = new ArrayList<>();
+            this.text.add(txt);
+        }
+
+        public Cell(final Object object, final Code... codes) {
+            this(new Text(object, codes));
+        }
+
+        public String toString(final int row, final ColumnDefinition def) {
+            final StringBuilder b = new StringBuilder();
+            int startSubstring = row * def.getLength();
+            int visibleLength = 0;
+            if (startSubstring >= 0) {
+                for (final Text t : this.text) {
+                    String part = t.getVisibleText(startSubstring, def.getLength() - visibleLength);
+                    if (b.length() + part.length() >= def.getLength() && def.getMaxLines() == row + 1) {
+                        part = dotted(part);
+                    }
+                    visibleLength += part.length();
+                    if (StringUtils.isNotBlank(part)) {
+                        b.append(t.render(part, DEFAULT_FORMAT));
+                        if (visibleLength >= def.getLength()) {
+                            break;
+                        }
+                        startSubstring = 0;
+                    } else {
+                        startSubstring = startSubstring - t.getLength();
+                    }
+                }
+            }
+            final String target = b.toString();
+            return StringUtils.rightPad(target, def.getLength() + (target.length() > 0 ? target.length() - visibleLength : 0));
+        }
+
+        public Cell add(final Object object, final Code... codes) {
+            this.text.add(new Text(object, codes));
+            return this;
+        }
+
+        private String dotted(final String part) {
+            return part.substring(0, part.length() - 3) + "...";
+        }
+
+    }
+
+    @Getter
+    private static class Text {
+
+        private final String text;
+
+        private Format format;
+
+        public Text(final Object text) {
+            this.text = text.toString();
+            this.format = DEFAULT_FORMAT;
+        }
+
+        public Text(final Object text, final Format format) {
+            this(text);
+            this.format = format;
+        }
+
+        public Text(final Object text, final Code... codes) {
+            this(text, new Format().addCodes(codes));
+        }
+
+        private String getVisibleText(final int startIndex, final int length) {
+            if (startIndex > this.text.length()) {
+                return "";
+            }
+            final String substring = this.text.substring(startIndex);
+            return substring.length() > length ? substring.substring(0, length) : substring;
+        }
+
+        private String render(final String text, final Format baseformat) {
+            return AnsiRenderer.render(text,
+                    Arrays.stream(this.format.mergeCodes(baseformat.getCodes())).map(Code::name).toArray(String[]::new));
+        }
+
+        public int getLength() {
+            return this.text.length();
+        }
+
+        public String render(final Format baseFormat) {
+            return render(getText(), baseFormat);
+        }
+    }
 
     private static class Format {
 
@@ -34,96 +356,145 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         private Code background;
 
-        private final int minLength = -1;
-
+        @Getter
         private final Set<Code> codes = new HashSet<>();
 
-        private StringBuilder builder = new StringBuilder();
+        private Code[] mergeCodes(final Collection<Code> newCodes) {
+            return mergeCodes(newCodes.toArray(new Code[newCodes.size()]));
+        }
 
         private Code[] mergeCodes(final Code... newCodes) {
-            final Optional<Code> color = Arrays.stream(newCodes).filter(Code::isColor).findFirst();
-            final Optional<Code> bg = Arrays.stream(newCodes).filter(Code::isBackground).findFirst();
-            final List<Code> attributes = Arrays.stream(newCodes).filter(Code::isBackground).filter(Code::isColor)
+            final Code[] allCodes = ArrayUtils.addAll(ArrayUtils.addAll(this.codes.toArray(new Code[0]), newCodes), this.textColor,
+                    this.background);
+
+            final Optional<Code> color = Arrays.stream(allCodes).filter(Objects::nonNull).filter(Code::isColor).findFirst();
+            final Optional<Code> bg = Arrays.stream(allCodes).filter(Objects::nonNull).filter(Code::isBackground).findFirst();
+            final List<Code> attributes = Arrays.stream(allCodes).filter(Objects::nonNull).filter(Code::isBackground).filter(Code::isColor)
                     .collect(Collectors.toList());
             attributes.add(color.orElse(this.textColor));
             attributes.add(bg.orElse(this.background));
-            return attributes.stream().filter(e -> e != null).toArray(Code[]::new);
+            return attributes.stream().filter(Objects::nonNull).toArray(Code[]::new);
         }
 
+        /**
+         * Sets explicit text color.
+         * 
+         * @param textColor the color.
+         * @return this {@link Format}
+         */
         public Format color(final Code textColor) {
             this.textColor = textColor;
             return this;
         }
 
-        public Format background(final Code bg) {
-            this.background = bg;
+        /**
+         * Sets explicit background color.
+         * 
+         * @param color the color.
+         * @return this {@link Format}
+         */
+        public Format background(final Code color) {
+            this.background = color;
             return this;
         }
 
-        public Format append(final Object data, final Code... codes) {
-            this.builder
-                    .append(AnsiRenderer.render(data.toString(), Arrays.stream(mergeCodes(codes)).map(Code::name).toArray(String[]::new)));
-            return this;
-        }
-
-        public Format append(final Object data, final int minLength) {
-            return append(data, minLength, new Code[0]);
-        }
-
-        public Format append(final Object data, final int minLength, final Code... codes) {
-            append(data, codes);
-            final int fillLength = minLength - data.toString().length();
-            fill(" ", fillLength);
-            return this;
-        }
-
-        private void fill(final String s, final int fillLength) {
-            IntStream.range(0, fillLength).forEach(e -> append(s));
-        }
-
-        public Format append(final Object data) {
-            return append(data, new Code[0]);
-        }
-
-        public void write(final Writer writer) throws IOException {
-            writer.write(toString());
-            this.builder = new StringBuilder();
-        }
-
-        public void writeln(final Writer writer) throws IOException {
-            writer.write(toString() + "\n");
-            this.builder = new StringBuilder();
-        }
-
-        @Override
-        public String toString() {
-            return this.builder.toString();
-        }
-
-        public Format repeat(final String str, final int count) {
-            fill(str, count);
+        /**
+         * Fügt weitere Formatierungscodes hinzu.
+         * 
+         * @param codes die Codes
+         * @return this {@link Format}
+         */
+        public Format addCodes(final Code... codes) {
+            this.codes.addAll(Arrays.asList(codes));
             return this;
         }
     }
+
+    /**
+     * Helper for printing a colored line (with newline at the end) to the console.
+     */
+    @NoArgsConstructor
+    private static class Line {
+
+        private final List<Text> texts = new ArrayList<>();
+
+        private Format baseFormat = DEFAULT_FORMAT;
+
+        /**
+         * Constructor.
+         * 
+         * @param format the configured base format
+         */
+        public Line(final Format format) {
+            this.baseFormat = format;
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param codes Ansi escape codes for formatting
+         */
+        public Line(final Code... codes) {
+            this(new Format().addCodes(codes));
+        }
+
+        /**
+         * Add some text to the line.
+         * 
+         * @param text the text
+         * @return this line
+         */
+        public Line add(final Text text) {
+            this.texts.add(text);
+            return this;
+        }
+
+        public Line add(final Object t) {
+            return add(new Text(t));
+        }
+
+        public Line add(final Object text, final Code... codes) {
+            return add(new Text(text, codes));
+        }
+
+        public String render() {
+            final String blank = AnsiRenderer.render(" ",
+                    Arrays.stream(this.baseFormat.mergeCodes()).map(Code::name).toArray(String[]::new));
+            return this.texts.stream().map(t -> t.render(this.baseFormat)).collect(Collectors.joining(blank)) + "\n";
+
+        }
+
+        public int getLength() {
+            return this.texts.stream().mapToInt(Text::getLength).sum() + this.texts.size();
+        }
+    }
+
+    private static final Format DEFAULT_FORMAT = new Format();
+
+    private static final Cell EMPTY = new Cell(new Text(" "));
 
     private final Writer writer;
-
-    public static Format format() {
-        return new Format();
-    }
 
     @Override
     public void generate(final List<Pair<Path, List<Mutation>>> results) {
         try {
-            final List<Mutation> allMutations = results.stream().flatMap(p -> p.getValue().stream()).collect(Collectors.toList());
-            format().background(Code.BG_MAGENTA).append("Summary: Generated ").append(aggregateValid(allMutations), Code.GREEN)
-                    .append(" " + "mutations" + " " + "and ").append(aggregateInvalid(allMutations), Code.RED)
-                    .append(" invalid mutations from ").writeln(this.writer);
 
             for (final Pair<Path, List<Mutation>> p : results) {
                 generate(p.getKey(), p.getValue());
                 this.writer.write("\n");
             }
+            final List<Mutation> allMutations = results.stream().flatMap(p -> p.getValue().stream()).collect(Collectors.toList());
+            final Line summary = new Line(Code.BOLD).add("Generated").add(allMutations.size(), Code.YELLOW).add("mutations. Passed:")
+                    .add(countSuccessful(allMutations), Code.GREEN).add("Failed:").add(countFailures(allMutations), Code.RED).add("Error:")
+                    .add(countErrors(allMutations), Code.RED);
+
+            final String dashes = StringUtils.rightPad("", summary.getLength(), "-");
+            this.writer.write(dashes + "\n");
+            final boolean sucess = countSuccessful(allMutations) == allMutations.size();
+            this.writer.write(new Line((sucess ? Code.GREEN : Code.RED)).add("Result: " + (sucess ? "SUCCESSFUL" : "FAILURE")).render());
+            this.writer.write(summary.render());
+            this.writer.write(dashes);
+
             this.writer.flush();
         } catch (final IOException e) {
             log.error("Error generating report", e);
@@ -131,32 +502,101 @@ public class TextReportGenerator extends BaseReportGenerator {
     }
 
     private void generate(final Path source, final List<Mutation> mutations) throws IOException {
-        format().background(Code.BG_CYAN).append("Generated ").append(mutations.size()).append(" mutations from ")
-                .append(source.toString(), Code.BLUE).writeln(this.writer);
-        for (final Mutation mutation : mutations) {
-            generateReport(mutation);
-        }
-    }
-
-    private void generateReport(final Mutation mutation) throws IOException {
-
-        final Format format = format();
-        format.append("Line " + mutation.getContext().getLineNumber(), 10).write(this.writer);
-        format.append("|" + mutation.getIdentifier(), 20);
-
-        if (mutation.getState() == State.ERROR) {
-            format.append("|" + mutation.getState(), 7, Code.RED);
-            format.append("|" + mutation.getErrorMessage(), 40);
-        } else if (mutation.isValid()) {
-            format.append("|" + "OK", 7, Code.GREEN);
-            format.append("|" + " ", 40);
+        final Line header = new Line(Code.BG_YELLOW);
+        header.add("Generated").add(mutations.size()).add("mutations from").add(source.toString(), Code.BLUE);
+        this.writer.write(header.render());
+        if (mutations.isEmpty()) {
+            final Line noMutationError = new Line(Code.RED);
+            noMutationError.add("No mutations found within this file");
+            this.writer.write(noMutationError.render());
         } else {
-            format.append("|FAILED", 7, Code.YELLOW);
-            format.append("|" + mutation.getErrorMessage(), 40, Code.YELLOW);
-        }
-        format.append("|").writeln(this.writer);
+            final ColumnDefinition num = new ColumnDefinition("#");
+            final ColumnDefinition identifier = new ColumnDefinition("Mutation", 30);
+            final ColumnDefinition line = new ColumnDefinition("Line");
+            final ColumnDefinition xsdResult = new ColumnDefinition("XSD Validation");
+            final ColumnDefinition schematronResult = new ColumnDefinition("Schematron");
+            final ColumnDefinition result = new ColumnDefinition("Result");
+            final ColumnDefinition description = new ColumnDefinition("Description");
+            final Grid grid = new Grid(num, identifier, line, xsdResult, schematronResult, result, description);
+            IntStream.range(0, mutations.size()).forEach(i -> {
+                grid.addCell(Integer.toString(i + 1));
+                generateReport(grid, mutations.get(i));
+            });
+            this.writer.write(grid.print());
+            final long failureCount = countFailures(mutations);
+            final int errorCount = countErrors(mutations);
+            final Line summary = new Line(failureCount + errorCount == 0 ? Code.GREEN : Code.RED);
+            summary.add("Mutations run:").add(mutations.size()).add("Failures:").add(failureCount).add("Errors:").add(errorCount);
+            this.writer.write(summary.render());
 
+        }
     }
 
+    private void generateReport(final Grid grid, final Mutation mutation) {
+        grid.addCell(mutation.getIdentifier());
+        grid.addCell(mutation.getContext().getLineNumber());
+        grid.addCell(createSchemaCell(mutation));
+        grid.addCell(createSchematronCell(mutation));
+        grid.addCell(createOverallResult(mutation));
+        final Object description = mutation.getConfiguration().getProperties().get("description");
+        if (description != null) {
+            grid.addCell(description);
+        } else {
+            grid.addCell(EMPTY);
+        }
+    }
+
+    private Cell createOverallResult(final Mutation mutation) {
+        final Cell overall;
+        if (mutation.isValid()) {
+            overall = new Cell("OK", Code.GREEN);
+        } else {
+
+            overall = new Cell("FAILED", Code.RED);
+        }
+        if (mutation.getErrorMessage() != null) {
+            overall.add(" " + mutation.getErrorMessage());
+        }
+        return overall;
+    }
+
+    private Cell createSchematronCell(final Mutation mutation) {
+        final Cell cell;
+        final boolean schemaProcessed = mutation.getResult().getSchematronValidation() != ValidationState.UNPROCESSED;
+        if (schemaProcessed) {
+            final boolean success = mutation.getResult().isExpectationCompliant();
+            if (!success) {
+                cell = new Cell("FAILED", Code.RED);
+                final List<Expectation> failed = mutation.getResult().getExpectationResult().entrySet().stream()
+                        .filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey).collect(Collectors.toList());
+
+                failed.stream().map(e -> new Text(e.getRuleName(), Code.RED)).forEach(cell::add);
+            } else {
+                cell = new Cell("OK", Code.GREEN);
+            }
+        } else {
+            cell = new Cell("not checked", Code.YELLOW);
+        }
+        return cell;
+    }
+
+    private Cell createSchemaCell(final Mutation mutation) {
+        final Cell cell;
+        final boolean schemaProcessed = mutation.getResult().getSchemaValidation() != ValidationState.UNPROCESSED;
+        if (schemaProcessed) {
+            final boolean schemaSuccess = mutation.getResult().isSchemaValid() && mutation.getResult().isExpectationCompliant();
+            cell = new Cell(mutation.getResult().getSchemaValidation().getText(), schemaSuccess ? Code.GREEN : Code.RED);
+            if (!schemaSuccess && mutation.getResult().isSchemaValid()) {
+                cell.add("Result should not be schema valid", Code.RED);
+            } else {
+                cell.add(mutation.getResult().getSchemaValidationErrors().stream().map(SyntaxError::getMessage)
+                        .collect(Collectors.joining(";")));
+            }
+
+        } else {
+            cell = new Cell("not checked", Code.YELLOW);
+        }
+        return cell;
+    }
 
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import de.init.kosit.commons.SyntaxError;
@@ -34,10 +35,10 @@ public class MutationResult {
     private Map<Expectation, Boolean> expectationResult = new HashMap<>();
 
     public boolean isValid() {
-        return isSchemaValid() && isSchematronValid();
+        return isSchemaValid() && isExpectationCompliant();
     }
 
-    private boolean isSchemaValid() {
+    public boolean isSchemaValid() {
         return this.schemaValidation == ValidationState.VALID || this.schemaValidation == ValidationState.UNPROCESSED;
     }
 
@@ -68,7 +69,12 @@ public class MutationResult {
                                     .findFirst();
     }
 
+    @Getter
+    @RequiredArgsConstructor
     public enum ValidationState {
-        UNPROCESSED, VALID, INVALID
+
+        UNPROCESSED(""), VALID("OK"), INVALID("FAILED");
+
+        private final String text;
     }
 }

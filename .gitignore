@@ -21,6 +21,7 @@ hs_err_pid*
 .classpath
 .project
 .settings
+.idea
 
 # ignoring vscode settings for now
 .vscode/launch.json
