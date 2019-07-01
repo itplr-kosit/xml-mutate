@@ -59,7 +59,6 @@ public class RunnerConfig {
             return this;
         }
 
-
         public Builder withExecutor(final ExecutorService service) {
             this.config.setExecutorService(service);
             return this;
@@ -69,9 +68,10 @@ public class RunnerConfig {
         public RunnerConfig build() {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
-            this.config.getActions().add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules()));
-            this.config.getActions().add(new CheckAction());
             this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
+            this.config.getActions()
+                    .add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(), config.getTargetFolder()));
+            this.config.getActions().add(new CheckAction());
             this.config.getActions().add(new ResetAction());
             this.config.getActions().add(new RemoveCommentAction());
 

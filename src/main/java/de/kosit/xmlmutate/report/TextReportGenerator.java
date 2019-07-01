@@ -585,7 +585,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean schemaProcessed = mutation.getResult().getSchemaValidation() != ValidationState.UNPROCESSED;
         if (schemaProcessed) {
             final boolean schemaSuccess = mutation.getResult().isSchemaValid() && mutation.getResult().isExpectationCompliant();
-            cell = new Cell(mutation.getResult().getSchemaValidation().getText(), schemaSuccess ? Code.GREEN : Code.RED);
+            cell = new Cell(mutation.getResult().getSchemaValidation().getText() + " ", schemaSuccess ? Code.GREEN : Code.RED);
             if (!schemaSuccess && mutation.getResult().isSchemaValid()) {
                 cell.add("Result should not be schema valid", Code.RED);
             } else {

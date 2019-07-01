@@ -1,16 +1,21 @@
 package de.kosit.xmlmutate.runner;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.xml.validation.Schema;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -31,6 +36,8 @@ public class ValidateAction implements RunAction {
     private final Schema schema;
 
     private final List<Schematron> schematronRules;
+
+    private final Path targetFolder;
 
     @Override
     public void run(final Mutation mutation) {
@@ -53,10 +60,16 @@ public class ValidateAction implements RunAction {
 
     private void schemaValidation(final Mutation mutation) {
         if (this.schema != null) {
-            final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema,
-                    mutation.getContext().getDocument());
-            mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
-            mutation.getResult().setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+            try {
+                final Document document = ObjectFactory.createDocumentBuilder(false)
+                        .parse(targetFolder.resolve(mutation.getResultDocument()).toFile());
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema, document);
+                mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
+                mutation.getResult().setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+            } catch (final SAXException | IOException e) {
+
+                e.printStackTrace();
+            }
         }
 
     }
