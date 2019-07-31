@@ -65,3 +65,10 @@ Configuration:
 * "_codeKey_"_ required for genericode, the name of the code key column to use for values of a genericode code list
 * "_attribute_": optional, the name of the attribute to mutate. If not configured the text content of the target element will be mutated
 
+
+## Alternative Mutator
+Name: "alternative"
+
+Purpose: Iterates through comment children  of the target node and mutually uncomments them.
+
+Configuration: none 

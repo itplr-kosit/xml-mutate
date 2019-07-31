@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.runner;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -124,19 +125,33 @@ public class DocumentParser {
      * @return das eingelesene Dokument
      */
     public static Document readDocument(final Path path) {
-        final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
+
         try ( final InputStream input = Files.newInputStream(path) ) {
-            final Document d = builder.newDocument();
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
-            final SAXParser saxParser = factory.newSAXParser();
-            final PositionalHandler handler = new PositionalHandler(d);
-            final XMLReader xmlReader = saxParser.getXMLReader();
-            xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
-            saxParser.parse(input, handler);
-            return d;
+            return readDocument(input);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", path, e);
             throw new IllegalArgumentException("Can not open Document " + path, e);
+        }
+    }
+
+    private static Document readDocument(final InputStream input) throws ParserConfigurationException, SAXException, IOException {
+        final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
+        final Document d = builder.newDocument();
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
+        final SAXParser saxParser = factory.newSAXParser();
+        final PositionalHandler handler = new PositionalHandler(d);
+        final XMLReader xmlReader = saxParser.getXMLReader();
+        xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+        saxParser.parse(input, handler);
+        return d;
+    }
+
+    public static Document readDocument(final String xml) {
+        try ( final InputStream input = new ByteArrayInputStream(xml.getBytes()) ) {
+            return readDocument(input);
+        } catch (final SAXException | IOException | ParserConfigurationException e) {
+            log.error("Error opening document {}", xml, e);
+            throw new IllegalArgumentException("Can not open Document from " + xml, e);
         }
     }
 

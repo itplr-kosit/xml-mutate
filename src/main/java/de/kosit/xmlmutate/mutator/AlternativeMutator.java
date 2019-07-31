@@ -1,0 +1,54 @@
+package de.kosit.xmlmutate.mutator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.DocumentParser;
+
+/**
+ * @author Andreas Penski
+ */
+public class AlternativeMutator extends BaseMutator implements MutationGenerator {
+
+    static final String ALT_KEY = AlternativeMutator.class.getSimpleName() + "_" + "index";
+
+    @Override
+    public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
+        final List<Mutation> l = new ArrayList<>();
+        final long count = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).count();
+        IntStream.range(0, (int) count).forEach(c -> {
+            final MutationConfig newConfig = config.cloneConfig().add(ALT_KEY, c);
+            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c));
+            m.setConfiguration(newConfig);
+            l.add(m);
+
+        });
+        return l;
+    }
+
+    @Override
+    public String getName() {
+        return "alternative";
+    }
+
+    @Override
+    public void mutate(final MutationContext context, final MutationConfig config) {
+        final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).collect(Collectors.toList());
+        final Node commentToUncomment = comments.get(Integer.parseInt(config.getProperty(ALT_KEY)));
+        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
+        stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
+            final Node newNode = context.getDocument().importNode(node, true);
+            context.getTarget().appendChild(newNode);
+        });
+
+    }
+}
