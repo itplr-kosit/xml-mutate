@@ -15,7 +15,7 @@ import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Dieser Mutator entfernt das Ziel-Element aus aus dem Dokument bzw. ersetz es durch einen Kommentar. Weiterhin kann
+ * Dieser Mutator entfernt das Ziel-Element aus  dem Dokument bzw. ersetz es durch einen Kommentar. Weiterhin kann
  * der Mutator auch Attribute entfernen.
  * 
  * @author Andreas Penski

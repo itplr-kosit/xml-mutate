@@ -14,6 +14,8 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.DocumentParser;
 
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 /**
  * @author Andreas Penski
  */
@@ -43,12 +45,20 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
         final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).collect(Collectors.toList());
-        final Node commentToUncomment = comments.get(Integer.parseInt(config.getProperty(ALT_KEY)));
+        if (config.getProperties().get(ALT_KEY) == null || !isNumeric(config.getProperty(ALT_KEY))){
+            throw new IllegalArgumentException("No comment index configured");
+        }
+        int index = Integer.parseInt(config.getProperty(ALT_KEY));
+        if (index >=comments.size() || index < 0) {
+            throw new IllegalArgumentException("No comment for index " + index);
+        }
+        final Node commentToUncomment = comments.get(index);
         final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
         stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
             final Node newNode = context.getDocument().importNode(node, true);
-            context.getTarget().appendChild(newNode);
+            context.getTarget().insertBefore(newNode, commentToUncomment);
         });
+        context.getTarget().removeChild(commentToUncomment);
 
     }
 }

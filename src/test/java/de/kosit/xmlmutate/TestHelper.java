@@ -44,7 +44,7 @@ public class TestHelper {
     }
 
     public static MutationContext createContext(final Consumer<Element> consumer) {
-        return createContext("mutator=remove", consumer);
+        return createContext("mutator=egal", consumer);
     }
 
     public static MutationContext createContext(final String piString) {
