@@ -12,7 +12,7 @@ import org.w3c.dom.Comment;
 import de.kosit.xmlmutate.TestHelper;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import sun.plugin.dom.core.Node;
+import org.w3c.dom.Node;
 
 /**
  * Tests for {@liink AlternativeMutator}.
