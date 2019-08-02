@@ -72,3 +72,8 @@ Name: "alternative"
 Purpose: Iterates through comment children  of the target node and mutually uncomments them.
 
 Configuration: none 
+
+## Noop-Mutator
+Name: "noop"
+
+Purpose: Test the original document validity
