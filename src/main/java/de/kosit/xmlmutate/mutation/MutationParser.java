@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import de.kosit.xmlmutate.mutation.Expectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
@@ -84,7 +85,11 @@ public class MutationParser {
             final int colonPos = value.indexOf(COLON);
             final String ruleName = colonPos > 0 ? value.substring(colonPos + 1) : value;
             final String sourceName = colonPos > 0 ? value.substring(0, colonPos) : Schematron.DEFAULT_NAME;
-            this.config.addExpectation(new Expectation(sourceName, ruleName, ctx.assertion().getText().equals("valid")));
+            this.config.addExpectation(new Expectation(sourceName, ruleName, evaluateExpectedResult(ctx)));
+        }
+
+        private ExpectedResult evaluateExpectedResult(final SchematronKeywordContext ctx) {
+            return ctx.assertion().getText().equals("valid") ? ExpectedResult.PASS : ExpectedResult.FAIL;
         }
 
         @Override

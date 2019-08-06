@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 
+import de.kosit.xmlmutate.mutation.Expectation.ExpectedResult;
+
 /**
  * Testet das {@link MutationConfig}-Objekt.
  * 
@@ -40,7 +42,7 @@ public class MutationConfigTest {
     public void testClone() {
         final MutationConfig c = new MutationConfig();
         c.add("prop", "property");
-        c.addExpectation(new Expectation("test", "test", false));
+        c.addExpectation(new Expectation("test", "test", ExpectedResult.FAIL));
         final MutationConfig clone = c.cloneConfig();
         assertThat(clone == c).isFalse();
         assertThat(clone.getProperties()).hasSize(1);

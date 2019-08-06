@@ -32,7 +32,7 @@ public class Expectation {
     /**
      * 
      */
-    private final boolean expectedResult;
+    private final ExpectedResult expectedResult;
 
     /**
      * An expectation on a subject e.g. name of a Schematron result, or XML Schema
@@ -49,10 +49,17 @@ public class Expectation {
     };
 
     /**
-     * Is the expectation true or false?
+     * Is expected to fail?
      */
     public boolean mustFail() {
-        return this.expectedResult;
+        return ExpectedResult.FAIL.equals(this.expectedResult);
+    }
+
+    /**
+     * Is the expected to pass?
+     */
+    public boolean mustPass() {
+        return ExpectedResult.PASS.equals(this.expectedResult);
     }
 
     public boolean evaluate(final MutationResult result) {
@@ -67,11 +74,14 @@ public class Expectation {
         // TODO prüfen ob das auch bei keinem Schematron match stimmt
         final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts).flatMap(List::stream)
                 .filter(f -> f.getId().equals(ruleName())).findAny();
-        return (failed.isPresent() && mustFail()) || (!failed.isPresent() && !mustFail());
+        return (failed.isPresent() && mustFail()) || (!failed.isPresent() && mustPass());
     }
 
     public String evaluateMessage(final MutationResult result) {
         return null;
     }
 
+    public enum ExpectedResult {
+        FAIL, PASS
+    }
 }

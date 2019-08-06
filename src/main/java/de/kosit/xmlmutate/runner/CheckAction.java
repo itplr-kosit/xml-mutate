@@ -16,7 +16,7 @@ public class CheckAction implements RunAction {
             final boolean valid = e.evaluate(mutation.getResult());
             mutation.getResult().getExpectationResult().put(e, valid);
             if (!valid) {
-                mutation.setErrorMessage("failed expectation assert");
+                mutation.setErrorMessage("Failed expectation assert for " + e.getRuleName());
             }
         });
         mutation.setState(State.CHECKED);

@@ -562,15 +562,15 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private Cell createSchematronCell(final Mutation mutation) {
         final Cell cell;
-        final boolean schemaProcessed = mutation.getResult().getSchematronValidation() != ValidationState.UNPROCESSED;
-        if (schemaProcessed) {
+        final boolean schematronProcessed = mutation.getResult().getSchematronValidation() != ValidationState.UNPROCESSED;
+        if (schematronProcessed) {
             final boolean success = mutation.getResult().isExpectationCompliant();
             if (!success) {
-                cell = new Cell("FAILED", Code.RED);
+                cell = new Cell("FAILED ", Code.RED);
                 final List<Expectation> failed = mutation.getResult().getExpectationResult().entrySet().stream()
                         .filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey).collect(Collectors.toList());
 
-                failed.stream().map(e -> new Text(e.getRuleName(), Code.RED)).forEach(cell::add);
+                failed.forEach(e -> cell.add(e.getRuleName(), Code.RED));
             } else {
                 cell = new Cell("OK", Code.GREEN);
             }
@@ -584,7 +584,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final Cell cell;
         final boolean schemaProcessed = mutation.getResult().getSchemaValidation() != ValidationState.UNPROCESSED;
         if (schemaProcessed) {
-            final boolean schemaSuccess = mutation.getResult().isSchemaValid() && mutation.getResult().isExpectationCompliant();
+            final boolean schemaSuccess = mutation.getResult().isSchemaValid() && mutation.getResult().isSchemaValid();
             cell = new Cell(mutation.getResult().getSchemaValidation().getText() + " ", schemaSuccess ? Code.GREEN : Code.RED);
             if (!schemaSuccess && mutation.getResult().isSchemaValid()) {
                 cell.add("Result should not be schema valid", Code.RED);
