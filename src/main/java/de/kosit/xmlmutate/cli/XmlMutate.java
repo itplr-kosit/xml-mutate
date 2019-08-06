@@ -24,35 +24,59 @@ import de.kosit.xmlmutate.runner.RunnerConfig.Builder;
 import de.kosit.xmlmutate.runner.Services;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
- * Basis Klasse für den Kommandozeilenaufruf.
- * 
+ * Base class for command line interface.
+ *
  * @author Andreas Penski
+ * @author Renzo Kottmann
  */
+
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
 public class XmlMutate implements Callable<Integer> {
 
-    @Option(names = { "-t", "--target" }, paramLabel = "FOLDER", description = "The target folder, where artefakts are generated.",
-            defaultValue = "target")
+    // @Option(names = { "-V", "--version" }, versionHelp = true, description =
+    // "display version info")
+    // boolean versionInfoRequested;
+
+    // @Option(names = { "?", "-h", "--help" }, usageHelp = true, description =
+    // "display this help message")
+    // boolean usageHelpRequested;
+
+    @Option(names = { "-t",
+            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-x", "--schema" }, paramLabel = "*.xsd", description = "The schema, that should be checked.")
+    @Option(names = { "-x", "--schema",
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
     private Path schemaLocation;
 
-    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "The target folder, where artefakts are generated.")
+    @Option(names = { "-s",
+            "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
     private Map<String, Path> schematrons;
 
-    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = { "-m",
+            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
     public static void main(final String[] args) {
-        final int i = CommandLine.call(new XmlMutate(), args);
         AnsiConsole.systemInstall();
+        int i = -1;
+        try {
+            i = new CommandLine(new XmlMutate()).execute(args);
+        } catch (Exception e) {
+            System.err.print(e.getMessage());
+            System.err.println("Exit with code=" + i);
+
+        }
+        // make sure to have a new line at the end of processing
+        System.out.println("\n");
         System.exit(i);
     }
 
@@ -62,6 +86,7 @@ public class XmlMutate implements Callable<Integer> {
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
         runner.run();
         executor.shutdown();
+
         return 0;
     }
 
@@ -84,33 +109,36 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Schematron> prepareSchematron() {
-        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri())).collect(Collectors.toList());
+        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri()))
+                .collect(Collectors.toList());
 
     }
 
     private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).collect(Collectors.toList());
+        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable)
+                .collect(Collectors.toList());
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
             throw new IllegalArgumentException(
                     MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
 
-        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml"))
-                .collect(Collectors.toList());
+        return available.stream().flatMap(this::expandDirectories)
+                .filter(e -> e.getFileName().toString().endsWith(".xml")).collect(Collectors.toList());
     }
 
     private Stream<Path> expandDirectories(final Path path) {
         try {
             if (!Files.exists(path)) {
-                throw new IllegalArgumentException("Document does not exist: " + path.toAbsolutePath().toString());
+                throw new IllegalArgumentException(
+                        "Document or directory does not exist: " + path.toAbsolutePath().toString());
             }
             if (Files.isDirectory(path)) {
                 return Files.walk(path);
             }
             return Stream.of(path);
         } catch (final IOException e) {
-            throw new IllegalArgumentException("Error looking for documents", e);
+            throw new IllegalArgumentException("Error looking for input documents", e);
         }
     }
 }

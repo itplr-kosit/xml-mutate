@@ -13,18 +13,20 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- Own properties -->
-        <log4j.version>2.11.0</log4j.version>
+        <log4j.version>2.12.0</log4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <saxon-he.version>9.8.0-11</saxon-he.version>
         <antlr.version>4.5.1-1</antlr.version>
+        <picocli.version>4.0.1</picocli.version>
         <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
             the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
         <mvn.surefire.version>2.19.1</mvn.surefire.version>
         <mvn.surefire.junit.platform.provider>1.1.0</mvn.surefire.junit.platform.provider>
-        
+
         <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
-    
+
     <repositories>
         <repository>
             <id>project.local</id>
@@ -32,18 +34,37 @@
             <url>file:${project.basedir}/libs</url>
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <!-- <scope>test</scope> -->
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -92,22 +113,11 @@
             <artifactId>jansi</artifactId>
             <version>1.18</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>3.9.6</version>
+            <version>${picocli.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -150,13 +160,13 @@
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${mvn.surefire.version}</version>
                 <dependencies>
-                    
+
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
@@ -186,7 +196,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            
+
                             <mainClass>de.kosit.xmlmutate.cli.XmlMutate</mainClass>
                         </manifest>
                     </archive>
@@ -197,7 +207,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    
+
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
@@ -208,7 +218,7 @@
                             </excludes>
                         </filter>
                     </filters>
-                    
+
                 </configuration>
                 <executions>
                     <execution>
@@ -218,7 +228,7 @@
                         </goals>
                     </execution>
                 </executions>
-                
+
             </plugin>
         </plugins>
     </build>
