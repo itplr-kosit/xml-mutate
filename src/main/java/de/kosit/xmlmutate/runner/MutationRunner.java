@@ -57,7 +57,7 @@ public class MutationRunner {
             return pairFuture.get();
         } catch (final InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Error awaiting result", e);
+            throw new IllegalStateException(e.getCause().getMessage(), e);
         }
     }
 
