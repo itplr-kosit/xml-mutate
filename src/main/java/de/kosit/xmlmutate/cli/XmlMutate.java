@@ -29,6 +29,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParseResult;
 
 /**
  * Base class for command line interface.
@@ -63,11 +64,7 @@ public class XmlMutate implements Callable<Integer> {
         int i = -1;
         try {
             final CommandLine commandLine = new CommandLine(new XmlMutate());
-            commandLine.setExecutionExceptionHandler((ex, commandLine1, parseResult) -> {
-                System.err.println(ex.getMessage());
-                log.error(ex.getMessage(), ex);
-                return 1;
-            });
+            commandLine.setExecutionExceptionHandler(XmlMutate::logExecutionException);
             i = commandLine.execute(args);
         } catch (final Exception e) {
             System.err.print(e.getMessage());
@@ -137,5 +134,11 @@ public class XmlMutate implements Callable<Integer> {
         } catch (final IOException e) {
             throw new IllegalArgumentException("Error looking for input documents", e);
         }
+    }
+
+    private static int logExecutionException(final Exception ex, final CommandLine commandLine1, final ParseResult parseResult) {
+        System.err.println(ex.getMessage());
+        log.error(ex.getMessage(), ex);
+        return 1;
     }
 }
