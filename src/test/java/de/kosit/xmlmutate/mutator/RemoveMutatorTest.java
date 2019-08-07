@@ -2,14 +2,13 @@ package de.kosit.xmlmutate.mutator;
 
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.TestHelper.createRootContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
@@ -36,16 +35,6 @@ public class RemoveMutatorTest {
     public void testUnexisting() {
         final MutationContext context = createContext();
         context.getParentElement().removeChild(context.getTarget());
-        assertThrows(MutationException.class, () -> {
-            this.mutator.mutate(context, createConfig());
-        });
-    }
-
-    @Test
-    public void testRemoveWrongElement() {
-        final MutationContext context = createContext();
-        final Element wrongElement = ObjectFactory.createDocumentBuilder(false).newDocument().createElement("someOtherElement");
-        context.setSpecificTarget(wrongElement);
         assertThrows(MutationException.class, () -> {
             this.mutator.mutate(context, createConfig());
         });
@@ -99,6 +88,14 @@ public class RemoveMutatorTest {
         assertThrows(MutationException.class, () -> {
             final MutationConfig config = createConfig().add("attribute", "doesNotExist");
             this.mutator.mutate(context, config);
+        });
+    }
+
+    @Test
+    public void testRemoveRoot() {
+        final MutationContext context = createRootContext();
+        assertThrows(MutationException.class, () -> {
+            this.mutator.mutate(context, createConfig());
         });
     }
 

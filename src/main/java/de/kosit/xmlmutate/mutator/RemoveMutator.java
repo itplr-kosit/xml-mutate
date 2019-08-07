@@ -30,7 +30,7 @@ public class RemoveMutator extends BaseMutator {
 
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
-        if (context.getTarget() == null || !context.getParentElement().isSameNode(context.getTarget().getParentNode())) {
+        if (context.getTarget() == null) {
             throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "No target found to remove");
         }
         final List<Object> atts = config.resolveList("attribute");
