@@ -26,6 +26,8 @@ import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
+ * Some helper function for testing.
+ * 
  * @author Andreas Penski
  */
 public class TestHelper {
@@ -39,19 +41,43 @@ public class TestHelper {
     private static final Consumer<Element> NOOP = whatever -> {
     };
 
+    /**
+     * Creates a simple mutation context for testing
+     * 
+     * @return the context
+     */
     public static MutationContext createContext() {
         return createContext(NOOP);
     }
 
+    /**
+     * Creates a simple mutation context for testing
+     *
+     * @param consumer a consumer for manipulating the target element
+     * @return the context
+     */
     public static MutationContext createContext(final Consumer<Element> consumer) {
-        return createContext("mutator=egal", consumer);
+        return createContext("mutator=noop", consumer);
     }
 
+    /**
+     * Creates a simple mutation context for testing
+     *
+     * @param piString a configuration for the PI
+     * @return the context
+     */
     public static MutationContext createContext(final String piString) {
         return createContext(piString, d -> {
         });
     }
 
+    /**
+     * Creates a simple mutation context for testing
+     *
+     * @param piString a configuration for the PI
+     * @param consumer a consumer for manipulating the target element
+     * @return the context
+     */
     public static MutationContext createContext(final String piString, final Consumer<Element> consumer) {
         final Document doc = de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument();
         final Element root = doc.createElement("root");
@@ -64,10 +90,56 @@ public class TestHelper {
         return new MutationContext(pi, "test");
     }
 
+    /**
+     * Creates a context with PI on root node.
+     * 
+     * @return the context
+     */
+    public static MutationContext createRootContext() {
+        return createRootContext("mutator=noop", NOOP);
+    }
+
+    /**
+     * Creates a context with PI on root node.
+     * 
+     * @param piString the pi string
+     * @return the context
+     */
+    public static MutationContext createRootContext(final String piString) {
+        return createRootContext(piString, NOOP);
+    }
+
+    /**
+     * Creates a context with PI on root node.
+     * 
+     * @param piString the pi string
+     * @param consumer consumer for manipulating the target node
+     * @return the context
+     */
+    public static MutationContext createRootContext(final String piString, final Consumer<Element> consumer) {
+        final Document doc = de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument();
+        final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", piString);
+        doc.appendChild(pi);
+        final Element root = doc.createElement("root");
+        doc.appendChild(root);
+        consumer.accept(root);
+        return new MutationContext(pi, "test");
+    }
+
+    /**
+     * Create an empty {@link MutationConfig}.
+     * 
+     * @return the config
+     */
     public static MutationConfig createConfig() {
         return new MutationConfig();
     }
 
+    /**
+     * Create a {@link MutationConfig} with some initial properties.
+     * 
+     * @return the config
+     */
     public static MutationConfig createConfig(final Map<String, Object> properties) {
         final MutationConfig config = createConfig();
         config.setProperties(properties);

@@ -25,8 +25,12 @@ class MarkMutationAction {
             final Comment comment = mutation.getContext().getDocument()
                     .createComment(MessageFormat.format("This is the active mutation configuration: {0} ", mutation.getIdentifier()));
             final Text textNode = mutation.getContext().getDocument().createTextNode("\n");
-            mutation.getContext().getParentElement().insertBefore(comment, mutation.getContext().getPi());
-            mutation.getContext().getParentElement().insertBefore(textNode, mutation.getContext().getPi());
+            if (mutation.getContext().getParentElement() != null) {
+                mutation.getContext().getParentElement().insertBefore(comment, mutation.getContext().getPi());
+                mutation.getContext().getParentElement().insertBefore(textNode, mutation.getContext().getPi());
+            } else {
+                mutation.getContext().getDocument().insertBefore(comment, mutation.getContext().getPi());
+            }
         }
 
     }
@@ -38,10 +42,15 @@ class MarkMutationAction {
 
             final Element parent = mutation.getContext().getParentElement();
             final ProcessingInstruction pi = mutation.getContext().getPi();
-            final Node lf = pi.getPreviousSibling();
-            parent.removeChild(lf);
-            final Node comment = pi.getPreviousSibling();
-            parent.removeChild(comment);
+            if (parent != null) {
+                final Node lf = pi.getPreviousSibling();
+                parent.removeChild(lf);
+                final Node comment = pi.getPreviousSibling();
+                parent.removeChild(comment);
+            } else {
+                // must be root node
+                mutation.getContext().getDocument().removeChild(pi.getPreviousSibling());
+            }
 
         }
     }

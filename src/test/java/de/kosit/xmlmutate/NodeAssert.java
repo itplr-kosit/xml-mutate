@@ -150,4 +150,20 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         }
         return this;
     }
+
+    public NodeAssert isSameNode(final Node other) {
+        isNotNull();
+        if (!this.actual.isSameNode(other)) {
+            failWithMessage("Node %s is not the same node as %s ", this.actual.getNodeName(), other.getNodeName());
+        }
+        return this;
+    }
+
+    public NodeAssert isNotSameNode(final Node other) {
+        isNotNull();
+        if (this.actual.isSameNode(other)) {
+            failWithMessage("Node %s is the same node as %s but should not ", this.actual.getNodeName(), other.getNodeName());
+        }
+        return this;
+    }
 }

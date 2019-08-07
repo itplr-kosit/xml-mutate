@@ -15,8 +15,8 @@ import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Dieser Mutator entfernt das Ziel-Element aus  dem Dokument bzw. ersetz es durch einen Kommentar. Weiterhin kann
- * der Mutator auch Attribute entfernen.
+ * Dieser Mutator entfernt das Ziel-Element aus dem Dokument bzw. ersetz es durch einen Kommentar. Weiterhin kann der
+ * Mutator auch Attribute entfernen.
  * 
  * @author Andreas Penski
  */
@@ -55,6 +55,9 @@ public class RemoveMutator extends BaseMutator {
     }
 
     private void removeElement(final MutationContext context) {
+        if (context.getTarget().isSameNode(context.getDocument().getDocumentElement())) {
+            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Can not remove root element");
+        }
         final Document doc = context.getDocument();
         final Comment remark = wrap(doc.createComment("Removed node "), context.getTarget());
         log.debug("Parent of context is=" + context.getParentElement());
