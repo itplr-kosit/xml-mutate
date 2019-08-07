@@ -101,13 +101,13 @@ Per default a mutator gets executed on the next element sibling, otherwise xpath
 
 Mutates like in Mutation mode and also tests each generated instance against XML Schema and Schematron.
 
-### Application User Interface
+## Application User Interface
 
 Command line interface
 
 * following GNU best practices and conventions
 
-### XMute Instructions
+## XMute Instructions
 
 Only XML processing instructions with name `xmute` are processed.
 
@@ -120,13 +120,13 @@ The general data structure of an instruction is a list of `key="value"` configur
 
 All item keys are interpreted case-insensitive. Each item value must be surrounded by quotes `"`. Sometimes `value` is optional.
 
-#### Mutations
+### Mutations
 
 One and only one `mutator` key(word) is mandatory where value is the name of the mutator to be applied e.g. `mutator="empty"`.
 
 There might be additional `key=value` items configuring the behavior of the mutator.
 
-#### Test Expectations
+### Test Expectations
 
 Each mutation (i.e. mutated document) is validated against XML Schema and Schematron rules if run in default mutate and test mode and the validation outcome is checked if it meets the declared expectations.
 
@@ -137,7 +137,7 @@ Therefore depending on the validation outcome and declaration of expectation the
 | valid               | +     | -       |
 | invalid             | -     | +       |
 
-##### XML Schema Expectations
+#### XML Schema Expectations
 
 `schema-valid` and `schema-invalid` items declare expectations about the outcome of an XML Schema validation on a mutation i.e. after a mutation was generated.
 
@@ -169,11 +169,13 @@ We want to test that an XML Schema correctly requires an element to be always pr
 <element>with content</element>
 ```
 
-##### Schematron Expectations
+#### Schematron Expectations
 
 `schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifiers and an optional schematron symbolic name.
 
 Let's assume we have a Schematron rule `rule-1` if an element is present it has to have content (independent of the above question if the element is optional or required by the XML Schema). We can declare another test case based on the previous example in the same document as follows:
+
+Simple Example
 
 ```xml
 <?xmute mutator="remove" schema-invalid ?>
@@ -189,7 +191,25 @@ The `empty` mutator will generate a document similar to this one:
 
 It will be Schema valid but if the Schematron `rule-1` correctly fires e.g. a fatal then it meets the expectation.
 
-### Mutate and Testing Result Report
+Complex Example:
+
+We can define more than one rule to be checked per mutation:
+
+```xml
+<?xmute mutator="empty" schema-valid schematron-invalid="rule-1, rule-2, rule-3" ?>
+<element>with content</element>
+```
+
+We can also give symbolic names to schematron rules in case we need to test with several schematron files:
+
+```xml
+<?xmute mutator="empty" schema-valid schematron-invalid="ubl:rule-1, ubl:rule-2, xr:rule-1, xr:rule-2" ?>
+<element>with content</element>
+```
+
+Here, there are two rules from Schematron with symbolic name `ubl` and two more rules from `xr`. These symbolic names have to be defined as input to the xml-mutator.
+
+## Mutate and Testing Result Report
 
 Each MT-Run (Mutate and Test Run) generates a report about the mutations generated and the test results.
 
