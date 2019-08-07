@@ -37,7 +37,7 @@ These can look like this for example:
     <cbc:TaxCurrencyCode>EUR</cbc:TaxCurrencyCode>
     <cbc:BuyerReference>04011000-12345-34</cbc:BuyerReference>
     <!-- Generate a new instances with next element removed-->
-    <?xmute mutator="remove-element" group="1" description="dieses soll x testen" recursive="yes" if="" ?>
+    <?xmute mutator="remove-element" group="1" description="dieses soll x testen" ?>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
@@ -127,14 +127,61 @@ One and only one `mutator` key(word) is mandatory where value is the name of the
 
 There might be additional `key=value` items configuring the behavior of the mutator.
 
-#### Testing
+#### Test Expectations
 
-Each mutation (i.e. mutated document) is validated against XML Schema and Schematron if run in default mutate and test mode.
+Each mutation (i.e. mutated document) is validated against XML Schema and Schematron rules if run in default mutate and test mode and the validation outcome is checked if it meets the declared expectations.
 
-`schema-valid` and `schema-invalid` items declare expectations about the outcome of an XML Schema validation.
-If no symbolic name (should be but does not need to be equal to namespace prefix) is given then `schema-valid` and `schema-invalid` are expectations about the default outcome of XML Schema validation.
+Therefore depending on the validation outcome and declaration of expectation the following results are possible:
 
-`schematron-valid="bt-1,ubl:bt-1"` and `schematron-invalid="xrech:bt-2 ubl:bt-1"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifier and optional schematron symbolic name.
+| Outcome/Expectation | valid | invalid |
+| ------------------- | ----- | ------- |
+| valid               | +     | -       |
+| invalid             | -     | +       |
+
+##### XML Schema Expectations
+
+`schema-valid` and `schema-invalid` items declare expectations about the outcome of an XML Schema validation on a mutation i.e. after a mutation was generated.
+
+This allows to generate various tests about what an XML Schema should achieve.
+
+Example 1:
+
+We want to test that an XML Schema correctly allows an element to be optional. Hence we create a schema valid document with the optional element:
+
+```xml
+<element>with content<element>
+```
+
+We then can create a test case by removing the element and declare our expectation that the mutation still has to be schema valid:
+
+```xml
+<?xmute mutator="remove" schema-valid ?>
+<element>with content<element>
+```
+
+In case the XML Schema is correct the outcome will be valid and it will meet the expectation. Hence the test result will be positive, otherwise negative.
+
+Example 2:
+
+We want to test that an XML Schema correctly requires an element to be always present, we only need to change our expectation:
+
+```xml
+<?xmute mutator="remove" schema-invalid ?>
+<element>with content<element>
+```
+
+##### Schematron Expectations
+
+
+`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifiers and optional schematron symbolic name.
+
+Let's assume we have a Schematron rule `rule-1` that if an element is present it has to have content (independent of the above question if the element is option or required by the XML Schema). We can declare another test case based on the previous example in the same document as follows:
+
+```xml
+<?xmute mutator="remove" schema-invalid ?>
+<?xmute mutator="empty" schema-valid schematron-invalid?>
+<element>with content<element>
+```
 
 ### Mutate and Testing Reuslt Report
 
