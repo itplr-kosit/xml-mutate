@@ -1,6 +1,6 @@
 # XML-MutaTe
 
-A declarative **XML** instance **Muta**ting and **Te**sting tool.
+A declarative **XML** instance **Muta**ting and **Te**st management tool.
 
 ## Motivation/Background
 
@@ -9,9 +9,9 @@ The generated content is most often not meaningful and does not reflect business
 However, not only during the development of XML Schema definition languages it is often very important to additionally test schema definitions against invalid instances. Only then one can make sure that certain constraints/rules
 
 * correctly exclude unwanted content and do not include content as **False Positives**,
-* correctly inlcude all valid content and do not exclude **False Negatives**
+* correctly include all valid content and do not exclude **False Negatives**
 
-However, the maintainance of a large number of meaningful test instances often becomes cumbersome for several reasons:
+However, the maintenance of a large number of meaningful test instances often becomes cumbersome for several reasons:
 
 * One needs to manage large number of XML instances for testing
 * One needs to define new schemas or one requires invasive changes to existing schemas to annotate the XML test instances with assertions about test cases
@@ -74,22 +74,21 @@ This way many kinds of mutations can be defined and combined with assertions abo
 
 Externalisieren von mutator "content" (da womit ein  mutator arbeiten soll) in externe files a la yaml etc
 
-
 [Documentation of available Mutators](../doc/mutator.md).
 
 ## Features
 
 * Generate persisted mutations i.e. files of mutations
 * Check valid mutator declarations
-* mutators can be written in XSLT
+* Mutators can be written in XSLT
 
-## Architecture/Design
+## Run Modes
 
-There are three app runtime modes:
+There are four app runtime modes:
 
 1. Generate mutations mode (the default): Generate mutations only
-2. Test and generate mutations mode: Generate mutations and test the resulting instances
-3. Check mode: Check that xmute instructions are syntactically correct and exectuable
+2. Generate mutations and test expectations mode: Generate mutations and test the resulting instances if they meet expectations
+3. Check mode: Check that xmute instructions are syntactically correct and executable
 
 ### Mutation mode
 
@@ -149,14 +148,14 @@ Example 1:
 We want to test that an XML Schema correctly allows an element to be optional. Hence we create a schema valid document with the optional element:
 
 ```xml
-<element>with content<element>
+<element>with content</element>
 ```
 
 We then can create a test case by removing the element and declare our expectation that the mutation still has to be schema valid:
 
 ```xml
 <?xmute mutator="remove" schema-valid ?>
-<element>with content<element>
+<element>with content</element>
 ```
 
 In case the XML Schema is correct the outcome will be valid and it will meet the expectation. Hence the test result will be positive, otherwise negative.
@@ -167,55 +166,60 @@ We want to test that an XML Schema correctly requires an element to be always pr
 
 ```xml
 <?xmute mutator="remove" schema-invalid ?>
-<element>with content<element>
+<element>with content</element>
 ```
 
 ##### Schematron Expectations
 
+`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifiers and an optional schematron symbolic name.
 
-`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifiers and optional schematron symbolic name.
-
-Let's assume we have a Schematron rule `rule-1` that if an element is present it has to have content (independent of the above question if the element is option or required by the XML Schema). We can declare another test case based on the previous example in the same document as follows:
+Let's assume we have a Schematron rule `rule-1` if an element is present it has to have content (independent of the above question if the element is optional or required by the XML Schema). We can declare another test case based on the previous example in the same document as follows:
 
 ```xml
 <?xmute mutator="remove" schema-invalid ?>
-<?xmute mutator="empty" schema-valid schematron-invalid?>
-<element>with content<element>
+<?xmute mutator="empty" schema-valid schematron-invalid="rule-1" ?>
+<element>with content</element>
 ```
 
-### Mutate and Testing Reuslt Report
+The `empty` mutator will generate a document similar to this one:
 
-Each run MT-Run (muatate and Test Run) generates a report about the mutations generated and the test results.
-* It should be basically be valid Markdown for copy and paste
+```xml
+<element></element>
+```
 
+It will be Schema valid but if the Schematron `rule-1` correctly fires e.g. a fatal then it meets the expectation.
+
+### Mutate and Testing Result Report
+
+Each MT-Run (Mutate and Test Run) generates a report about the mutations generated and the test results.
+
+* It should basically be valid Markdown for copy and paste
 
 Per original Document the output stdout looks as follows:
-
 
 xrechnung-bug.xml
 
 3 mutations: 1 expected and 2 unexpected test results
 
-| No  | Line | Exp. | XSD Valid | XSD Exp. | Sch    | Sch Exp | Description        |
-| --- | ---- | ---- | --------- | -------- | ------ | ------- | ------------------ |
-| 1   | 44   | Y    | Y         | Y        | BT1: Y | Y       | Is X correct       |
-| 2   | 46   | Y    | Y         | N        | T4: N  | N       | B should not match |
-| 3   | 48   | N    | N         | Y        | Xf: Y  | Y       | is cool            |
+| Name   | No  | Line | Exp. | XSD Valid | XSD Exp | Sch    | Sch Exp | Description        |
+| ------ | --- | ---- | ---- | --------- | ------- | ------ | ------- | ------------------ |
+| remove | 1   | 44   | Y    | Y         | Y       | BT1: Y | Y       | Is X correct       |
+| empty  | 1   | 46   | Y    | Y         | N       | T4: N  | N       | B should not match |
+|        | 2   | 48   | N    | N         | Y       | Xf: Y  | Y       | is cool            |
 
 with columns:
 
 * No = Number
 * Line
-* Exp. = Are all expectation matched
+* Exp. = Are all expectations matched
 * XSD Valid = Is mutation valid against Schema?
 * XSD Exp = Is result as expected?
-* Sch = Is mutation valid against Schemtron Rule?
+* Sch = Is mutation valid against Schematron Rule?
 * Sch Exp. = Is Schematron result as Expected?
 * Description = Description of test case
 
-
 Open questions:
 
-* Do we differetiate between mutate only run and report or treat it the same as muatate and test report?
+* Do we differentiate between mutate only run and report or treat it the same as mutate and test report?
 * How do we report many schematron results per mutation?
 * Can we just have `XSD` as column header, knowing it is about valid or not valid XSD Schema?
