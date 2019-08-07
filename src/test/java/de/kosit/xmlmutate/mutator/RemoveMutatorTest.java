@@ -14,7 +14,7 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Testet {@link RemoveMutator}.
+ * Tests {@link RemoveMutator}.
  * 
  * @author Andreas Penski
  */
