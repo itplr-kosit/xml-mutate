@@ -169,13 +169,25 @@ We want to test that an XML Schema correctly requires an element to be always pr
 <element>with content</element>
 ```
 
-#### Schematron Expectations
+#### Schematron Evaluation of Expectations
 
-`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The optional value can be a list of schematron rule identifiers and an optional schematron symbolic name.
+`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The required value can be a list of schematron rule identifiers and an optional schematron symbolic name. In case one or more rule-ids are listed, the expectations of only these rules will be evaluated. In case other rules fire, they will not be reported by default. Only the number of other fired rules will be mentioned.
+
+There are two special keywords for convenience: `none` and `all` the meaning is defined as follows:
+
+* `schematron-valid="all"`
+  * All rules are expected to be valid
+* `schematron-valid="none"`
+  * None of the rules are expected to be valid i.e. all rules defined in a schematron fire invalid messages
+and
+* `schematron-invalid="all"`
+  * All rules are expected to fire invalid messages
+* `schematron-invalid="none"`
+  * None of the rules are expected to fire messages about invalidity
 
 Let's assume we have a Schematron rule `rule-1` if an element is present it has to have content (independent of the above question if the element is optional or required by the XML Schema). We can declare another test case based on the previous example in the same document as follows:
 
-Simple Example
+Simple Example:
 
 ```xml
 <?xmute mutator="remove" schema-invalid ?>
