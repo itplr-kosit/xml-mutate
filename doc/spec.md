@@ -233,11 +233,13 @@ xrechnung-bug.xml
 
 3 mutations: 1 expected and 2 unexpected test results
 
-| Name   | No  | Line | Exp. | XSD Valid | XSD Exp | Sch    | Sch Exp | Description        |
-| ------ | --- | ---- | ---- | --------- | ------- | ------ | ------- | ------------------ |
-| remove | 1   | 44   | Y    | Y         | Y       | BT1: Y | Y       | Is X correct       |
-| empty  | 1   | 46   | Y    | Y         | N       | T4: N  | N       | B should not match |
-|        | 2   | 48   | N    | N         | Y       | Xf: Y  | Y       | is cool            |
+| Name   | No  | Line | Exp. | XSD Valid | XSD Exp | Sch    | Failure Text | Sch Exp | Description        |
+| ------ | --- | ---- | ---- | --------- | ------- | ------ | ------------ | ------- | ------------------ |
+| remove | 1   | 44   | Y    | Y         | Y       | BT1: Y |              |         | Is X correct       |
+| empty  | 1   | 46   | Y    | Y         | N       | T4: N  | failure text | N       | B should not match |
+| ident  | 1   | 100  | N    | N         | Y       | Xf: Y  |              | Y       | is cool            |
+| "      | "   | "    | "    | "         | "       | as: N  | failure test | N       | "                  |
+
 
 with columns:
 
