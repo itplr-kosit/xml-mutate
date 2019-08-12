@@ -18,14 +18,32 @@ import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
 
 /**
- * Die Arbeitsanweisung für den {@link MutationRunner}. Dieses Datenobjekt kapselt alle Informationen, damit der
- * {@link MutationRunner} die nötigen Arbeitsschritte auf den Zieldokumennten durchführen kann.
- * 
+ * Die Arbeitsanweisung für den {@link MutationRunner}. Dieses Datenobjekt
+ * kapselt alle Informationen, damit der {@link MutationRunner} die nötigen
+ * Arbeitsschritte auf den Zieldokumennten durchführen kann.
+ *
  * @author Andreas Penski
  */
 @Getter
 @Setter
 public class RunnerConfig {
+
+    /**
+     * Zielverzeichnis für Ausgaben.
+     */
+    private Path targetFolder;
+
+    private List<Path> documents;
+
+    private Schema schema;
+
+    private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
+
+    private List<RunAction> actions = new ArrayList<>();
+
+    private List<Schematron> schematronRules = new ArrayList<>();
+
+    private ExecutorService executorService;
 
     public static class Builder {
 
@@ -69,14 +87,15 @@ public class RunnerConfig {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
             this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
-            this.config.getActions()
-                    .add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(), config.getTargetFolder()));
+            this.config.getActions().add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(),
+                    config.getTargetFolder()));
             this.config.getActions().add(new CheckAction());
             this.config.getActions().add(new ResetAction());
             this.config.getActions().add(new RemoveCommentAction());
 
             if (this.config.getExecutorService() == null) {
-                this.config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+                this.config
+                        .setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
             }
 
             return this.config;
@@ -87,22 +106,5 @@ public class RunnerConfig {
             return this;
         }
     }
-
-    /**
-     * Zielverzeichnis für Ausgaben.
-     */
-    private Path targetFolder;
-
-    private List<Path> documents;
-
-    private Schema schema;
-
-    private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
-
-    private List<RunAction> actions = new ArrayList<>();
-
-    private List<Schematron> schematronRules = new ArrayList<>();
-
-    private ExecutorService executorService;
 
 }

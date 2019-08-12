@@ -38,22 +38,24 @@ import picocli.CommandLine.ParseResult;
  * @author Renzo Kottmann
  */
 
-@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
-         separator = " ")
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
 @Slf4j
 public class XmlMutate implements Callable<Integer> {
 
-    @Option(names = { "-t", "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+    @Option(names = { "-t",
+            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-x", "--schema", "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation",
-            required = true)
+    @Option(names = { "-x", "--schema",
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
     private Path schemaLocation;
 
-    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
+    @Option(names = { "-s",
+            "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
     private Map<String, Path> schematrons;
 
-    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = { "-m",
+            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
@@ -78,6 +80,9 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     @Override
+    /**
+     * The actual method to call run method on MutationRunner
+     */
     public Integer call() throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
@@ -87,14 +92,17 @@ public class XmlMutate implements Callable<Integer> {
         return 0;
     }
 
+    /*
+     *
+     */
     private RunnerConfig prepareConfig() throws IOException {
         Files.createDirectories(this.target);
         // target folder
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        return Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron())
-                .checkSchema(prepareSchema()).build();
+        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
+                .checkSchematron(prepareSchematron()).checkSchema(prepareSchema()).build();
 
     }
 
@@ -106,26 +114,28 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Schematron> prepareSchematron() {
-        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri())).collect(Collectors.toList());
-
+        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri()))
+                .collect(Collectors.toList());
     }
 
     private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).collect(Collectors.toList());
+        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable)
+                .collect(Collectors.toList());
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
             throw new IllegalArgumentException(
                     MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
 
-        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml"))
-                .collect(Collectors.toList());
+        return available.stream().flatMap(this::expandDirectories)
+                .filter(e -> e.getFileName().toString().endsWith(".xml")).collect(Collectors.toList());
     }
 
     private Stream<Path> expandDirectories(final Path path) {
         try {
             if (!Files.exists(path)) {
-                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath().toString());
+                throw new IllegalArgumentException(
+                        "Document or directory does not exist: " + path.toAbsolutePath().toString());
             }
             if (Files.isDirectory(path)) {
                 return Files.walk(path);
@@ -136,7 +146,7 @@ public class XmlMutate implements Callable<Integer> {
         }
     }
 
-    private static int logExecutionException(final Exception ex, final CommandLine commandLine1, final ParseResult parseResult) {
+    private static int logExecutionException(final Exception ex, final CommandLine cli, final ParseResult parseResult) {
         System.err.println(ex.getMessage());
         log.error(ex.getMessage(), ex);
         return 1;

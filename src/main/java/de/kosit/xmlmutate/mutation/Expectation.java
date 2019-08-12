@@ -20,7 +20,8 @@ import lombok.Getter;
 public class Expectation {
 
     /**
-     * Der (Kurz-)Name der Schematron-Quelle (falls bei der Validierung mehrere Scripte verwendet werden)
+     * Der (Kurz-)Name der Schematron-Quelle (falls bei der Validierung mehrere
+     * Scripte verwendet werden)
      */
     private final String schematronSource;
 
@@ -30,7 +31,7 @@ public class Expectation {
     private final String ruleName;
 
     /**
-     * 
+     *
      */
     private final ExpectedResult expectedResult;
 
@@ -42,7 +43,8 @@ public class Expectation {
     };
 
     /**
-     * Of() what do we expect something e.g. which Schematron rule do we expect to be true/or false
+     * Of() what do we expect something e.g. which Schematron rule do we expect to
+     * be true/or false
      */
     public String ruleName() {
         return this.ruleName;
@@ -72,8 +74,8 @@ public class Expectation {
         }
 
         // TODO prüfen ob das auch bei keinem Schematron match stimmt
-        final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts).flatMap(List::stream)
-                .filter(f -> f.getId().equals(ruleName())).findAny();
+        final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
+                .flatMap(List::stream).filter(f -> f.getId().equals(ruleName())).findAny();
         return (failed.isPresent() && mustFail()) || (!failed.isPresent() && mustPass());
     }
 
