@@ -14,8 +14,8 @@ import de.kosit.xmlmutate.mutation.SequenceNameGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
 
 /**
- * Common Service Definition.
- * 
+ * Common Service Definitions.
+ *
  * @author Andreas Penski
  */
 
