@@ -25,7 +25,7 @@ import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
 
 /**
- * Validator validating against XSd and Schemtron.
+ * Validator validating against XSD and Schematron.
  *
  * @author Andreas Penski
  */
