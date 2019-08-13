@@ -9,44 +9,54 @@ import java.util.Optional;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
- * Daten über das erwartete Schematron-Validierungsergebnis NACH der Mutation.
+ * Expectation on the validation after mutation of a Schematron Rule Schematron-
+ *
+ * @author Renzo Kottmann
+ * @author Andreas Penski
  */
-@AllArgsConstructor
-@Getter
+
 public class SchematronRuleExpectation {
 
     /**
-     * Der (Kurz-)Name der Schematron-Quelle (falls bei der Validierung mehrere
-     * Scripte verwendet werden)
+     * The symbolic short name of the Schematron source.
      */
-    private final String schematronSource;
+    private final String source;
 
     /**
-     * Der Name der Regel die geprüft werden soll
+     * Name of schematron rule on which expectation is expressed.
      */
     private final String ruleName;
 
     /**
-     *
+     * The actual expectation value.
      */
     private final ExpectedResult expectedResult;
+
+    private SchematronRuleExpectation() {
+        source = "";
+        ruleName = "";
+        expectedResult = ExpectedResult.UNDEFINED;
+    }
+
+    public SchematronRuleExpectation(String schematronSource, String ruleName, ExpectedResult expectation) {
+        this.source = schematronSource;
+        this.ruleName = ruleName;
+        this.expectedResult = expectation;
+    }
 
     /**
      * An expectation on a subject e.g. name of a Schematron result, or XML Schema
      */
-    public String schematron() {
-        return this.schematronSource;
+    public String getSource() {
+        return this.source;
     };
 
     /**
      * Of() what do we expect something e.g. which Schematron rule do we expect to
      * be true/or false
      */
-    public String ruleName() {
+    public String getRuleName() {
         return this.ruleName;
     };
 
@@ -66,8 +76,8 @@ public class SchematronRuleExpectation {
 
     public boolean evaluate(final MutationResult result) {
         final Collection<SchematronOutput> targets;
-        if (getSchematronSource() != null) {
-            final Optional<SchematronOutput> schematronResult = result.getSchematronResult(getSchematronSource());
+        if (getSource() != null) {
+            final Optional<SchematronOutput> schematronResult = result.getSchematronResult(getSource());
             targets = schematronResult.map(Collections::singletonList).orElseGet(ArrayList::new);
         } else {
             targets = result.getSchematronResult().values();
@@ -75,15 +85,11 @@ public class SchematronRuleExpectation {
 
         // TODO prüfen ob das auch bei keinem Schematron match stimmt
         final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
-                .flatMap(List::stream).filter(f -> f.getId().equals(ruleName())).findAny();
+                .flatMap(List::stream).filter(f -> f.getId().equals(getRuleName())).findAny();
         return (failed.isPresent() && mustFail()) || (!failed.isPresent() && mustPass());
     }
 
-    public String evaluateMessage(final MutationResult result) {
-        return null;
-    }
-
     public enum ExpectedResult {
-        FAIL, PASS
+        FAIL, PASS, UNDEFINED
     }
 }

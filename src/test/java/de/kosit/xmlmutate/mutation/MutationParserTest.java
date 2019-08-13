@@ -54,7 +54,7 @@ public class MutationParserTest {
         assertEquals(16, e.size());
 
         assertEquals("BR-52", e.get(0).getRuleName());
-        assertEquals("ubl", e.get(0).getSchematronSource());
+        assertEquals("ubl", e.get(0).getSource());
 
         // assertThat(m.getConfiguration().getProperties().get("test2")).isEqualTo("value
         // value");
