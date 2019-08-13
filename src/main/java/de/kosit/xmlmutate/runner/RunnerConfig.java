@@ -18,9 +18,9 @@ import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
 
 /**
- * Die Arbeitsanweisung für den {@link MutationRunner}. Dieses Datenobjekt
- * kapselt alle Informationen, damit der {@link MutationRunner} die nötigen
- * Arbeitsschritte auf den Zieldokumennten durchführen kann.
+ *
+ * Contains whole configuration for a {@link MutationRunner} including all
+ * Actions.
  *
  * @author Andreas Penski
  */

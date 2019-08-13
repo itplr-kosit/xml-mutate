@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.kosit.xmlmutate.mutation.Expectation.ExpectedResult;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
@@ -93,10 +93,10 @@ public class MutationParser {
                 ruleParts = this.parseSchemtronRule(rules[i]);
                 if (ruleParts.length == 1) {
                     this.config.addExpectation(
-                            new Expectation(Schematron.DEFAULT_NAME, ruleParts[0], evaluateExpectedResult(ctx)));
+                            new SchematronRuleExpectation(Schematron.DEFAULT_NAME, ruleParts[0], evaluateExpectedResult(ctx)));
                 } else {
                     this.config
-                            .addExpectation(new Expectation(ruleParts[0], ruleParts[1], evaluateExpectedResult(ctx)));
+                            .addExpectation(new SchematronRuleExpectation(ruleParts[0], ruleParts[1], evaluateExpectedResult(ctx)));
                 }
             }
 

@@ -50,7 +50,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
-        List<Expectation> e = mutations.get(0).getConfiguration().getSchematronExpectations();
+        List<SchematronRuleExpectation> e = mutations.get(0).getConfiguration().getSchematronExpectations();
         assertEquals(16, e.size());
 
         assertEquals("BR-52", e.get(0).getRuleName());

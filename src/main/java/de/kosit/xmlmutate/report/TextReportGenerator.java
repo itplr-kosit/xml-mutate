@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.mutation.Expectation;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 

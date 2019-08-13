@@ -17,7 +17,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class Expectation {
+public class SchematronRuleExpectation {
 
     /**
      * Der (Kurz-)Name der Schematron-Quelle (falls bei der Validierung mehrere

@@ -17,7 +17,7 @@ import de.init.kosit.commons.SyntaxError;
 
 /**
  * Mutationsergebnis aus den diversen Schritten.
- * 
+ *
  * @author Andreas Penski
  */
 @Getter
@@ -32,7 +32,7 @@ public class MutationResult {
 
     private ValidationState schematronValidation = ValidationState.UNPROCESSED;
 
-    private Map<Expectation, Boolean> expectationResult = new HashMap<>();
+    private Map<SchematronRuleExpectation, Boolean> expectationResult = new HashMap<>();
 
     public boolean isValid() {
         return isSchemaValid() && isExpectationCompliant();
@@ -52,7 +52,7 @@ public class MutationResult {
 
     /**
      * Evaluiert den
-     * 
+     *
      * @return
      */
     public boolean isExpectationCompliant() {
