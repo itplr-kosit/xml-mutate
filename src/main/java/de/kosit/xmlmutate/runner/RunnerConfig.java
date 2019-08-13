@@ -87,9 +87,10 @@ public class RunnerConfig {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
             this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
-            this.config.getActions().add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(),
-                    config.getTargetFolder()));
-            this.config.getActions().add(new CheckAction());
+            this.config.getActions().add(
+                    new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(),
+                            config.getTargetFolder()));
+            this.config.getActions().add(new EvaluateSchematronExpectationsAction());
             this.config.getActions().add(new ResetAction());
             this.config.getActions().add(new RemoveCommentAction());
 

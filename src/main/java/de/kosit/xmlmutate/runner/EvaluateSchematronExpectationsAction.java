@@ -5,10 +5,10 @@ import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
  * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem validierten Zustand.
- * 
+ *
  * @author Andreas Penski
  */
-public class CheckAction implements RunAction {
+public class EvaluateSchematronExpectationsAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
