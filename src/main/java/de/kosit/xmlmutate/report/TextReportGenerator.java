@@ -539,10 +539,10 @@ public class TextReportGenerator extends BaseReportGenerator {
             this.writer.write(noMutationError.render());
         } else {
 
-            final Grid grid = new Grid(new ColumnDefinition("#"), new ColumnDefinition("Mutation", 15),
-                    new ColumnDefinition("Line"), new ColumnDefinition("Exp"), new ColumnDefinition("XSD Valid"),
-                    new ColumnDefinition("XSD Exp"), new ColumnDefinition("Sch"), new ColumnDefinition("Sch Exp"),
-                    new ColumnDefinition("Error Message"), new ColumnDefinition("Description"));
+            final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
+                    new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
+                    new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3), new ColumnDefinition("Exp", 10),
+                    new ColumnDefinition("Error Message", 15), new ColumnDefinition("Description", 15));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
                 this.generateMutationReportLine(grid, mutations.get(i), i);
@@ -559,9 +559,9 @@ public class TextReportGenerator extends BaseReportGenerator {
     }
 
     private void generateMutationReportLine(final Grid grid, final Mutation mutation, int mutationNum) {
-        final boolean isSchemaValid = false;
-        final boolean isSchemaProcessed = false;
-        final boolean asSchemaExpected = false;
+        final boolean isSchemaValid = mutation.isSchemaValid();
+        final boolean isSchemaProcessed = mutation.isSchemaProcessed();
+        final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronProcessed = mutation.getResult()
                 .getSchematronValidation() != ValidationState.UNPROCESSED;
 
@@ -572,8 +572,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
         grid.addCell(createSchemaExpectationCell(asSchemaExpected));
-        grid.addCell(createSchematronValidationCell(isSchematronProcessed));
-        grid.addCell(createSchematronValidationCell(isSchematronProcessed));
+        grid.addCell(createSchematronValidationCell(isSchematronProcessed, mutation));
+        grid.addCell(createSchematronExpectationCell(isSchematronProcessed, mutation));
         grid.addCell("Error message");
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
@@ -586,43 +586,48 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private Cell createOverallResult(final Mutation mutation) {
         final Cell overall;
-        if (mutation.isValid()) {
-            overall = new Cell("OK", Code.GREEN);
+        if (mutation.isAllAsExpected()) {
+            overall = new Cell("Y", Code.GREEN);
         } else {
 
-            overall = new Cell("FAILED", Code.RED);
+            overall = new Cell("N", Code.RED);
         }
-        if (mutation.getErrorMessage() != null) {
-            overall.add(" " + mutation.getErrorMessage());
-        }
+
         return overall;
     }
 
-    private Cell createSchematronValidationCell(boolean isProcessed) {
+    private Cell createSchematronValidationCell(boolean isProcessed, Mutation mutation) {
 
         if (!isProcessed) {
             return new Cell("NA", Code.RED);
         }
 
-        return new Cell("Y", Code.GREEN);
+        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
+                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
+                .collect(Collectors.toList());
 
-        // if (schematronProcessed) {
-        // final boolean success = mutation.getResult().isExpectationCompliant();
-        // if (!success) {
-        // cell = new Cell("FAILED ", Code.RED);
-        // final List<Expectation> failed =
-        // mutation.getResult().getExpectationResult().entrySet().stream()
-        // .filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
-        // .collect(Collectors.toList());
+        if (failed.size() == 0) {
+            return new Cell("Y", Code.GREEN);
+        }
+        return new Cell("N", Code.RED);
+    }
 
-        // failed.forEach(e -> cell.add(e.getRuleName() + "\n", Code.RED));
-        // } else {
-        // cell = new Cell("OK", Code.GREEN);
-        // }
-        // } else {
-        // cell = new Cell("not checked", Code.YELLOW);
-        // }
-        // return cell;
+    private Cell createSchematronExpectationCell(boolean isProcessed, Mutation mutation) {
+
+        if (!isProcessed) {
+            return new Cell("NA", Code.RED);
+        }
+
+        Cell cell = new Cell("");
+        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
+                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
+                .collect(Collectors.toList());
+
+        if (failed.size() == 0) {
+            return new Cell("Y", Code.GREEN);
+        }
+        failed.forEach(e -> cell.getText().add(new Text(e.getRuleName() + "\n", Code.RED)));
+        return cell;
     }
 
     private Cell createSchemaValidationCell(boolean isProcessed, boolean isValid) {
@@ -630,7 +635,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             return new Cell("NA", Code.RED);
         }
 
-        return new Cell(isValid ? "Y" : "N", isValid ? Code.GREEN : Code.RED);
+        return new Cell(isValid ? "Y" : "Nss", isValid ? Code.GREEN : Code.RED);
     }
 
     private Cell createSchemaExpectationCell(boolean asExpected) {

@@ -55,8 +55,8 @@ public class ValidateAction implements RunAction {
 
         for (final Schematron s : getSchematronRules()) {
             log.debug("Using schematron=" + s.getName());
-            final SchematronOutput out = Services.getSchematronService().validate(s.getUri(),
-                    mutation.getContext().getDocument());
+            final SchematronOutput out = Services.getSchematronService()
+                    .validate(s.getUri(), mutation.getContext().getDocument());
             log.debug("result=" + out.getText());
             failedAssertCount += out.getFailedAsserts().size();
             log.debug("failed asserts=" + failedAssertCount);
@@ -71,9 +71,10 @@ public class ValidateAction implements RunAction {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false)
                         .parse(targetFolder.resolve(mutation.getResultDocument()).toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema,
-                        document);
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService()
+                        .validate(this.schema, document);
                 mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
+                log.debug("Schema valid={}", result.isValid());
                 mutation.getResult()
                         .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException | IOException e) {

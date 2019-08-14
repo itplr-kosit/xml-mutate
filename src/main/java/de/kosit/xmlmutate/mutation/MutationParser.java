@@ -13,7 +13,6 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.RegExUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,6 @@ public class MutationParser {
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
         private static final String COLON = ":";
-        private static final String SPACE = " ";
 
         private final MutationContext context;
 
@@ -78,14 +76,16 @@ public class MutationParser {
 
         @Override
         public void exitSchemaKeyword(final SchemaKeywordContext ctx) {
-            this.config.setExpectSchemaValid(StringUtils.equalsIgnoreCase("valid", ctx.getText()));
+            final String keyword = ctx.assertion().getText();
+            final boolean valid = "valid".equals(keyword);
+            log.debug("Schema {} expectation is={}", keyword, valid);
+            this.config.setSchemaValidationAsExpected(valid);
         }
 
         @Override
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             final String value = unquote(ctx.value().getText());
             log.debug("Parse schematron expecation value={}", value);
-            final int SPACE_POS = value.indexOf(SPACE);
             // split at least returns the string itself if no split char is found
             String[] rules = value.split(" ");
             String[] ruleParts = null;
@@ -93,10 +93,11 @@ public class MutationParser {
                 ruleParts = this.parseSchemtronRule(rules[i]);
                 if (ruleParts.length == 1) {
                     this.config.addExpectation(
-                            new SchematronRuleExpectation(Schematron.DEFAULT_NAME, ruleParts[0], evaluateExpectedResult(ctx)));
+                            new SchematronRuleExpectation(Schematron.DEFAULT_NAME, ruleParts[0],
+                                    evaluateExpectedResult(ctx)));
                 } else {
-                    this.config
-                            .addExpectation(new SchematronRuleExpectation(ruleParts[0], ruleParts[1], evaluateExpectedResult(ctx)));
+                    this.config.addExpectation(
+                            new SchematronRuleExpectation(ruleParts[0], ruleParts[1], evaluateExpectedResult(ctx)));
                 }
             }
 
@@ -131,13 +132,17 @@ public class MutationParser {
         private boolean validate() {
             if (this.config.getMutatorName() == null
                     || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
-                this.mutations = (createErrorMutation(this.context,
+                this.mutations = (createErrorMutation(
+                        this.context,
                         MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
             }
 
             if (this.context.getTarget() == null) {
-                this.mutations = createErrorMutation(this.context, MessageFormat.format(
-                        "No mutation can be found for {0}. Is PI last " + "element?", this.context.getDocumentName()));
+                this.mutations = createErrorMutation(
+                        this.context,
+                        MessageFormat.format(
+                                "No mutation can be found for {0}. Is PI last " + "element?",
+                                this.context.getDocumentName()));
             }
             return this.mutations == null;
         }
@@ -158,7 +163,8 @@ public class MutationParser {
     /**
      * Parsed den gegebenen Kontext
      *
-     * @param context der Kontext im Dokument; entspricht einer PI
+     * @param context
+     *                    der Kontext im Dokument; entspricht einer PI
      * @return Liste mit den generierten Mutationen
      */
     public List<Mutation> parse(final MutationContext context) {

@@ -11,8 +11,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im XML-Dokument hinterlegte
- * {@link org.w3c.dom.ProcessingInstruction} Information bestimmt.
+ * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im
+ * XML-Dokument hinterlegte {@link org.w3c.dom.ProcessingInstruction}
+ * Information bestimmt.
  *
  * @author Andreas Penski
  */
@@ -22,7 +23,7 @@ public class MutationConfig {
 
     private Map<String, Object> properties = new HashMap<>();
 
-    private boolean expectSchemaValid;
+    private boolean schemaValidationAsExpected;
 
     private List<SchematronRuleExpectation> schematronExpectations = new ArrayList<>();
 
@@ -31,8 +32,10 @@ public class MutationConfig {
     /**
      * Fügt einen weiteren Parameter hinzu.
      *
-     * @param keyword der Parameter
-     * @param value der Wert des Parameters
+     * @param keyword
+     *                    der Parameter
+     * @param value
+     *                    der Wert des Parameters
      * @return die Konfiguration zum verketten von Aktionen
      */
     public MutationConfig add(final String keyword, final Object value) {

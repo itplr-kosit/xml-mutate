@@ -1,13 +1,5 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
 /**
  * Expectation on the validation after mutation of a Schematron Rule Schematron-
@@ -72,21 +64,6 @@ public class SchematronRuleExpectation {
      */
     public boolean mustPass() {
         return ExpectedResult.PASS.equals(this.expectedResult);
-    }
-
-    public boolean evaluate(final MutationResult result) {
-        final Collection<SchematronOutput> targets;
-        if (getSource() != null) {
-            final Optional<SchematronOutput> schematronResult = result.getSchematronResult(getSource());
-            targets = schematronResult.map(Collections::singletonList).orElseGet(ArrayList::new);
-        } else {
-            targets = result.getSchematronResult().values();
-        }
-
-        // TODO prüfen ob das auch bei keinem Schematron match stimmt
-        final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
-                .flatMap(List::stream).filter(f -> f.getId().equals(getRuleName())).findAny();
-        return (failed.isPresent() && mustFail()) || (!failed.isPresent() && mustPass());
     }
 
     public enum ExpectedResult {
