@@ -171,7 +171,7 @@ We want to test that an XML Schema correctly requires an element to be always pr
 
 #### Schematron Evaluation of Expectations
 
-`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The required value can be a list of schematron rule identifiers and an optional schematron symbolic name. In case one or more rule-ids are listed, the expectations of only these rules will be evaluated. In case other rules fire, they will not be reported by default. Only the number of other fired rules will be mentioned.
+`schematron-valid="some-rule-id"` and `schematron-invalid="some-rule-id"` declare expectations about the outcome of Schematron validations. The required value can be a list of space separated schematron rule identifiers and an optional schematron symbolic name. In case one or more rule-ids are listed, the expectations of only these rules will be evaluated. In case other rules fire, they will not be reported by default. Only the number of other fired rules will be mentioned.
 
 There are two special keywords for convenience: `none` and `all` the meaning is defined as follows:
 
