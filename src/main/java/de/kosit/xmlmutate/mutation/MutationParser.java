@@ -84,8 +84,13 @@ public class MutationParser {
 
         @Override
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
-            final String value = unquote(ctx.value().getText());
-            log.debug("Parse schematron expecation value={}", value);
+            // replaceAll includes unbreakable spaces too
+
+            String value = ctx.getText();
+            log.trace("Value from PI={}", value);
+            value = unquote(value);
+            value = value.replaceAll("[\\s|\\u00A0]+", " ");
+            log.trace("Parse schematron expectation value={}", value);
             // split at least returns the string itself if no split char is found
             String[] rules = value.split(" ");
             String[] ruleParts = null;
@@ -101,6 +106,7 @@ public class MutationParser {
                 }
             }
 
+            log.debug("Generated expections num={}", this.config.getSchematronExpectations().size());
             // final String sourceName = COLON_POS > 0 ? value.substring(0, COLON_POS) :
             // Schematron.DEFAULT_NAME;
             // final String ruleName = COLON_POS > 0 ? value.substring(COLON_POS + 1) :

@@ -25,10 +25,10 @@ import org.fusesource.jansi.AnsiRenderer.Code;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
@@ -342,6 +342,10 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
 
         private String getVisibleText(final int startIndex, final int length) {
+            // log.debug("startIndex={} and length={}",startIndex, length);
+            if (startIndex < 0) {
+                return "Wrong cell text index";
+            }
             if (startIndex > this.text.length()) {
                 return "";
             }
@@ -541,8 +545,9 @@ public class TextReportGenerator extends BaseReportGenerator {
 
             final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
-                    new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3), new ColumnDefinition("Exp", 10),
-                    new ColumnDefinition("Error Message", 15), new ColumnDefinition("Description", 15));
+                    new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
+                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 15),
+                    new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
                 this.generateMutationReportLine(grid, mutations.get(i), i);
@@ -558,12 +563,19 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
     }
 
-    private void generateMutationReportLine(final Grid grid, final Mutation mutation, int mutationNum) {
+    private void generateMutationReportLine(final Grid grid, Mutation mutation, int mutationNum) {
+
         final boolean isSchemaValid = mutation.isSchemaValid();
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronProcessed = mutation.getResult()
                 .getSchematronValidation() != ValidationState.UNPROCESSED;
+
+        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
+                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
+                .collect(Collectors.toList());
+
+        List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
 
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
@@ -572,14 +584,28 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
         grid.addCell(createSchemaExpectationCell(asSchemaExpected));
+
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, mutation));
-        grid.addCell(createSchematronExpectationCell(isSchematronProcessed, mutation));
+        grid.addCell(expectationCells.get(0));
         grid.addCell("Error message");
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
         if (description != null) {
             grid.addCell(description);
         } else {
+            grid.addCell(EMPTY);
+        }
+        // if more than one schematron expectation failed
+        for (int i = 1; i < expectationCells.size(); i++) {
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(expectationCells.get(i));
+            grid.addCell(EMPTY);
             grid.addCell(EMPTY);
         }
     }
@@ -612,22 +638,20 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell("N", Code.RED);
     }
 
-    private Cell createSchematronExpectationCell(boolean isProcessed, Mutation mutation) {
+    private List<Cell> createSchematronExpectationCells(boolean isProcessed, List<SchematronRuleExpectation> failed) {
+        List<Cell> cells = new ArrayList<>();
 
         if (!isProcessed) {
-            return new Cell("NA", Code.RED);
+            cells.add(new Cell("NA", Code.RED));
+            return cells;
         }
-
-        Cell cell = new Cell("");
-        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
-                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
-                .collect(Collectors.toList());
 
         if (failed.size() == 0) {
-            return new Cell("Y", Code.GREEN);
+            cells.add(new Cell("Y", Code.GREEN));
+            return cells;
         }
-        failed.forEach(e -> cell.getText().add(new Text(e.getRuleName() + "\n", Code.RED)));
-        return cell;
+        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N" + "\n", Code.RED)));
+        return cells;
     }
 
     private Cell createSchemaValidationCell(boolean isProcessed, boolean isValid) {

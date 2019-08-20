@@ -80,8 +80,9 @@ public class MutationConfig {
         return c;
     }
 
-    public void addExpectation(final SchematronRuleExpectation valid) {
-        this.schematronExpectations.add(valid);
+    public void addExpectation(final SchematronRuleExpectation expectation) {
+
+        this.schematronExpectations.add(expectation);
     }
 
     public String getProperty(final String propGenericode) {

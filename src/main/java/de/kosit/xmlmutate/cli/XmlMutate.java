@@ -149,6 +149,7 @@ public class XmlMutate implements Callable<Integer> {
     private static int logExecutionException(final Exception ex, final CommandLine cli, final ParseResult parseResult) {
         System.err.println(ex.getMessage());
         log.error(ex.getMessage(), ex);
+
         return 1;
     }
 }
