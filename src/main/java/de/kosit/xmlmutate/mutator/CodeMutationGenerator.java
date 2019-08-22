@@ -110,9 +110,9 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateGenericodeCodes(final MutationConfig config, final MutationContext context) {
-        final URI uri = URI.create(config.getProperty(PROP_GENERICODE));
+        final URI uri = URI.create(config.getStringProperty(PROP_GENERICODE));
 
-        final String codeKey = config.getProperty(PROP_CODE_KEY);
+        final String codeKey = config.getStringProperty(PROP_CODE_KEY);
         return CodeFactory.resolveCodes(uri, defaultIfBlank(codeKey, "code")).stream()
                 .map(c -> createMutation(config, context, c.getCode())).collect(Collectors.toList());
 
