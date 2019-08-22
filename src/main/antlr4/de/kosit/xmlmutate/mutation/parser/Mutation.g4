@@ -44,9 +44,11 @@ NOT: 'NOT';
 EQUALITY_OPERATOR: ('=');
 COLON: ':';
 WS: [ \t\r\n\u000C]+ -> skip;
+DASH:'-';
 
 STRING_LITERAL:
 	'"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
+QUOTE :'"';
 LITERAL: [a-zA-Z_] CHARACTER*;
 
 CHARACTER: ('0' ..'9' | 'a' ..'z' | 'A' ..'Z' | '_');
@@ -61,21 +63,26 @@ configuration: keyword | property;
 
 keyword: schemaKeyword | schematronKeyword;
 
-schemaKeyword: 'schema-' assertion;
+schemaKeyword: 'schema-' assertion identifier;
 
 assertion: 'valid' | 'invalid';
 
 schematronKeyword:
-	'schematron-' assertion EQUALITY_OPERATOR ruleList;
+	'schematron-' assertion EQUALITY_OPERATOR identifier;
 
-property: key EQUALITY_OPERATOR value;
-
-key: identifier | identifier '-' identifier;
+property: identifier EQUALITY_OPERATOR value;
 
 value: identifier;
 
-ruleList: (identifier | COLON)+;
 
 name: identifier;
 
-identifier: LITERAL | STRING_LITERAL;
+identifier: STRING_LITERAL | (LITERAL (DASH (text|identifier))* );
+
+text: CHARACTER+ ;
+
+schematronRules: schematronRule+;
+
+schematronRule: ruleName | schematronName (COLON ruleName)*;
+schematronName: identifier;
+ruleName: identifier;
