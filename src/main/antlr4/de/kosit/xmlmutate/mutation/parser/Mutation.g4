@@ -1,84 +1,81 @@
 grammar Mutation;
 
-options
-{
-  // antlr will generate java lexer and parser
-  language = Java;
-  // generated parser should create abstract syntax tree
+options {
+	// antlr will generate java lexer and parser
+	language = Java;
+	// generated parser should create abstract syntax tree
 }
 
-//as the generated lexer will reside in org.meri.antlr_step_by_step.parsers 
-//package, we have to add package declaration on top of it
+//as the generated lexer will reside in org.meri.antlr_step_by_step.parsers package, we have to add
+// package declaration on top of it
 @lexer::header {
 //package  de.kosit.xmlmutate.mutation.parser;
 
 }
 
-//as the generated parser will reside in org.meri.antlr_step_by_step.parsers 
-//package, we have to add package declaration on top of it
+//as the generated parser will reside in org.meri.antlr_step_by_step.parsers package, we have to add
+// package declaration on top of it
 @parser::header {
 //package  de.kosit.xmlmutate.mutation.parser;
 
 }
 
-//override some methods and add new members to generated lexer
-//public void reportError(RecognitionException e) {
-    //displayRecognitionError(this.getTokenNames(), e);
-    //throw new S005Error(":(", e); 
-  //}
+//override some methods and add new members to generated lexer public void
+// reportError(RecognitionException e) { displayRecognitionError(this.getTokenNames(), e); throw new
+// S005Error(":(", e); }
 @lexer::members {
   //override method
- 
-  
+
+
 }
 
 //override some methods and add new members to generated parser
 @parser::members {
   //override method
-  
+
 }
 
-// ***************** lexer rules:
-LPAREN : '(' ;
-RPAREN : ')' ;
-AND : 'AND';
-OR : 'OR';
-NOT : 'NOT';
-EQUALITY_OPERATOR: ('=')  ;
-WS  :  [ \t\r\n\u000C]+ -> skip;
+// lexer rules:
+LPAREN: '(';
+RPAREN: ')';
+AND: 'AND';
+OR: 'OR';
+NOT: 'NOT';
+EQUALITY_OPERATOR: ('=');
+COLON: ':';
+WS: [ \t\r\n\u000C]+ -> skip;
 
-STRING_LITERAL : '"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
-LITERAL : [a-zA-Z_] CHARACTER*;
+STRING_LITERAL:
+	'"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
+LITERAL: [a-zA-Z_] CHARACTER*;
 
-CHARACTER: ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_'  ) ;
+CHARACTER: ('0' ..'9' | 'a' ..'z' | 'A' ..'Z' | '_');
 
+// parser rules:
 
-// ***************** parser rules:
+mutation: mutator (configuration)*;
 
-mutation         :	mutator (configuration)*;
+mutator: 'mutator' EQUALITY_OPERATOR name;
 
-configuration   : keyword | property;
+configuration: keyword | property;
 
-keyword         : schemaKeyword | schematronKeyword;
+keyword: schemaKeyword | schematronKeyword;
 
-schemaKeyword   : 'schema-' assertion;
+schemaKeyword: 'schema-' assertion;
 
-assertion :     'valid' | 'invalid';
+assertion: 'valid' | 'invalid';
 
-schematronKeyword : 'schematron-' assertion EQUALITY_OPERATOR value;
+schematronKeyword:
+	'schematron-' assertion EQUALITY_OPERATOR ruleList;
 
-property        : key  EQUALITY_OPERATOR value ;
+property: key EQUALITY_OPERATOR value;
 
-key             : identifier | identifier '-' identifier;
+key: identifier | identifier '-' identifier;
 
-value           : identifier;
+value: identifier;
 
-mutator         : 'mutator'  EQUALITY_OPERATOR name;
+ruleList: (identifier | COLON)+;
 
-name            : identifier ;
+name: identifier;
 
-identifier      :       LITERAL | STRING_LITERAL ;
-
-
-
-    
+identifier: LITERAL | STRING_LITERAL;

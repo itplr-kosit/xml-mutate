@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Datenobjekt mit Informationen über eine Schematron-Datei
- * 
+ * Information about a Schematron file.
+ *
  * @author Andreas Penski
  */
 @Getter
@@ -19,12 +19,12 @@ public class Schematron {
     public static final String DEFAULT_NAME = "SCHEMATRON";
 
     /**
-     * Der (Kurz-)Name des Schematron-Regelsets
+     * Symbolic name for this file of Schematron rules.
      */
     private final String name;
 
     /**
-     * Die URI des Schematron-Scriptes.
+     * The URI of the Schematron file.
      */
     private final URI uri;
 

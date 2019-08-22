@@ -42,7 +42,8 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
         final Node target = context.getTarget();
-        target.setTextContent(this.textGenerator.generateAlphaNumeric((Integer) config.getProperties().get(LENGTH_PARAM)));
+        target.setTextContent(
+                this.textGenerator.generateAlphaNumeric((Integer) config.getProperties().get(LENGTH_PARAM)));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         l.add(create(config.cloneConfig(), context.cloneContext(), length));
         l.add(create(config.cloneConfig(), context.cloneContext(), length - 1));
         final Mutation violation = create(config.cloneConfig(), context.cloneContext(), length + 1);
-        violation.getConfiguration().setExpectSchemaValid(false);
+        violation.getConfiguration().setSchemaValidationAsExpected(false);
         l.add(violation);
 
         return l;
@@ -78,8 +79,9 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         if (minLength != null) {
             l.add(create(config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength)));
             l.add(create(config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength) + 1));
-            final Mutation violation = create(config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength) - 1);
-            violation.getConfiguration().setExpectSchemaValid(false);
+            final Mutation violation = create(
+                    config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength) - 1);
+            violation.getConfiguration().setSchemaValidationAsExpected(false);
             l.add(violation);
         }
         return l;

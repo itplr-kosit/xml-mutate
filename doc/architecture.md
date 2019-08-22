@@ -22,6 +22,10 @@ Here it is about technical details of design decisions and the implementations.
 
 ## Reporting
 
+Currently, we use [JANSI](https://github.com/fusesource/jansi) to generate colored output to the console.
+
+
+
 ## Command Line Interface
 
 The main intended use of XML-Mutate is based on the command line interface.

@@ -9,8 +9,8 @@ import lombok.Setter;
 import de.kosit.xmlmutate.mutator.Mutator;
 
 /**
- * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle möglichen Informationen rund um die
- * Verarbeitung, inkl. Testergebnisse.
+ * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
+ * möglichen Informationen rund um die Verarbeitung, inkl. Testergebnisse.
  *
  * @author Andreas Penski
  */
@@ -35,9 +35,11 @@ public class Mutation {
 
     /**
      * Constructor.
-     * 
-     * @param context der {@link MutationContext}
-     * @param identifier ein Name / Bezeichner für die Mutation
+     *
+     * @param context
+     *                       der {@link MutationContext}
+     * @param identifier
+     *                       ein Name / Bezeichner für die Mutation
      */
     public Mutation(final MutationContext context, final String identifier) {
         this.context = context;
@@ -48,12 +50,28 @@ public class Mutation {
         return Paths.get(getContext().getDocumentName()).resolve(this.identifier + ".xml");
     }
 
-    public boolean isInvalid() {
-        return !isValid();
+    public boolean isSchemaValid() {
+        return this.result.isSchemaValid();
     }
 
-    public boolean isValid() {
-        return this.state.ordinal() >= State.VALIDATED.ordinal() && this.result.isValid();
+    public boolean isSchemaProcessed() {
+        return result.isSchemaProcessed();
+    }
+
+    public boolean isSchemaValidationAsExpected() {
+        return configuration.isSchemaValidationAsExpected();
+    }
+
+    public boolean isSchematronProcessed() {
+        return result.isSchematronProcessed();
+    }
+
+    public boolean isAllAsExpected() {
+        return this.isSchemaValid() && result.allSchematronRulesAsExpected();
+    }
+
+    public boolean hasUnexpectedValidation() {
+        return !isAllAsExpected();
     }
 
     public boolean isErroneous() {
