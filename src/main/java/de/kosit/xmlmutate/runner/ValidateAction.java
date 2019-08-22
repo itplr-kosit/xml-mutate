@@ -30,7 +30,6 @@ import de.kosit.xmlmutate.mutation.Schematron;
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
-
 @Getter(AccessLevel.PACKAGE)
 public class ValidateAction implements RunAction {
 
@@ -44,7 +43,7 @@ public class ValidateAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
-        log.info("validating {}", mutation.getIdentifier());
+        this.log.info("validating {}", mutation.getIdentifier());
         schemaValidation(mutation);
         schematronValidation(mutation);
         mutation.setState(State.VALIDATED);
@@ -54,12 +53,12 @@ public class ValidateAction implements RunAction {
         long failedAssertCount = 0;
 
         for (final Schematron s : getSchematronRules()) {
-            log.debug("Using schematron=" + s.getName());
+            this.log.debug("Using schematron=" + s.getName());
             final SchematronOutput out = Services.getSchematronService().validate(s.getUri(),
                     mutation.getContext().getDocument());
-            log.debug("result=" + out.getText());
+            this.log.debug("result=" + out.getText());
             failedAssertCount += out.getFailedAsserts().size();
-            log.debug("failed asserts=" + failedAssertCount);
+            this.log.debug("failed asserts=" + failedAssertCount);
             mutation.getResult().addSchematronResult(s, out);
         }
         mutation.getResult()
@@ -70,7 +69,7 @@ public class ValidateAction implements RunAction {
         if (this.schema != null) {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false)
-                        .parse(targetFolder.resolve(mutation.getResultDocument()).toFile());
+                        .parse(this.targetFolder.resolve(mutation.getResultDocument()).toFile());
                 final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema,
                         document);
                 mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());

@@ -81,8 +81,25 @@ public class MutationConfig {
         this.schematronExpectations.add(valid);
     }
 
-    public String getProperty(final String propGenericode) {
-        final Object objekt = this.properties.get(propGenericode);
+    /**
+     * Returns a string-representation of a defined property.
+     * 
+     * @param propKey the key of the property
+     * @return String representation or null
+     */
+    public String getStringProperty(final String propKey) {
+        final Object objekt = this.properties.get(propKey);
         return objekt != null ? objekt.toString() : null;
+    }
+
+    /**
+     * Returns a defined property and casting it to the desired target type.
+     *
+     * @param propKey the key of the property
+     * @return the property value or null
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getProperty(final String propKey) {
+        return (T) this.properties.get(propKey);
     }
 }

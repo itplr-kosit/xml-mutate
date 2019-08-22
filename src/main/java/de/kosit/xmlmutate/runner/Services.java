@@ -37,6 +37,8 @@ public class Services {
 
     private static final SchemaRepository schemaRepository;
 
+    private static final TemplateRepository templateRepository;
+
     static {
         xsltRepository = new ExecutableRepository(ObjectFactory.createProcessor());
         conversionService = new ConversionService();
@@ -46,6 +48,7 @@ public class Services {
                 ObjectFactory.createProcessor());
         schematronService = new SchematronService(xsltRepository, transformService);
         schemaRepository = new SchemaRepository();
+        templateRepository = new TemplateRepository();
     }
 
     public static SchemaValidationService getSchemaValidatonService() {
@@ -66,5 +69,9 @@ public class Services {
 
     public static SchemaRepository getSchemaRepository() {
         return schemaRepository;
+    }
+
+    public static TemplateRepository getTemplateRepository() {
+        return templateRepository;
     }
 }

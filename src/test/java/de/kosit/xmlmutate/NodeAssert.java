@@ -166,4 +166,20 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         }
         return this;
     }
+
+    public NodeAssert hasNodeName(final String test) {
+        isNotNull();
+        if (!this.actual.getNodeName().equals(test)) {
+            failWithMessage("Node name does not match. Expected %s. Actual is %s", test, this.actual.getNodeName());
+        }
+        return this;
+    }
+
+    public NodeAssert containsText(final String text) {
+        isNotNull();
+        if (!this.actual.getTextContent().contains(text)) {
+            failWithMessage("Node should contain text '%s', but does not.", text);
+        }
+        return this;
+    }
 }

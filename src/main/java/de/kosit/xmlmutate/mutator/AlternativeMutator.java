@@ -1,5 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,8 +15,6 @@ import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.DocumentParser;
-
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * @author Andreas Penski
@@ -45,10 +45,10 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
         final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).collect(Collectors.toList());
-        if (config.getProperties().get(ALT_KEY) == null || !isNumeric(config.getProperty(ALT_KEY))){
+        if (config.getProperties().get(ALT_KEY) == null || !isNumeric(config.getStringProperty(ALT_KEY))) {
             throw new IllegalArgumentException("No comment index configured");
         }
-        int index = Integer.parseInt(config.getProperty(ALT_KEY));
+        final int index = Integer.parseInt(config.getStringProperty(ALT_KEY));
         if (index >=comments.size() || index < 0) {
             throw new IllegalArgumentException("No comment for index " + index);
         }
