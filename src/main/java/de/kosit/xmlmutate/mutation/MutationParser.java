@@ -13,13 +13,12 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.RegExUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.kosit.xmlmutate.mutation.Expectation.ExpectedResult;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
@@ -31,9 +30,10 @@ import de.kosit.xmlmutate.mutator.MutatorRegistry;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
- * Parser für die Evaluierung von {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser basiert auf
- * einer ANTLR4-Grammatik.
- * 
+ * Parser für die Evaluierung von
+ * {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser
+ * basiert auf einer ANTLR4-Grammatik.
+ *
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class MutationParser {
     @RequiredArgsConstructor
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
-        private static final char COLON = ':';
+        private static final String COLON = ":";
 
         private final MutationContext context;
 
@@ -76,16 +76,47 @@ public class MutationParser {
 
         @Override
         public void exitSchemaKeyword(final SchemaKeywordContext ctx) {
-            this.config.setExpectSchemaValid(StringUtils.equalsIgnoreCase("valid", ctx.getText()));
+            final String keyword = ctx.assertion().getText();
+            final boolean valid = "valid".equals(keyword);
+            log.debug("Schema {} expectation is={}", keyword, valid);
+            this.config.setSchemaValidationAsExpected(valid);
         }
 
         @Override
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
-            final String value = unquote(ctx.value().getText());
-            final int colonPos = value.indexOf(COLON);
-            final String ruleName = colonPos > 0 ? value.substring(colonPos + 1) : value;
-            final String sourceName = colonPos > 0 ? value.substring(0, colonPos) : Schematron.DEFAULT_NAME;
-            this.config.addExpectation(new Expectation(sourceName, ruleName, evaluateExpectedResult(ctx)));
+            // replaceAll includes unbreakable spaces too
+
+            String value = ctx.getText();
+            log.trace("Value from PI={}", value);
+            value = unquote(value);
+            value = value.replaceAll("[\\s|\\u00A0]+", " ");
+            log.trace("Parse schematron expectation value={}", value);
+            // split at least returns the string itself if no split char is found
+            String[] rules = value.split(" ");
+            String[] ruleParts = null;
+            for (int i = 0; i < rules.length; i++) {
+                ruleParts = this.parseSchemtronRule(rules[i]);
+                if (ruleParts.length == 1) {
+                    this.config.addExpectation(
+                            new SchematronRuleExpectation(Schematron.DEFAULT_NAME, ruleParts[0],
+                                    evaluateExpectedResult(ctx)));
+                } else {
+                    this.config.addExpectation(
+                            new SchematronRuleExpectation(ruleParts[0], ruleParts[1], evaluateExpectedResult(ctx)));
+                }
+            }
+
+            log.debug("Generated expections num={}", this.config.getSchematronExpectations().size());
+            // final String sourceName = COLON_POS > 0 ? value.substring(0, COLON_POS) :
+            // Schematron.DEFAULT_NAME;
+            // final String ruleName = COLON_POS > 0 ? value.substring(COLON_POS + 1) :
+            // value;
+
+        }
+
+        private String[] parseSchemtronRule(String rule) {
+            // split at least returns the string itself if no split char is found
+            return rule.split(COLON);
         }
 
         private ExpectedResult evaluateExpectedResult(final SchematronKeywordContext ctx) {
@@ -105,14 +136,19 @@ public class MutationParser {
         }
 
         private boolean validate() {
-            if (this.config.getMutatorName() == null || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
-                this.mutations = (createErrorMutation(this.context,
+            if (this.config.getMutatorName() == null
+                    || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
+                this.mutations = (createErrorMutation(
+                        this.context,
                         MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
             }
 
             if (this.context.getTarget() == null) {
-                this.mutations = createErrorMutation(this.context,
-                        MessageFormat.format("No mutation can be found for {0}. Is PI last " + "element?", this.context.getDocumentName()));
+                this.mutations = createErrorMutation(
+                        this.context,
+                        MessageFormat.format(
+                                "No mutation can be found for {0}. Is PI last " + "element?",
+                                this.context.getDocumentName()));
             }
             return this.mutations == null;
         }
@@ -133,14 +169,16 @@ public class MutationParser {
     /**
      * Parsed den gegebenen Kontext
      *
-     * @param context der Kontext im Dokument; entspricht einer PI
+     * @param context
+     *                    der Kontext im Dokument; entspricht einer PI
      * @return Liste mit den generierten Mutationen
      */
     public List<Mutation> parse(final MutationContext context) {
         final CharStream cs = new ANTLRInputStream(context.getPi().getTextContent());
         final MutationLexer lexer = new MutationLexer(cs);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final de.kosit.xmlmutate.mutation.parser.MutationParser parser = new de.kosit.xmlmutate.mutation.parser.MutationParser(tokens);
+        final de.kosit.xmlmutate.mutation.parser.MutationParser parser = new de.kosit.xmlmutate.mutation.parser.MutationParser(
+                tokens);
         final MutationParserListener l = new MutationParserListener(context);
         parser.addErrorListener(ThrowingErrorListener.INSTANCE);
         parser.addParseListener(l);

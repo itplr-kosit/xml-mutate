@@ -15,8 +15,9 @@ import lombok.Setter;
 import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
- * Der Kontext der Mutation. Alle nötigen Artefakte um die Position innerhalb des Zieldokuments zu bestimmen.
- * 
+ * Context of the Mutation including all data necessary to determine where in
+ * the document the mutation takes place.
+ *
  * @author Andreas Penski
  */
 @Getter
@@ -33,9 +34,9 @@ public class MutationContext {
 
     /**
      * Constructor.
-     * 
-     * @param pi die {@link ProcessingInstruction} die mit diesem Kontext verbunden ist
-     * @param name der Name der Mutation
+     *
+     * @param pi   the {@link ProcessingInstruction} linked to this context,
+     * @param name name of the mutation
      */
     public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
         if (isBlank(name)) {
@@ -47,21 +48,24 @@ public class MutationContext {
     }
 
     /**
-     * Setzt ein spezifisches Zielelement. Dies ist z.B. dann nötig, wenn das eigentlich Zielelement aus dem Dokument
+     * Specific target DOM element.
+     *
+     * @param element the DOM node which is target of the mutation
+     */
+    /*
+     * Dies ist z.B. dann nötig, wenn das eigentlich Zielelement aus dem Dokument
      * entfernt wird oder sich die Struktur anderweitig ändert.
-     * 
-     * @param element das neue Zielelement
      */
     public void setSpecificTarget(final Node element) {
         this.specificTarget = element;
     }
 
     /**
-     * Ermittelt die Zeilennummer aus der sich dieser Kontext ergibt. Dieser muss nicht zwingend vorhanden sein und ist
-     * abhängig vom Parsing des {@link Document}.
-     * 
+     * Calculate the line number of the MutationContext. Depending on the
+     * {@link Document} parsing, the line number might not be availabe.
+     *
      * @see DocumentParser
-     * @return die Zeilennummer oder -1 wenn diese nicht zu ermitteln ist
+     * @return line number or -1 if not available
      */
     public int getLineNumber() {
         final Object userData = this.pi.getUserData(DocumentParser.LINE_NUMBER_KEY_NAME);
@@ -69,9 +73,9 @@ public class MutationContext {
     }
 
     /**
-     * Gibt die Verschachtelungs-Tiefe der {@link ProcessingInstruction} innerhalb des DOM zurück.
-     * 
-     * @return Tiefe
+     * Gets nesting level of the {@link ProcessingInstruction}.
+     *
+     * @return Nesting Level
      */
     public int getLevel() {
         int level = 0;
@@ -83,8 +87,9 @@ public class MutationContext {
     }
 
     /**
-     * Gibt den Zielknoten der Mutation zurück. Default ist das der {@link ProcessingInstruction} folgende {@link Element}.
-     * 
+     * Gets the target Element. Default is the next sibling {@link Element}
+     * following this {@link ProcessingInstruction}.
+     *
      * @return Zielknoten
      */
     public Node getTarget() {
@@ -115,8 +120,8 @@ public class MutationContext {
     }
 
     /**
-     * Gibt das Document zurück, das hinter dem PI steht.
-     * 
+     * Get the DOM Document.
+     *
      * @return Document
      */
     public Document getDocument() {
@@ -124,9 +129,10 @@ public class MutationContext {
     }
 
     /**
-     * Gibt das Parent Element des PI zurück. Ist das PI über vor dem Root-Element angesiedelt, so ist parent null
-     * 
-     * @return das parent Element
+     * Get parent Element. If the {@link ProcessingInstruction} is preceeding the
+     * Root Element, the parent will be null.
+     *
+     * @return parent Element
      */
     public Element getParentElement() {
         final Node parentNode = getPi().getParentNode();
@@ -134,8 +140,8 @@ public class MutationContext {
     }
 
     /**
-     * Erstellt eine Kopie des Kontexts, wenn beispieleweise mehrere Mutationen aus einer PI erstellt werden müssen.
-     * 
+     * Creates a SHALLOW copy of this MutationContext
+     *
      * @return eine Kopie
      */
     public MutationContext cloneContext() {
