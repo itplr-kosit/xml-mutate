@@ -3,7 +3,6 @@ package de.kosit.xmlmutate.mutation;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Disabled;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +44,6 @@ public class MutationParserTest {
 
     @Test
     @DisplayName("schematronKeyword with many rules")
-    @Disabled
     public void manySchematronRules() {
         final MutationContext context = createContext(
                 "mutator=remove schematron-valid=\"ubl:BR-52 ubl:BR-CO-25 ubl:BR-63 ubl:BR-11 ubl:BR-51 ubl:BR-57 ubl:BR-31 ubl:BR-32 ubl:BR-33 ubl:BR-CO-05 ubl:BR-CO-21 ubl:BR-DEC-01 ubl:BR-DEC-02 ubl:BR-36 ubl:BR-37 ubl:BR-38\"");
