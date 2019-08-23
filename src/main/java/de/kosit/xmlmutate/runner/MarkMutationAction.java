@@ -11,19 +11,23 @@ import org.w3c.dom.Text;
 import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
- * 
- * Actions fürs das Markieren der aktiven PI im Zieldokument.
- * 
+ *
+ * Actions for marking and demarking active xmute Processing Instruction
+ *
  * @author Andreas Penski
  */
 class MarkMutationAction {
+
+    private MarkMutationAction() {
+        // hide
+    }
 
     static class InsertCommentAction implements RunAction {
 
         @Override
         public void run(final Mutation mutation) {
-            final Comment comment = mutation.getContext().getDocument()
-                    .createComment(MessageFormat.format("This is the active mutation configuration: {0} ", mutation.getIdentifier()));
+            final Comment comment = mutation.getContext().getDocument().createComment(
+                    MessageFormat.format("This is the active mutation configuration: {0} ", mutation.getIdentifier()));
             final Text textNode = mutation.getContext().getDocument().createTextNode("\n");
             if (mutation.getContext().getParentElement() != null) {
                 mutation.getContext().getParentElement().insertBefore(comment, mutation.getContext().getPi());
@@ -53,9 +57,5 @@ class MarkMutationAction {
             }
 
         }
-    }
-
-    private MarkMutationAction() {
-        // hide
     }
 }

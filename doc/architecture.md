@@ -12,7 +12,24 @@ Here it is about technical details of design decisions and the implementations.
 * Evaluation
 * Mermaid diag
 
+## Standard Mutation Run
+
+All steps are designed similar to a simple Command Pattern and are called Actions.
+
+Currently, configured actions in order of execution are:
+
+* InsertCommentAction
+* MutateAction
+* SerializeAction(this.config.getTargetFolder()));
+* ValidateAction(this.config.getSchema(), this.config.getSchematronRules(),
+                            config.getTargetFolder()));
+* EvaluateSchematronExpectationsAction());
+* ResetAction());
+* new RemoveCommentAction());
+
 ## Mutation algorithm
+
+Order of processing is by nesting depth from inside out, because otherwise it might happen that xmute PIs are loosing their Kontext.
 
 ### Naming Scheme
 
@@ -23,8 +40,6 @@ Here it is about technical details of design decisions and the implementations.
 ## Reporting
 
 Currently, we use [JANSI](https://github.com/fusesource/jansi) to generate colored output to the console.
-
-
 
 ## Command Line Interface
 
