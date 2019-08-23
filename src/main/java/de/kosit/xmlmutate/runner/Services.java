@@ -2,6 +2,8 @@ package de.kosit.xmlmutate.runner;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
+import lombok.extern.slf4j.Slf4j;
+
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.convert.ConversionService;
 import de.init.kosit.commons.schematron.SchematronService;
@@ -18,7 +20,7 @@ import de.kosit.xmlmutate.mutator.MutatorRegistry;
  *
  * @author Andreas Penski
  */
-
+@Slf4j
 public class Services {
 
     private static final ExecutableRepository xsltRepository;
@@ -31,7 +33,7 @@ public class Services {
 
     public static final SchematronService schematronService;
 
-    private static final MutatorRegistry registry = MutatorRegistry.getInstance();
+    private static final MutatorRegistry registry;
 
     private static final NameGenerator nameGenerator = new SequenceNameGenerator();
 
@@ -40,6 +42,8 @@ public class Services {
     private static final TemplateRepository templateRepository;
 
     static {
+        log.debug("Initializing common services");
+        templateRepository = new TemplateRepository();
         xsltRepository = new ExecutableRepository(ObjectFactory.createProcessor());
         conversionService = new ConversionService();
         conversionService.initialize(SchematronOutput.class.getPackage().getName());
@@ -48,7 +52,7 @@ public class Services {
                 ObjectFactory.createProcessor());
         schematronService = new SchematronService(xsltRepository, transformService);
         schemaRepository = new SchemaRepository();
-        templateRepository = new TemplateRepository();
+        registry = MutatorRegistry.getInstance();
     }
 
     public static SchemaValidationService getSchemaValidatonService() {

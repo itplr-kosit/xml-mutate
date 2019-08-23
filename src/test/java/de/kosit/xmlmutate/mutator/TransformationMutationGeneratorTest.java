@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -41,7 +40,6 @@ public class TransformationMutationGeneratorTest {
     }
 
     @Test
-    @Disabled
     public void testSimpleGenerate() {
         final MutationConfig config = createConfig().add("name", SIMPLE_NAME);
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
@@ -55,7 +53,6 @@ public class TransformationMutationGeneratorTest {
     }
 
     @Test
-    @Disabled
     public void testParameters() {
         final MutationConfig config = createConfig().add("name", SIMPLE_NAME).add("param-test", "value").add("param-test2", "value");
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
