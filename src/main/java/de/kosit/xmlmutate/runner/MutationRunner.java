@@ -39,17 +39,26 @@ public class MutationRunner {
 
     private final ExecutorService executorService;
 
+    private final TemplateRepository templateRepository;
+
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
         this.parser = new MutationParser();
         this.executorService = executorService;
+        this.templateRepository = Services.getTemplateRepository();
     }
 
     public void run() {
+        prepare();
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
         this.configuration.getReportGenerator().generate(results);
 
+    }
+
+    private void prepare() {
+        // register templates
+        this.configuration.getTemplates().forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
     }
 
     private static Pair<Path, List<Mutation>> awaitTermination(final Future<Pair<Path, List<Mutation>>> pairFuture) {
@@ -69,8 +78,7 @@ public class MutationRunner {
             // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem
             // Kontext gerissen werden.
             final List<Mutation> sorted = mutations.stream()
-                    .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
+                    .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder())).collect(Collectors.toList());
             process(sorted);
             return new ImmutablePair<>(path, mutations);
         });
@@ -100,8 +108,8 @@ public class MutationRunner {
 
     private List<Mutation> parseMutations(final Document origin, final String documentName) {
         final List<Mutation> all = new ArrayList<>();
-        final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin,
-                NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
+        final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null,
+                true);
         while (piWalker.nextNode() != null) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {

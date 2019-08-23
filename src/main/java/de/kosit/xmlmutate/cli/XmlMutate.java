@@ -18,11 +18,11 @@ import org.fusesource.jansi.AnsiConsole;
 
 import lombok.extern.slf4j.Slf4j;
 
+import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.MutationRunner;
 import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.RunnerConfig.Builder;
 import de.kosit.xmlmutate.runner.Services;
 
 import picocli.CommandLine;
@@ -38,25 +38,27 @@ import picocli.CommandLine.ParseResult;
  * @author Renzo Kottmann
  */
 
-@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
+         separator = " ")
 @Slf4j
 public class XmlMutate implements Callable<Integer> {
 
-    @Option(names = { "-t",
-            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+    @Option(names = { "-o", "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
+    @Option(names = { "-x", "--schema", "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation",
+            required = true)
     private Path schemaLocation;
 
-    @Option(names = { "-s",
-            "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
+    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
     private Map<String, Path> schematrons;
 
-    @Option(names = { "-m",
-            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
+
+    @Option(names = { "-t", "--transformations" }, paramLabel = "MAP",
+            description = "Named transformations used for the Transformation-Mutator")
+    private Map<String, Path> transformations;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
@@ -79,10 +81,10 @@ public class XmlMutate implements Callable<Integer> {
         System.exit(i);
     }
 
-    @Override
     /**
      * The actual method to call run method on MutationRunner
      */
+    @Override
     public Integer call() throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
@@ -92,8 +94,8 @@ public class XmlMutate implements Callable<Integer> {
         return 0;
     }
 
-    /*
-     *
+    /**
+     * Prepares a {@link RunnerConfig configuration} for the {@link MutationRunner}.
      */
     private RunnerConfig prepareConfig() throws IOException {
         Files.createDirectories(this.target);
@@ -101,9 +103,18 @@ public class XmlMutate implements Callable<Integer> {
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
-                .checkSchematron(prepareSchematron()).checkSchema(prepareSchema()).build();
+        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron())
+                .checkSchema(prepareSchema()).useTransformations(prepareTransformations()).build();
 
+    }
+
+    private List<NamedTemplate> prepareTransformations() {
+        return this.transformations.entrySet().stream().map(e -> {
+            if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
+                return new NamedTemplate(e.getKey(), e.getValue());
+            }
+            throw new IllegalArgumentException(String.format("Provided template '%s' does not exist or is not readable", e.getValue()));
+        }).collect(Collectors.toList());
     }
 
     private Schema prepareSchema() {
@@ -114,28 +125,25 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Schematron> prepareSchematron() {
-        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri()))
-                .collect(Collectors.toList());
+        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri())).collect(Collectors.toList());
     }
 
     private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable)
-                .collect(Collectors.toList());
+        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).collect(Collectors.toList());
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
             throw new IllegalArgumentException(
                     MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
 
-        return available.stream().flatMap(this::expandDirectories)
-                .filter(e -> e.getFileName().toString().endsWith(".xml")).collect(Collectors.toList());
+        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml"))
+                .collect(Collectors.toList());
     }
 
     private Stream<Path> expandDirectories(final Path path) {
         try {
             if (!Files.exists(path)) {
-                throw new IllegalArgumentException(
-                        "Document or directory does not exist: " + path.toAbsolutePath().toString());
+                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath().toString());
             }
             if (Files.isDirectory(path)) {
                 return Files.walk(path);

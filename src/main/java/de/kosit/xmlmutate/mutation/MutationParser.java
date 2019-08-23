@@ -107,7 +107,7 @@ public class MutationParser {
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             // replaceAll includes unbreakable spaces too
             final SchematronRulesParserListener l = new SchematronRulesParserListener(evaluateExpectedResult(ctx));
-            final List<SchematronRuleExpectation> expectations = parse(unquote(ctx.identifier().getText()), l, parser -> {
+            final List<SchematronRuleExpectation> expectations = parse(unquote(ctx.schematronText().getText()), l, parser -> {
                 parser.schematronRules();
                 return l.getExpectations();
             }, e -> null);

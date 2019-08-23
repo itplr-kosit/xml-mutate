@@ -12,6 +12,7 @@ import javax.xml.validation.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.report.ReportGenerator;
 import de.kosit.xmlmutate.report.TextReportGenerator;
@@ -19,31 +20,13 @@ import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
 
 /**
  *
- * Contains whole configuration for a {@link MutationRunner} including all
- * Actions.
+ * Contains whole configuration for a {@link MutationRunner} including all Actions.
  *
  * @author Andreas Penski
  */
 @Getter
 @Setter
 public class RunnerConfig {
-
-    /**
-     * Zielverzeichnis für Ausgaben.
-     */
-    private Path targetFolder;
-
-    private List<Path> documents;
-
-    private Schema schema;
-
-    private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
-
-    private List<RunAction> actions = new ArrayList<>();
-
-    private List<Schematron> schematronRules = new ArrayList<>();
-
-    private ExecutorService executorService;
 
     public static class Builder {
 
@@ -80,32 +63,53 @@ public class RunnerConfig {
         public Builder withExecutor(final ExecutorService service) {
             this.config.setExecutorService(service);
             return this;
-
-        }
-
-        public RunnerConfig build() {
-            this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
-            this.config.getActions().add(new MutateAction());
-            this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
-            this.config.getActions().add(
-                    new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(),
-                            config.getTargetFolder()));
-            this.config.getActions().add(new EvaluateSchematronExpectationsAction());
-            this.config.getActions().add(new ResetAction());
-            this.config.getActions().add(new RemoveCommentAction());
-
-            if (this.config.getExecutorService() == null) {
-                this.config
-                        .setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
-            }
-
-            return this.config;
         }
 
         public Builder checkSchematron(final List<Schematron> rules) {
             this.config.setSchematronRules(rules);
             return this;
         }
+
+        public Builder useTransformations(final List<NamedTemplate> templates) {
+            this.config.setTemplates(templates);
+            return this;
+        }
+
+        public RunnerConfig build() {
+            this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
+            this.config.getActions().add(new MutateAction());
+            this.config.getActions().add(new SerializeAction(this.config.getTargetFolder()));
+            this.config.getActions()
+                    .add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(), this.config.getTargetFolder()));
+            this.config.getActions().add(new EvaluateSchematronExpectationsAction());
+            this.config.getActions().add(new ResetAction());
+            this.config.getActions().add(new RemoveCommentAction());
+
+            if (this.config.getExecutorService() == null) {
+                this.config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+            }
+            return this.config;
+        }
+
     }
+
+    /**
+     * Zielverzeichnis für Ausgaben.
+     */
+    private Path targetFolder;
+
+    private List<Path> documents;
+
+    private Schema schema;
+
+    private ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
+
+    private List<RunAction> actions = new ArrayList<>();
+
+    private List<Schematron> schematronRules = new ArrayList<>();
+
+    private List<NamedTemplate> templates;
+
+    private ExecutorService executorService;
 
 }

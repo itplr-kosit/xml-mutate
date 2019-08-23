@@ -51,7 +51,7 @@ STRING_LITERAL:
 QUOTE :'"';
 LITERAL: [a-zA-Z_] CHARACTER*;
 
-CHARACTER: ('0' ..'9' | 'a' ..'z' | 'A' ..'Z' | '_');
+CHARACTER: ('0' ..'9' | 'a' ..'z' | 'A' ..'Z' | '_' | '.');
 
 // parser rules:
 
@@ -59,16 +59,18 @@ mutation: mutator (configuration)*;
 
 mutator: 'mutator' EQUALITY_OPERATOR name;
 
-configuration: keyword | property;
+configuration: (keyword | property);
 
 keyword: schemaKeyword | schematronKeyword;
 
-schemaKeyword: 'schema-' assertion identifier;
-
-assertion: 'valid' | 'invalid';
+schemaKeyword: 'schema-' assertion;
 
 schematronKeyword:
-	'schematron-' assertion EQUALITY_OPERATOR identifier;
+	'schematron-' assertion EQUALITY_OPERATOR schematronText;
+
+schematronText: STRING_LITERAL;
+
+assertion: 'valid' | 'invalid';
 
 property: identifier EQUALITY_OPERATOR value;
 

@@ -14,17 +14,19 @@
     <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
     <cbc:TaxCurrencyCode>EUR</cbc:TaxCurrencyCode>
     <cbc:BuyerReference>04011000-12345-34</cbc:BuyerReference>
-    <?xmute mutator="remove-one-element" group="1" recursive="yes"?>
+    <?xmute mutator="remove" group="1" recursive="yes"?>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
                 <cbc:Name>[Seller trading name]</cbc:Name>
             </cac:PartyName>
-          
+
+            <?xmute mutator="xslt" name="my" ?>
             <cac:PostalAddress>
-                <?xmute mutator="randomize-element-order" xpath="."  group="1" schemtron-invalid="bt-br-03" ?>
+                <?xmute mutator="remove" xpath="."  group="1" schematron-invalid="bt-br-03" ?>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
-                <?xmute mutator="empty" xpath="." schema-valid  schemtron-invalid="bt-br-03" ?><cbc:CityName>bremen</cbc:CityName>
+                <?xmute mutator="empty" xpath="." schema-valid  schematron-invalid="bt-br-03" ?>
+                <cbc:CityName>bremen</cbc:CityName>
                 
                 <cbc:PostalZone>12345</cbc:PostalZone>
                 <cac:Country>

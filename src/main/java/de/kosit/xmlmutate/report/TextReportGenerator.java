@@ -25,13 +25,12 @@ import org.fusesource.jansi.AnsiRenderer.Code;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 
 /**
  * A {@link ReportGenerator} that prints results to the console.
@@ -328,7 +327,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         private Format format;
 
         public Text(final Object text) {
-            this.text = text.toString();
+            this.text = text != null ? text.toString() : "";
             this.format = DEFAULT_FORMAT;
         }
 
@@ -563,7 +562,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
     }
 
-    private void generateMutationReportLine(final Grid grid, Mutation mutation, int mutationNum) {
+    private void generateMutationReportLine(final Grid grid, final Mutation mutation, final int mutationNum) {
 
         final boolean isSchemaValid = mutation.isSchemaValid();
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
@@ -575,11 +574,11 @@ public class TextReportGenerator extends BaseReportGenerator {
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
                 .collect(Collectors.toList());
 
-        List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
+        final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
 
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
-        grid.addCell(mutation.getMutator().getName() + " " + mutation.getIdentifier());
+        grid.addCell(mutation.getMutator() != null ? mutation.getMutator().getName() + " " + mutation.getIdentifier() : "");
         grid.addCell(mutation.getContext().getLineNumber());
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
@@ -587,7 +586,7 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, mutation));
         grid.addCell(expectationCells.get(0));
-        grid.addCell("Error message");
+        grid.addCell(mutation.getErrorMessage());
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
         if (description != null) {
@@ -622,7 +621,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         return overall;
     }
 
-    private Cell createSchematronValidationCell(boolean isProcessed, Mutation mutation) {
+    private Cell createSchematronValidationCell(final boolean isProcessed, final Mutation mutation) {
 
         if (!isProcessed) {
             return new Cell("NA", Code.RED);
@@ -638,8 +637,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell("N", Code.RED);
     }
 
-    private List<Cell> createSchematronExpectationCells(boolean isProcessed, List<SchematronRuleExpectation> failed) {
-        List<Cell> cells = new ArrayList<>();
+    private List<Cell> createSchematronExpectationCells(final boolean isProcessed, final List<SchematronRuleExpectation> failed) {
+        final List<Cell> cells = new ArrayList<>();
 
         if (!isProcessed) {
             cells.add(new Cell("NA", Code.RED));
@@ -654,7 +653,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         return cells;
     }
 
-    private Cell createSchemaValidationCell(boolean isProcessed, boolean isValid) {
+    private Cell createSchemaValidationCell(final boolean isProcessed, final boolean isValid) {
         if (!isProcessed) {
             return new Cell("NA", Code.RED);
         }
@@ -662,7 +661,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell(isValid ? "Y" : "Nss", isValid ? Code.GREEN : Code.RED);
     }
 
-    private Cell createSchemaExpectationCell(boolean asExpected) {
+    private Cell createSchemaExpectationCell(final boolean asExpected) {
         if (asExpected) {
             return new Cell("Y", Code.GREEN);
         }

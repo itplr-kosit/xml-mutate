@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -138,12 +139,15 @@ public class DocumentParser {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
         final Document d = builder.newDocument();
         final SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         final SAXParser saxParser = factory.newSAXParser();
         final PositionalHandler handler = new PositionalHandler(d);
         final XMLReader xmlReader = saxParser.getXMLReader();
         xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
-        saxParser.parse(input, handler);
-        return d;
+        // saxParser.parse(input, handler);
+        // return d;
+        return builder.parse(input);
     }
 
     public static Document readDocument(final String xml) {
