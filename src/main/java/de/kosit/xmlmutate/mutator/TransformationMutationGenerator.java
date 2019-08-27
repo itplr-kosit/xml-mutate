@@ -18,7 +18,7 @@ import de.kosit.xmlmutate.runner.TemplateRepository;
 
 /**
  * Generator for generating mutations for the {@link TransformationMutator}.
- * 
+ *
  * @author Andreas Penski
  */
 public class TransformationMutationGenerator implements MutationGenerator {
@@ -41,15 +41,15 @@ public class TransformationMutationGenerator implements MutationGenerator {
     @Override
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
         final String name = config.getStringProperty(PROP_NAME);
+        final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
         if (isEmpty(name) || !this.repository.exists(name)) {
             throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, "Template {0} not found", name);
         }
 
         config.add(TransformationMutator.TEMPLATE_PARAM, this.repository.getTemplate(name));
         config.add(TransformationMutator.PARAMETER_PARAM, collectParameters(config));
-        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
-        m.setConfiguration(config);
-        m.setMutator(Services.getRegistry().getMutator(config.getMutatorName()));
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(), config, mutator);
+
         return Collections.singletonList(m);
     }
 

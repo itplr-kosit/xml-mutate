@@ -29,8 +29,10 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
         final long count = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).count();
         IntStream.range(0, (int) count).forEach(c -> {
             final MutationConfig newConfig = config.cloneConfig().add(ALT_KEY, c);
-            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c));
-            m.setConfiguration(newConfig);
+            // final MutationContext context, final String identifier, MutationConfig
+            // configuration
+            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c), newConfig);
+
             l.add(m);
 
         });
@@ -44,16 +46,18 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
 
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
-        final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).collect(Collectors.toList());
+        final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE)
+                .collect(Collectors.toList());
         if (config.getProperties().get(ALT_KEY) == null || !isNumeric(config.getStringProperty(ALT_KEY))) {
             throw new IllegalArgumentException("No comment index configured");
         }
         final int index = Integer.parseInt(config.getStringProperty(ALT_KEY));
-        if (index >=comments.size() || index < 0) {
+        if (index >= comments.size() || index < 0) {
             throw new IllegalArgumentException("No comment for index " + index);
         }
         final Node commentToUncomment = comments.get(index);
-        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
+        final Document parsedFragment = DocumentParser
+                .readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
         stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
             final Node newNode = context.getDocument().importNode(node, true);
             context.getTarget().insertBefore(newNode, commentToUncomment);

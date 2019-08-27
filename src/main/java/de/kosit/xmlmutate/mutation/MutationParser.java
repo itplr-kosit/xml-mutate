@@ -36,8 +36,9 @@ import de.kosit.xmlmutate.mutator.MutatorRegistry;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
- * Parser für die Evaluierung von {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser basiert auf
- * einer ANTLR4-Grammatik.
+ * Parser für die Evaluierung von
+ * {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser
+ * basiert auf einer ANTLR4-Grammatik.
  *
  * @author Andreas Penski
  */
@@ -107,10 +108,11 @@ public class MutationParser {
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             // replaceAll includes unbreakable spaces too
             final SchematronRulesParserListener l = new SchematronRulesParserListener(evaluateExpectedResult(ctx));
-            final List<SchematronRuleExpectation> expectations = parse(unquote(ctx.schematronText().getText()), l, parser -> {
-                parser.schematronRules();
-                return l.getExpectations();
-            }, e -> null);
+            final List<SchematronRuleExpectation> expectations = parse(
+                    unquote(ctx.schematronText().getText()), l, parser -> {
+                        parser.schematronRules();
+                        return l.getExpectations();
+                    }, e -> null);
             expectations.forEach(this.config::addExpectation);
         }
 
@@ -131,14 +133,19 @@ public class MutationParser {
         }
 
         private boolean validate() {
-            if (this.config.getMutatorName() == null || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
-                this.mutations = (createErrorMutation(this.context,
+            if (this.config.getMutatorName() == null
+                    || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
+                this.mutations = (createErrorMutation(
+                        this.context,
                         MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
             }
 
             if (this.context.getTarget() == null) {
-                this.mutations = createErrorMutation(this.context,
-                        MessageFormat.format("No mutation can be found for {0}. Is PI last " + "element?", this.context.getDocumentName()));
+                this.mutations = createErrorMutation(
+                        this.context,
+                        MessageFormat.format(
+                                "No mutation can be found for {0}. Is PI last " + "element?",
+                                this.context.getDocumentName()));
             }
             return this.mutations == null;
         }
@@ -159,23 +166,26 @@ public class MutationParser {
     /**
      * Parsed den gegebenen Kontext
      *
-     * @param context der Kontext im Dokument; entspricht einer PI
+     * @param context
+     *                    der Kontext im Dokument; entspricht einer PI
      * @return Liste mit den generierten Mutationen
      */
     public List<Mutation> parse(final MutationContext context) {
-        final MutationParserListener l = new MutationParserListener(context);
-        return parse(context.getPi().getTextContent(), l, parser -> {
+        final MutationParserListener listener = new MutationParserListener(context);
+        return parse(context.getPi().getTextContent(), listener, parser -> {
             parser.mutation();
-            return l.getMutations();
+            return listener.getMutations();
         }, e -> createErrorMutation(context, e.getMessage()));
     }
 
     private static <T> T parse(final String text, final ParseTreeListener listener,
-            final Function<de.kosit.xmlmutate.mutation.parser.MutationParser, T> function, final Function<Exception, T> errorFunction) {
+            final Function<de.kosit.xmlmutate.mutation.parser.MutationParser, T> function,
+            final Function<Exception, T> errorFunction) {
         final CharStream cs = new ANTLRInputStream(text);
         final MutationLexer lexer = new MutationLexer(cs);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final de.kosit.xmlmutate.mutation.parser.MutationParser parser = new de.kosit.xmlmutate.mutation.parser.MutationParser(tokens);
+        final de.kosit.xmlmutate.mutation.parser.MutationParser parser = new de.kosit.xmlmutate.mutation.parser.MutationParser(
+                tokens);
 
         parser.addErrorListener(ThrowingErrorListener.INSTANCE);
         parser.addParseListener(listener);
