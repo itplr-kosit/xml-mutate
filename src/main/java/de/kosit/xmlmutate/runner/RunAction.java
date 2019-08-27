@@ -3,17 +3,22 @@ package de.kosit.xmlmutate.runner;
 import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
- * Eine Aktion des Runners. Kapselt eine bestimmte Funktion, welche auf Basis eine Mutation ausgeführt werden muss.
+ * Action for XMute Runner.
  *
  * @author Andreas Penski
+ * @author Renzo Kottmann
  */
 interface RunAction {
 
     /**
-     * Führt die Aktion aus.
-     * 
-     * @param mutation die Mutation
-     * @throws MutationException bei einem Verarbeitungsfehler
+     * Executes the action.
+     *
+     * @param mutation
+     *                     The Mutation
+     * @throws MutationException
+     *                               In case of run time errors of the
+     *                               MutationRunner
      */
     void run(Mutation mutation);
+
 }

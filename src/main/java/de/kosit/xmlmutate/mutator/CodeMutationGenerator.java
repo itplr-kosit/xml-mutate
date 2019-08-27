@@ -39,8 +39,8 @@ import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
- * Erzeugt Mutationen für eine definierte Liste mit Code-Werten. Die Liste kann eine simple
- * 
+ * Generator for Mutation having a defined vlaue from a list of values.
+ *
  * @author Andreas Penski
  */
 @Slf4j
@@ -72,12 +72,15 @@ public class CodeMutationGenerator implements MutationGenerator {
                     final DocumentBuilder builder = builderFactory.newDocumentBuilder();
                     final Document xmlDocument = builder.parse(source.toString());
                     final XPath xPath = XPathFactory.newInstance().newXPath();
-                    final String expression = String.format("/CodeList/SimpleCodeList/Row/Value[@ColumnRef='%s']/SimpleValue", key);
-                    final NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
-                    final List<Code> result = IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).map(Node::getTextContent)
-                            .map(Code::new).collect(Collectors.toList());
+                    final String expression = String
+                            .format("/CodeList/SimpleCodeList/Row/Value[@ColumnRef='%s']/SimpleValue", key);
+                    final NodeList nodeList = (NodeList) xPath.compile(expression)
+                            .evaluate(xmlDocument, XPathConstants.NODESET);
+                    final List<Code> result = IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item)
+                            .map(Node::getTextContent).map(Code::new).collect(Collectors.toList());
                     if (result.isEmpty()) {
-                        throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, String.format("No codes found for %s", source));
+                        throw new MutationException(ErrorCode.CONFIGURATION_ERRROR,
+                                String.format("No codes found for %s", source));
                     }
                     return result;
                 } catch (final ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
@@ -88,6 +91,7 @@ public class CodeMutationGenerator implements MutationGenerator {
             throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, "No genericode input given");
         }
     }
+
     private static final String PROP_VALUES = "values";
 
     private static final String PROP_CODE_KEY = "codeKey";
@@ -119,17 +123,19 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
-        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(SEPERATOR))
-                .filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
+        return config.resolveList(PROP_VALUES).stream()
+                .flatMap(
+                        e -> Arrays.stream(e.toString().split(SEPERATOR)).filter(StringUtils::isNotEmpty)
+                                .map(s -> createMutation(config, context, s)))
+                .collect(Collectors.toList());
     }
 
     private Mutation createMutation(final MutationConfig config, final MutationContext context, final String s) {
+        final Mutator mutator = MutatorRegistry.getInstance().getMutator(getName());
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
         final Mutation m = new Mutation(context.cloneContext(),
-                Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()));
-        m.setConfiguration(cloned);
-        m.setMutator(MutatorRegistry.getInstance().getMutator(getName()));
+                Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()), cloned, mutator);
         return m;
     }
 
