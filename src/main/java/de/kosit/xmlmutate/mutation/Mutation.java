@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import de.kosit.xmlmutate.mutator.Mutator;
 
@@ -13,10 +12,11 @@ import de.kosit.xmlmutate.mutator.Mutator;
  * möglichen Informationen rund um die Verarbeitung, inkl. Testergebnisse.
  *
  * @author Andreas Penski
+ * @author Renzo Kottmann
  */
 
 @Getter
-@Setter
+
 public class Mutation {
 
     private final MutationContext context;
@@ -31,7 +31,7 @@ public class Mutation {
 
     private State state = State.CREATED;
 
-    private String errorMessage;
+    private String errorMessage = "";
 
     /**
      * Constructor.
@@ -44,6 +44,32 @@ public class Mutation {
     public Mutation(final MutationContext context, final String identifier) {
         this.context = context;
         this.identifier = identifier;
+    }
+
+    public Mutation(final MutationContext context, final String identifier, MutationConfig configuration) {
+        this(context, identifier);
+        this.configuration = configuration;
+    }
+
+    public Mutation(final MutationContext context, final String identifier, MutationConfig configuration,
+            Mutator mutator) {
+        this(context, identifier, configuration);
+        this.mutator = mutator;
+    }
+
+    public void setState(State state) {
+        if (state == null) {
+            this.state = State.ERROR;
+            throw new IllegalArgumentException("State should not be set to null");
+        }
+        this.state = state;
+    }
+
+    public void setErrorMessage(String message) {
+        if (message == null) {
+            this.errorMessage = "";
+        }
+        this.errorMessage = message;
     }
 
     public Path getResultDocument() {
