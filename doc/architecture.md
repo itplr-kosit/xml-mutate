@@ -8,14 +8,15 @@ Here it is about technical details of design decisions and the implementations.
 
 * Original document
   > An original document is the XML instance with or without mutator instructions
-* Mutator instructions are the declaration of a mutator with additional data on Expectations for Evaluation and for Test-Management
+* Mutator instructions
+  > A Mutator instructions is the declaration of a mutator with additional data on Validation, Expectations for Evaluation, and for Test-Management
   * Implemented as XML Processing Instructions
 
 * Mutator
   > A mutator mutates (changes() an Original Document according to the mutator instructions and generates one or more Mutations
 * Mutation
   > Is the outcome (changed document) of a Mutator
-* valid/invalid
+* Validation: valid/invalid
   > A mutation can be Schema valid or invalid and Schematron valid or invalid as determined by Schema Validation and Schematron Validation
 * Expectation
   > Is the declaration of what the validation outcome of (after) a Mutation is expected to be
