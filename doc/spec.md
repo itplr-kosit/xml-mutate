@@ -89,6 +89,7 @@ There are four app runtime modes:
 1. Generate mutations mode (the default): Generate mutations only
 2. Generate mutations and test expectations mode: Generate mutations and test the resulting instances if they meet expectations
 3. Check mode: Check that xmute instructions are syntactically correct and executable
+4. Generate Test Management Report
 
 ### Mutation mode
 

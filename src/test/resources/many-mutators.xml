@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ubl:Invoice
+  xmlns:ccts-cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2"
+  xmlns:ccts="urn:un:unece:uncefact:documentation:2"
+  xmlns:sbc="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2"
+  xmlns:ns0="urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2"
+  xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+  xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+  xmlns:udt="urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2"
+  xmlns:ns1="http://uri.etsi.org/01903/v1.4.1#"
+  xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+  xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"
+  xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+  xmlns:sac="urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2"
+  xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDataTypes-2"
+  xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 file:/C:/data/git-repos/xrechnung-test/build/repository/resources/ubl/2.1/xsd/maindoc/UBL-Invoice-2.1.xsd">
+  <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-001" description="Element UBLExtension not allowed." ?>
+  <ext:UBLExtensions>
+    <ext:UBLExtension>
+      <ext:ExtensionContent>
+        <xades:SignedDataObjectProperties />
+      </ext:ExtensionContent>
+    </ext:UBLExtension>
+    <ext:UBLExtension>
+      <ext:ExtensionContent>
+        <xades:SignedDataObjectProperties />
+      </ext:ExtensionContent>
+    </ext:UBLExtension>
+  </ext:UBLExtensions>
+  <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-002" description="Element UBLVersionID not allowed." ?>
+  <cbc:UBLVersionID>UBLVersionID0</cbc:UBLVersionID>
+  <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-648" description="Attr schemeID not allowed" ?>
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-01" description="Has to have CustomizationID" ?>
+  <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-01" description="CustomizationID has to have a value" ?>
+  <cbc:CustomizationID schemeID="a scheme id"
+    >CustomizationID0</cbc:CustomizationID>
+
+  <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-649" description="Attr schemeID not allowed" ?>
+  <cbc:ProfileID schemeID="not allowed">ProfileID0</cbc:ProfileID>
+  <cbc:ProfileExecutionID>ProfileExecutionID0</cbc:ProfileExecutionID>
+  <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-650" description="Attr schemeID not allowed" ?>
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-02" description="Has to have ID" ?>
+  <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-02" description="ID must have a value" ?>
+  <cbc:ID schemeID="not allowed">ID0</cbc:ID>
+  <cbc:CopyIndicator>false</cbc:CopyIndicator>
+  <cbc:UUID>UUID0</cbc:UUID>
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-03" description="Must have IssueDate" ?>
+  <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-03" description="Must have IssueDate" ?>
+  <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-03" description="IssueDate must have a value" ?>
+  <cbc:IssueDate>2006-05-04</cbc:IssueDate>
+  <cbc:IssueTime>01:01:01.001</cbc:IssueTime>
+  <cbc:DueDate>2006-05-04</cbc:DueDate>
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-04" description="Must have InvoiceTypeCode" ?>
+  <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-04" description="Must have InvoiceTypeCode" ?>
+  <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-04" description="Must not be empty" ?>
+  <cbc:InvoiceTypeCode>InvoiceTypeCode0</cbc:InvoiceTypeCode>
+  <cbc:Note>Note0</cbc:Note>
+  <cbc:Note>Note1</cbc:Note>
+  <cbc:Note>Note2</cbc:Note>
+  <cbc:Note>Note3</cbc:Note>
+  <cbc:Note>Note4</cbc:Note>
+  <cbc:TaxPointDate>2006-05-04</cbc:TaxPointDate>
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-04" description="Must have InvoiceTypeCode" ?>
+  <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-04" description="Must have InvoiceTypeCode" ?>
+  <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-04" description="Must not be empty" ?>
+  <?xmute mutator="noop" schema-valid schematron-invalid="ubl:UBL-CR-657"
+    description="Attr listID not allowed" ?>
+  <cbc:DocumentCurrencyCode listID="sds"
+    >DocumentCurrencyCode0</cbc:DocumentCurrencyCode>
+  <cbc:TaxCurrencyCode>TaxCurrencyCode0</cbc:TaxCurrencyCode>
+  <cbc:PricingCurrencyCode>PricingCurrencyCode0</cbc:PricingCurrencyCode>
+  <cbc:PaymentCurrencyCode>PaymentCurrencyCode0</cbc:PaymentCurrencyCode>
+  <cbc:PaymentAlternativeCurrencyCode>PaymentAlternativeCurrencyCode0</cbc:PaymentAlternativeCurrencyCode>
+  <cbc:AccountingCostCode>AccountingCostCode0</cbc:AccountingCostCode>
+  <cbc:AccountingCost>AccountingCost0</cbc:AccountingCost>
+  <cbc:LineCountNumeric>0</cbc:LineCountNumeric>
+  <cbc:BuyerReference>BuyerReference0</cbc:BuyerReference>
+  <cac:InvoicePeriod>
+    <cbc:StartDate>2000-04-04</cbc:StartDate>
+    <cbc:EndDate>2000-04-04</cbc:EndDate>
+  </cac:InvoicePeriod>
+  <cac:InvoicePeriod />
+  <cac:InvoicePeriod />
+  <cac:InvoicePeriod />
+  <cac:InvoicePeriod />
+  <cac:OrderReference>
+    <cbc:ID>ID1</cbc:ID>
+  </cac:OrderReference>
+
+  <cac:BillingReference />
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-55" description="Has to have cbc:ID elem" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-55" description="Has to have cbc:ID elem" ?>
+      <cbc:ID>someid</cbc:ID>
+    </cac:InvoiceDocumentReference>
+
+  </cac:BillingReference>
+  <cac:BillingReference />
+  <cac:BillingReference />
+  <cac:BillingReference />
+  <cac:DespatchDocumentReference>
+    <cbc:ID>ID2</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>ID3</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>ID4</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>ID5</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>ID6</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>ID7</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>ID8</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>ID9</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>ID10</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>ID11</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:StatementDocumentReference>
+    <cbc:ID>ID12</cbc:ID>
+  </cac:StatementDocumentReference>
+  <cac:StatementDocumentReference>
+    <cbc:ID>ID13</cbc:ID>
+  </cac:StatementDocumentReference>
+  <cac:StatementDocumentReference>
+    <cbc:ID>ID14</cbc:ID>
+  </cac:StatementDocumentReference>
+  <cac:StatementDocumentReference>
+    <cbc:ID>ID15</cbc:ID>
+  </cac:StatementDocumentReference>
+  <cac:StatementDocumentReference>
+    <cbc:ID>ID16</cbc:ID>
+  </cac:StatementDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>ID17</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>ID18</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>ID19</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>ID20</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>ID21</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>ID22</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>ID23</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>ID24</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>ID25</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>ID26</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ID27</cbc:ID>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ID28</cbc:ID>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ID29</cbc:ID>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ID30</cbc:ID>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ID31</cbc:ID>
+  </cac:AdditionalDocumentReference>
+  <cac:ProjectReference>
+    <cbc:ID>ID32</cbc:ID>
+  </cac:ProjectReference>
+  <cac:ProjectReference>
+    <cbc:ID>ID33</cbc:ID>
+  </cac:ProjectReference>
+  <cac:ProjectReference>
+    <cbc:ID>ID34</cbc:ID>
+  </cac:ProjectReference>
+  <cac:ProjectReference>
+    <cbc:ID>ID35</cbc:ID>
+  </cac:ProjectReference>
+  <cac:ProjectReference>
+    <cbc:ID>ID36</cbc:ID>
+  </cac:ProjectReference>
+  <cac:Signature>
+    <cbc:ID>ID37</cbc:ID>
+  </cac:Signature>
+  <cac:Signature>
+    <cbc:ID>ID38</cbc:ID>
+  </cac:Signature>
+  <cac:Signature>
+    <cbc:ID>ID39</cbc:ID>
+  </cac:Signature>
+  <cac:Signature>
+    <cbc:ID>ID40</cbc:ID>
+  </cac:Signature>
+  <cac:Signature>
+    <cbc:ID>ID41</cbc:ID>
+  </cac:Signature>
+  <!-- Must exist -->
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="someid" />
+      <cac:PostalAddress>
+        <cac:Country>
+          <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-09"
+            description="Must have Country/IdentificaionCode" ?>
+          <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-09" description="Must have Country/IdentificaionCode" ?>
+          <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-09" description="Must not be empty" ?>
+          <cbc:IdentificationCode>somecode</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyLegalEntity>
+        <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-06" description="Must have RegistrationName" ?>
+        <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-06" description="Must have RegistrationName" ?>
+        <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-06" description="Must not be empty" ?>
+        <cbc:RegistrationName>Seller Name</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+
+
+  <!-- CUSTOMER -->
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-10" description="Must have PostalAddress" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-10" description="Must have PostalAddress" ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-10" description="Must not be empty" ?>
+      <cac:PostalAddress> </cac:PostalAddress>
+      <cac:PartyLegalEntity>
+        <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-07" description="Must have RegistrationName" ?>
+        <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-07" description="Must have RegistrationName" ?>
+        <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-07" description="Must not be empty" ?>
+        <cbc:RegistrationName>Buyer Name</cbc:RegistrationName>
+
+      </cac:PartyLegalEntity>
+
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PayeeParty />
+  <cac:BuyerCustomerParty />
+  <cac:SellerSupplierParty />
+  <cac:TaxRepresentativeParty />
+  <cac:Delivery />
+  <cac:Delivery />
+  <cac:Delivery />
+  <cac:Delivery />
+  <cac:Delivery />
+  <cac:DeliveryTerms />
+  <cac:PaymentMeans>
+    <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-49"
+      description="Must have PaymentMeansCode" ?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-49" description="Must have PaymentMeansCode" ?>
+    <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-49" description="Must not be empty" ?>
+    <cbc:PaymentMeansCode>PaymentMeansCode0</cbc:PaymentMeansCode>
+    <?xmute mutator="noop" schema-valid schematron-invalid="UBL-SR-44" description="Identical payment IDs not allowed" ?>
+    <cbc:PaymentID>identicalID</cbc:PaymentID>
+    <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-653"
+      description="Attr schemID not allowed" ?>
+    <cbc:PaymentID schemeID="not allowed">identicalID</cbc:PaymentID>
+    <cac:PayeeFinancialAccount>
+      <?xmute mutator="noop" schema-valid schematron-invalid="UBL-CR-654"
+        description="Attr. schemeID not allowed" ?>
+      <cbc:ID schemeID="not allowed" />
+    </cac:PayeeFinancialAccount>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>PaymentMeansCode1</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>PaymentMeansCode2</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>PaymentMeansCode3</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>PaymentMeansCode4</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  <cac:PaymentTerms />
+  <cac:PaymentTerms />
+  <cac:PaymentTerms />
+  <cac:PaymentTerms />
+  <cac:PaymentTerms />
+  <cac:PrepaidPayment />
+  <cac:PrepaidPayment />
+  <cac:PrepaidPayment />
+  <cac:PrepaidPayment />
+  <cac:PrepaidPayment />
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:Amount currencyID="currencyID0">0</cbc:Amount>
+  </cac:AllowanceCharge>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:Amount currencyID="currencyID1">0</cbc:Amount>
+  </cac:AllowanceCharge>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:Amount currencyID="currencyID2">0</cbc:Amount>
+  </cac:AllowanceCharge>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:Amount currencyID="currencyID3">0</cbc:Amount>
+  </cac:AllowanceCharge>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:Amount currencyID="currencyID4">0</cbc:Amount>
+  </cac:AllowanceCharge>
+  <cac:TaxExchangeRate>
+    <cbc:SourceCurrencyCode>SourceCurrencyCode0</cbc:SourceCurrencyCode>
+    <cbc:TargetCurrencyCode>TargetCurrencyCode0</cbc:TargetCurrencyCode>
+  </cac:TaxExchangeRate>
+  <cac:PricingExchangeRate>
+    <cbc:SourceCurrencyCode>SourceCurrencyCode1</cbc:SourceCurrencyCode>
+    <cbc:TargetCurrencyCode>TargetCurrencyCode1</cbc:TargetCurrencyCode>
+  </cac:PricingExchangeRate>
+  <cac:PaymentExchangeRate>
+    <cbc:SourceCurrencyCode>SourceCurrencyCode2</cbc:SourceCurrencyCode>
+    <cbc:TargetCurrencyCode>TargetCurrencyCode2</cbc:TargetCurrencyCode>
+  </cac:PaymentExchangeRate>
+  <cac:PaymentAlternativeExchangeRate>
+    <cbc:SourceCurrencyCode>SourceCurrencyCode3</cbc:SourceCurrencyCode>
+    <cbc:TargetCurrencyCode>TargetCurrencyCode3</cbc:TargetCurrencyCode>
+  </cac:PaymentAlternativeExchangeRate>
+
+
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="currencyID5">0</cbc:TaxAmount>
+    <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-CO-18" description="Must have " ?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-CO-18" description="Must have " ?>
+    <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-CO-18"
+      description="Must not be empty" ?>
+    <cac:TaxSubtotal>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-45"
+        description="Must have TaxableAmount" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-45" description="Must have TaxableAmount" ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-45" description="Must not be empty" ?>
+      <cbc:TaxableAmount currencyID="dd">444</cbc:TaxableAmount>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-46"
+        description="Must have TaxAmount" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-46" description="Must have TaxAmount" ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-46" description="Must not be empty" ?>
+      <cbc:TaxAmount currencyID="">6.000997766</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cac:TaxScheme />
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="currencyID6">0</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="currencyID7">0</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="currencyID8">0</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="currencyID9">0</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="currencyID10">0</cbc:TaxAmount>
+  </cac:WithholdingTaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="currencyID11">0</cbc:TaxAmount>
+  </cac:WithholdingTaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="currencyID12">0</cbc:TaxAmount>
+  </cac:WithholdingTaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="currencyID13">0</cbc:TaxAmount>
+  </cac:WithholdingTaxTotal>
+  <cac:WithholdingTaxTotal>
+    <cbc:TaxAmount currencyID="currencyID14">0</cbc:TaxAmount>
+  </cac:WithholdingTaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:PayableAmount currencyID="currencyID15">0</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+
+  <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-16"
+    description="Must have at least one InvoiceLIne" ?>
+  <cac:InvoiceLine>
+    <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-21"
+      description="Must have InvoiceLine/ID" ?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-21" description="Must have InvoiceLine/ID" ?>
+    <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-21"
+      description="Must not be empty" ?>
+    <cbc:ID>ID42</cbc:ID>
+    <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-22"
+      description="Must have InvoicedQuantity" ?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-22" description="Must have " ?>
+    <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-22" description="Must not be empty" ?>
+    <cbc:InvoicedQuantity unitCode="">67.88656544</cbc:InvoicedQuantity>
+    <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-24" description="Must have LineExtensionAmount" ?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-24" description="Must have LineExtensionAmount" ?>
+    <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-24" description="Must not be empty" ?>
+    <cbc:LineExtensionAmount currencyID="currencyID16"
+      >0</cbc:LineExtensionAmount>
+    <cac:InvoicePeriod>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-30 BR-CO-20"
+        description="startdate needs to be before end date" ?>
+      <cbc:StartDate>2000-01-01</cbc:StartDate>
+      <cbc:EndDate>2111-01-01</cbc:EndDate>
+    </cac:InvoicePeriod>
+    <cac:AllowanceCharge>
+      <!-- bt-41 and bt-42 depend on this value -->
+      <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+
+      <cbc:AllowanceChargeReasonCode />
+      <cbc:AllowanceChargeReason />
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-41 ubl:BR-41"
+        description="Must have AllowanceCharge/Amount" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-41 ubl:BR-41" description="Must have AllowanceCharge/Amount" ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-41 ubl:BR-41" description="Must not be empty" ?>
+      <cbc:Amount currencyID="">33</cbc:Amount>
+    </cac:AllowanceCharge>
+    <cac:Item>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-25"
+        description="Must have Item/Name" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-25" description="Must have Item/Name" ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-25" description="Must not be empty" ?>
+      <cbc:Name>whatever</cbc:Name>
+
+      <cac:StandardItemIdentification>
+        <cbc:ID schemeID="sdsd" />
+      </cac:StandardItemIdentification>
+
+      <cac:CommodityClassification>
+        <cbc:ItemClassificationCode listID="" />
+      </cac:CommodityClassification>
+
+
+      <cac:AdditionalItemProperty>
+        <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-54"
+    description="Must have name" ?>
+        <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-54"
+    description="Must have Name" ?>
+        <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-54" description="Must not be empty" ?>
+        <cbc:Name>name</cbc:Name>
+        <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-54"
+    description="Must have Value" ?>
+        <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-54"
+    description="Must have Value" ?>
+        <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-54" description="Must not be empty" ?>
+        <cbc:Value>sdasd</cbc:Value>
+      </cac:AdditionalItemProperty>
+
+    </cac:Item>
+
+    <cac:Price>
+      <?xmute mutator="noop" schema-valid schematron-valid="ubl:BR-27"
+        description="Must have Price/PriceAmount" ?>
+      <?xmute mutator="remove" schema-valid schematron-invalid="ubl:BR-27" description="Must have " ?>
+      <?xmute mutator="empty" schema-valid schematron-invalid="ubl:BR-27" description="Must not be empty" ?>
+      <cbc:PriceAmount currencyID="">77</cbc:PriceAmount>
+
+    </cac:Price>
+
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>ID43</cbc:ID>
+    <cbc:LineExtensionAmount currencyID="currencyID17"
+      >0</cbc:LineExtensionAmount>
+    <cac:Item />
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>ID44</cbc:ID>
+    <cbc:LineExtensionAmount currencyID="currencyID18"
+      >0</cbc:LineExtensionAmount>
+    <cac:Item />
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>ID45</cbc:ID>
+    <cbc:LineExtensionAmount currencyID="currencyID19"
+      >0</cbc:LineExtensionAmount>
+    <cac:Item />
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>ID46</cbc:ID>
+    <cbc:LineExtensionAmount currencyID="currencyID20"
+      >0</cbc:LineExtensionAmount>
+    <cac:Item />
+  </cac:InvoiceLine>
+</ubl:Invoice>
