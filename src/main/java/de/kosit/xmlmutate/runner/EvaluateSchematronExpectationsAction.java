@@ -1,23 +1,17 @@
 package de.kosit.xmlmutate.runner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import java.util.List;
-import java.util.Optional;
-
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationResult;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import com.google.common.base.Optional;
+import java.util.*;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationResult;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
+// import com.google.common.base.Optional;
 
 /**
  * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem
@@ -42,7 +36,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 mutation.setErrorMessage("Failed expectation assert for " + e.getRuleName());
             }
             log.trace(
-                    "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getName(),
+                    "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
                     e.getRuleName(), e.mustPass(), e.mustFail(), valid);
         });
         mutation.setState(State.CHECKED);

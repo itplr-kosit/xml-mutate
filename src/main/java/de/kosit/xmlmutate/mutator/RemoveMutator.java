@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,8 +25,8 @@ import de.kosit.xmlmutate.runner.MutationException;
 public class RemoveMutator extends BaseMutator {
 
     @Override
-    public String getName() {
-        return "remove";
+    public List<String> getNames() {
+        return Arrays.asList("remove");
     }
 
     @Override

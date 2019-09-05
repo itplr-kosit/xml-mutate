@@ -1,39 +1,27 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
+import de.kosit.xmlmutate.mutation.parser.MutationLexer;
+import de.kosit.xmlmutate.mutation.parser.MutationParser.*;
+import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
+import de.kosit.xmlmutate.mutator.MutatorRegistry;
+import de.kosit.xmlmutate.runner.Services;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.apache.commons.lang3.RegExUtils;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.apache.commons.lang3.RegExUtils;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
-import de.kosit.xmlmutate.mutation.parser.MutationLexer;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.PropertyContext;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.RuleNameContext;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.SchemaKeywordContext;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.SchematronKeywordContext;
-import de.kosit.xmlmutate.mutation.parser.MutationParser.SchematronRuleContext;
-import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
-import de.kosit.xmlmutate.mutator.MutatorRegistry;
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Parser für die Evaluierung von

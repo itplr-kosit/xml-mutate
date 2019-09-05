@@ -30,6 +30,11 @@ public abstract class BaseMutator implements Mutator {
         return comment;
     }
 
+    @Override
+    public String getPreferredName() {
+        return getNames().stream().findFirst().orElseThrow(IllegalStateException::new);
+    }
+
     protected static Comment wrap(final Comment comment, final List<Node> nodesToWrap) {
         nodesToWrap.forEach(n -> comment.appendData(nodeToString(n)));
         return comment;

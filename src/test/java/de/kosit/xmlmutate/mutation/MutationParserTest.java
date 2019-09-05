@@ -1,16 +1,15 @@
 package de.kosit.xmlmutate.mutation;
 
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import de.kosit.xmlmutate.mutation.Mutation.State;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Testet die grundsätzlichen Parser-Funktionen.
@@ -20,6 +19,14 @@ import de.kosit.xmlmutate.mutation.Mutation.State;
 public class MutationParserTest {
 
     private final MutationParser parser = new MutationParser();
+
+    @Test
+    @DisplayName("Alias test")
+    public void alias() {
+        final MutationContext context = createContext("mutator=noop");
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations.get(0).getMutator().getClass().getSimpleName()).isEqualToIgnoringCase("IdentityMutator");
+    }
 
     @Test
     @DisplayName("Simple Test")

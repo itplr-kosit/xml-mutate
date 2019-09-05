@@ -17,7 +17,7 @@ public class MutateAction implements RunAction {
     @Override
     public void run(final Mutation mutation) {
         log.info(
-                "Running mutation {} on element {}", mutation.getMutator().getName(),
+                "Running mutation {} on element {}", mutation.getMutator().getPreferredName(),
                 mutation.getContext().getTarget().getNodeName());
         final Mutator mutator = mutation.getMutator();
         mutator.mutate(mutation.getContext(), mutation.getConfiguration());

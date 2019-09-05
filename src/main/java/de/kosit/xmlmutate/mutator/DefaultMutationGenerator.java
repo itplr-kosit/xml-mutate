@@ -26,6 +26,8 @@ public class DefaultMutationGenerator implements MutationGenerator {
     @Override
     public List<Mutation> generateMutations(@NonNull final MutationConfig config,
             @NonNull final MutationContext context) {
+        // Get first name of name list of mutator
+
         final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(), config, mutator);
 
@@ -33,7 +35,12 @@ public class DefaultMutationGenerator implements MutationGenerator {
     }
 
     @Override
-    public String getName() {
-        return NAME;
+    public List<String> getNames() {
+        return Collections.singletonList(NAME);
+    }
+
+    @Override
+    public String getPreferredName() {
+        return getNames().stream().findFirst().orElseThrow(IllegalStateException::new);
     }
 }
