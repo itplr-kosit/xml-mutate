@@ -1,20 +1,13 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-
+import de.init.kosit.commons.SyntaxError;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
-import de.init.kosit.commons.SyntaxError;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Mutationsergebnis aus den diversen Schritten.
@@ -48,6 +41,10 @@ public class MutationResult {
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
 
+    public boolean isUnprocessed() {
+        return this.schemaValidation.equals(ValidationState.UNPROCESSED);
+    }
+
     public boolean isSchematronProcessed() {
         return !this.schematronValidation.equals(ValidationState.UNPROCESSED);
     }
@@ -58,7 +55,7 @@ public class MutationResult {
      * @return
      */
     public boolean allSchematronRulesAsExpected() {
-        return this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
+        return this.schematronExpectationMatches.size() > 0 && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
     }
 
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {

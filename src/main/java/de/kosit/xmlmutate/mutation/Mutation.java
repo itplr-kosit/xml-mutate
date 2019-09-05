@@ -1,11 +1,10 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import de.kosit.xmlmutate.mutator.Mutator;
 import lombok.Getter;
 
-import de.kosit.xmlmutate.mutator.Mutator;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -96,6 +95,10 @@ public class Mutation {
         return this.isSchemaValid() && result.allSchematronRulesAsExpected();
     }
 
+    public boolean isAllUnprocessed() {
+        return this.result.isUnprocessed() && !result.isSchematronProcessed();
+    }
+
     public boolean hasUnexpectedValidation() {
         return !isAllAsExpected();
     }
@@ -103,6 +106,7 @@ public class Mutation {
     public boolean isErroneous() {
         return this.state == State.ERROR;
     }
+
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
