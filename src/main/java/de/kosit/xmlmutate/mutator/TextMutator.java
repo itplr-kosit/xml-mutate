@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,9 +35,10 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
 
     private final TextGenerator textGenerator = new TextGenerator();
 
+
     @Override
-    public String getName() {
-        return NAME;
+    public List<String> getNames() {
+        return Arrays.asList(NAME);
     }
 
     @Override

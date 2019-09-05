@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,8 @@ public class EmptyMutator extends BaseMutator {
     private final static String MUTATOR_NAME = "empty";
 
     @Override
-    public String getName() {
-        return EmptyMutator.MUTATOR_NAME;
+    public List<String> getNames() {
+        return Collections.singletonList(EmptyMutator.MUTATOR_NAME);
     }
 
     @Override

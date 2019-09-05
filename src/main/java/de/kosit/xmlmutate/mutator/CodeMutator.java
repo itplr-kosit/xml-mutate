@@ -1,5 +1,8 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.w3c.dom.Node;
 
 import de.kosit.xmlmutate.mutation.MutationConfig;
@@ -22,8 +25,8 @@ public class CodeMutator extends BaseMutator {
     static final String PROP_ATTRIBUTE = "attribute";
 
     @Override
-    public String getName() {
-        return NAME;
+    public List<String> getNames() {
+        return Collections.singletonList(NAME);
     }
 
     @Override

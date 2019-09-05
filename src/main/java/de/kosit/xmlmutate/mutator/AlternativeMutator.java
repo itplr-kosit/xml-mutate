@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.mutator;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,8 +41,8 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     }
 
     @Override
-    public String getName() {
-        return "alternative";
+    public List<String> getNames() {
+        return Collections.singletonList("alternative");
     }
 
     @Override

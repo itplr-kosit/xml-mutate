@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,15 +73,12 @@ public class CodeMutationGenerator implements MutationGenerator {
                     final DocumentBuilder builder = builderFactory.newDocumentBuilder();
                     final Document xmlDocument = builder.parse(source.toString());
                     final XPath xPath = XPathFactory.newInstance().newXPath();
-                    final String expression = String
-                            .format("/CodeList/SimpleCodeList/Row/Value[@ColumnRef='%s']/SimpleValue", key);
-                    final NodeList nodeList = (NodeList) xPath.compile(expression)
-                            .evaluate(xmlDocument, XPathConstants.NODESET);
-                    final List<Code> result = IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item)
-                            .map(Node::getTextContent).map(Code::new).collect(Collectors.toList());
+                    final String expression = String.format("/CodeList/SimpleCodeList/Row/Value[@ColumnRef='%s']/SimpleValue", key);
+                    final NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+                    final List<Code> result = IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).map(Node::getTextContent)
+                            .map(Code::new).collect(Collectors.toList());
                     if (result.isEmpty()) {
-                        throw new MutationException(ErrorCode.CONFIGURATION_ERRROR,
-                                String.format("No codes found for %s", source));
+                        throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, String.format("No codes found for %s", source));
                     }
                     return result;
                 } catch (final ParserConfigurationException | IOException | XPathExpressionException | SAXException e) {
@@ -95,7 +93,9 @@ public class CodeMutationGenerator implements MutationGenerator {
     private static final String PROP_VALUES = "values";
 
     private static final String PROP_CODE_KEY = "codeKey";
+
     private static final String PROP_GENERICODE = "genericode";
+
     private static final String SEPERATOR = ",";
 
     @Override
@@ -123,24 +123,25 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
-        return config.resolveList(PROP_VALUES).stream()
-                .flatMap(
-                        e -> Arrays.stream(e.toString().split(SEPERATOR)).filter(StringUtils::isNotEmpty)
-                                .map(s -> createMutation(config, context, s)))
-                .collect(Collectors.toList());
+        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(SEPERATOR))
+                .filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
     }
 
     private Mutation createMutation(final MutationConfig config, final MutationContext context, final String s) {
-        final Mutator mutator = MutatorRegistry.getInstance().getMutator(getName());
+        final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
-        final Mutation m = new Mutation(context.cloneContext(),
+        return new Mutation(context.cloneContext(),
                 Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()), cloned, mutator);
-        return m;
     }
 
     @Override
-    public String getName() {
-        return CodeMutator.NAME;
+    public List<String> getNames() {
+        return Collections.singletonList(CodeMutator.NAME);
+    }
+
+    @Override
+    public String getPreferredName() {
+        return getNames().stream().findFirst().orElseThrow(IllegalStateException::new);
     }
 }

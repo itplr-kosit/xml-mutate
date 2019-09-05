@@ -19,6 +19,13 @@ import de.kosit.xmlmutate.mutator.Mutator;
 public interface MutationGenerator {
 
     /**
+     * Der präferierte Name des Generatores
+     *
+     * @return der Name des Generators (identisch mit passenden {@link Mutator#getPreferredName()})
+     */
+    String getPreferredName();
+
+    /**
      * Generiert eine oder mehrere Mutationen.
      * 
      * @param config die Konfiguration aus der {@link org.w3c.dom.ProcessingInstruction}
@@ -28,10 +35,10 @@ public interface MutationGenerator {
     List<Mutation> generateMutations(MutationConfig config, MutationContext context);
 
     /**
-     * Der Name des Generatores bzw. die Zuordnung zu einem konkrente
+     * Die Namen des Generatores bzw. die Zuordnung zu einem konkrente
      * 
-     * @return der Name des Generators (identisch mit passenden {@link Mutator#getName()})
+     * @return die Namen des Generators (identisch mit passenden {@link Mutator#getNames()})
      */
-    String getName();
+    List<String> getNames();
 
 }

@@ -578,7 +578,7 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
-        grid.addCell(mutation.getMutator() != null ? mutation.getMutator().getName() + " " + mutation.getIdentifier() : "");
+        grid.addCell(mutation.getMutator() != null ? mutation.getMutator().getNames() + " " + mutation.getIdentifier() : "");
         grid.addCell(mutation.getContext().getLineNumber());
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));

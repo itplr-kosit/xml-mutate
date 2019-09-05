@@ -1,5 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.List;
+
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
@@ -10,7 +12,9 @@ import de.kosit.xmlmutate.mutation.MutationContext;
  */
 public interface Mutator {
 
-    String getName();
+    List<String> getNames();
+
+    String getPreferredName();
 
     void mutate(MutationContext context, MutationConfig config);
 

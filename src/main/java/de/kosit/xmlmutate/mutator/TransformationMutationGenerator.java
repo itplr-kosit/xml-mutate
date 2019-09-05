@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.mutator;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,12 @@ public class TransformationMutationGenerator implements MutationGenerator {
     }
 
     @Override
-    public String getName() {
-        return "xslt";
+    public List<String> getNames() {
+        return Arrays.asList("xslt");
+    }
+
+    @Override
+    public String getPreferredName() {
+        return getNames().stream().findFirst().orElseThrow(IllegalStateException::new);
     }
 }

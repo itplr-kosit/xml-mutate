@@ -1,5 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
@@ -35,8 +37,8 @@ public class TransformationMutator extends BaseMutator {
     static final String TEMPLATE_NAME_PARAM = "template";
 
     @Override
-    public String getName() {
-        return "xslt";
+    public List<String> getNames() {
+        return Arrays.asList("xslt");
     }
 
     @Override
