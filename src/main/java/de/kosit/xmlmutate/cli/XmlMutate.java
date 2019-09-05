@@ -1,5 +1,20 @@
 package de.kosit.xmlmutate.cli;
 
+import de.kosit.xmlmutate.mutation.NamedTemplate;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.Services;
+import lombok.extern.slf4j.Slf4j;
+import org.fusesource.jansi.AnsiConsole;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParseResult;
+
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,25 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.xml.validation.Schema;
-
-import org.fusesource.jansi.AnsiConsole;
-
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.NamedTemplate;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.MutationRunner;
-import de.kosit.xmlmutate.runner.RunMode;
-import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.Services;
-
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParseResult;
 
 /**
  * Base class for command line interface.
@@ -93,8 +89,7 @@ public class XmlMutate implements Callable<Integer> {
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
         runner.run();
         executor.shutdown();
-
-        return 0;
+        return runner.isErrorPresent() ? 1 : 0;
     }
 
     /**

@@ -1,5 +1,19 @@
 package de.kosit.xmlmutate.runner;
 
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationParser;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.Document;
+import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
+
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,21 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Document;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.traversal.DocumentTraversal;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.TreeWalker;
-
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
  * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
@@ -41,6 +40,9 @@ public class MutationRunner {
 
     private final TemplateRepository templateRepository;
 
+    @Getter
+    private boolean errorPresent;
+
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
         this.parser = new MutationParser();
@@ -52,8 +54,14 @@ public class MutationRunner {
         prepare();
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
+        checkIfErrorStatePresent(results);
         this.configuration.getReportGenerator().generate(results);
+    }
 
+    private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
+        results.forEach(o -> {
+            errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR);
+        });
     }
 
     private void prepare() {

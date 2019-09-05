@@ -41,6 +41,11 @@ public class MutationResult {
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
 
+    /**
+     * Prüft ob die Mutation keine Schemavalidierung hatte = UNPROCESSED
+     *
+     * @return ob UNPROCESSED oder nicht
+     */
     public boolean isUnprocessed() {
         return this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
@@ -63,7 +68,6 @@ public class MutationResult {
     }
 
     /**
-     *
      * @param schematronSource
      * @return
      */

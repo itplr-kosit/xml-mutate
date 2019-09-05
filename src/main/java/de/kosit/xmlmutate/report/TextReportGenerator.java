@@ -491,8 +491,6 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private final Writer writer;
 
-    private Cell overall;
-
     @Override
     public void generate(final List<Pair<Path, List<Mutation>>> results) {
         try {
@@ -521,9 +519,6 @@ public class TextReportGenerator extends BaseReportGenerator {
             this.writer.flush();
         } catch (final IOException e) {
             log.error("Error generating report", e);
-        }
-        if (overall.getText().get(0).getText().equals("NA")) {
-            System.exit(1);
         }
     }
 
@@ -606,6 +601,7 @@ public class TextReportGenerator extends BaseReportGenerator {
     }
 
     private Cell createOverallResult(final Mutation mutation) {
+        final Cell overall;
         if (mutation.isAllAsExpected()) {
             overall = new Cell("Y", Code.GREEN);
         } else  if (mutation.isAllUnprocessed()){

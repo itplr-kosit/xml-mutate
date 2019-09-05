@@ -35,10 +35,8 @@ public class Mutation {
     /**
      * Constructor.
      *
-     * @param context
-     *                       der {@link MutationContext}
-     * @param identifier
-     *                       ein Name / Bezeichner für die Mutation
+     * @param context    der {@link MutationContext}
+     * @param identifier ein Name / Bezeichner für die Mutation
      */
     public Mutation(final MutationContext context, final String identifier) {
         this.context = context;
@@ -51,7 +49,7 @@ public class Mutation {
     }
 
     public Mutation(final MutationContext context, final String identifier, MutationConfig configuration,
-            Mutator mutator) {
+                    Mutator mutator) {
         this(context, identifier, configuration);
         this.mutator = mutator;
     }
@@ -95,6 +93,11 @@ public class Mutation {
         return this.isSchemaValid() && result.allSchematronRulesAsExpected();
     }
 
+    /**
+     * Prüft ob eine Mutation Schema- und Schematron-validiert wurde
+     *
+     * @return ob eine Mutation Schema- und Schematron-validiert wurde
+     */
     public boolean isAllUnprocessed() {
         return this.result.isUnprocessed() && !result.isSchematronProcessed();
     }
