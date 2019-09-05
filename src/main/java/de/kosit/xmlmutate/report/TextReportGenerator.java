@@ -533,14 +533,11 @@ public class TextReportGenerator extends BaseReportGenerator {
             this.writer.write(noMutationError.render());
         } else {
 
-            // Längste Längen ermitteln (Mutation, ErrorMessage, Description)
-            final HashMap<String, Integer>  maximumLengths = getMaximumLenghts(mutations);
-
-            final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", Math.max(maximumLengths.get("Mutation"), 8)),
+            final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
                     new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
-                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", Math.max(maximumLengths.get("ErrorMessage"), 13)),
-                    new ColumnDefinition("Description", Math.max(maximumLengths.get("Description"), 11), 10));
+                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 15),
+                    new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
                 this.generateMutationReportLine(grid, mutations.get(i), i);
@@ -554,27 +551,6 @@ public class TextReportGenerator extends BaseReportGenerator {
             this.writer.write(summary.render());
 
         }
-    }
-
-    private HashMap<String, Integer> getMaximumLenghts ( final List<Mutation> mutations) {
-        HashMap<String, Integer> map = new HashMap<>();
-        final Mutation longestMutation = Collections.max(mutations, Comparator.comparingInt(o -> o.getMutator()!=null ? (o.getMutator().getName() + " " + o.getIdentifier()).length() : 0));
-        final int longestMutationSize = longestMutation.getMutator() != null ? (longestMutation.getMutator().getName() + " " + longestMutation.getIdentifier()).length() : 15;
-        map.put("Mutation", longestMutationSize);
-
-        final int longestErrorMessageSize = Collections.max(mutations, Comparator.comparingInt(o -> o.getErrorMessage().length())).getErrorMessage().length();
-        map.put("ErrorMessage", longestErrorMessageSize);
-
-        final List<Mutation> mutationsWithDescription = mutations.stream()
-                .filter(o -> o.getConfiguration().getProperties().get("description") != null).collect(Collectors.toList());
-        int longestDescriptionSize = 0;
-        if(!mutationsWithDescription.isEmpty()) {
-            final Mutation longestDescriptionMutation = mutationsWithDescription.stream()
-                    .max(Comparator.comparingInt(n -> ((String)n.getConfiguration().getProperties().get("description")).length())).get();
-            longestDescriptionSize = ((String)longestDescriptionMutation.getConfiguration().getProperties().get("description")).length();
-        }
-        map.put("Description", longestDescriptionSize);
-        return map;
     }
 
     private void generateMutationReportLine(final Grid grid, final Mutation mutation, final int mutationNum) {
