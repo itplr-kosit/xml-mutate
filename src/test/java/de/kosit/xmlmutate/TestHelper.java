@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -24,11 +25,14 @@ import org.w3c.dom.ProcessingInstruction;
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
+import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
  * Some helper function for testing.
- * 
+ *
  * @author Andreas Penski
+ * @author Renzo Kottmann
  */
 public class TestHelper {
 
@@ -41,9 +45,22 @@ public class TestHelper {
     private static final Consumer<Element> NOOP = whatever -> {
     };
 
+    public static List<MutatorInstruction> createInstruction(String xml) {
+
+        Document doc = DocumentParser.readDocument(xml);
+        return DocumentParser.parseMutatorInstruction(doc, "test");
+
+    }
+
+    private static List<MutatorInstruction> createInstruction(Document doc) {
+
+        return DocumentParser.parseMutatorInstruction(doc, "test");
+
+    }
+
     /**
      * Creates a simple mutation context for testing
-     * 
+     *
      * @return the context
      */
     public static MutationContext createContext() {
@@ -53,7 +70,8 @@ public class TestHelper {
     /**
      * Creates a simple mutation context for testing
      *
-     * @param consumer a consumer for manipulating the target element
+     * @param consumer
+     *                     a consumer for manipulating the target element
      * @return the context
      */
     public static MutationContext createContext(final Consumer<Element> consumer) {
@@ -63,7 +81,8 @@ public class TestHelper {
     /**
      * Creates a simple mutation context for testing
      *
-     * @param piString a configuration for the PI
+     * @param piString
+     *                     a configuration for the PI
      * @return the context
      */
     public static MutationContext createContext(final String piString) {
@@ -74,8 +93,10 @@ public class TestHelper {
     /**
      * Creates a simple mutation context for testing
      *
-     * @param piString a configuration for the PI
-     * @param consumer a consumer for manipulating the target element
+     * @param piString
+     *                     a configuration for the PI
+     * @param consumer
+     *                     a consumer for manipulating the target element
      * @return the context
      */
     public static MutationContext createContext(final String piString, final Consumer<Element> consumer) {
@@ -92,7 +113,7 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
+     *
      * @return the context
      */
     public static MutationContext createRootContext() {
@@ -101,8 +122,9 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
-     * @param piString the pi string
+     *
+     * @param piString
+     *                     the pi string
      * @return the context
      */
     public static MutationContext createRootContext(final String piString) {
@@ -111,9 +133,11 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
-     * @param piString the pi string
-     * @param consumer consumer for manipulating the target node
+     *
+     * @param piString
+     *                     the pi string
+     * @param consumer
+     *                     consumer for manipulating the target node
      * @return the context
      */
     public static MutationContext createRootContext(final String piString, final Consumer<Element> consumer) {
@@ -128,7 +152,7 @@ public class TestHelper {
 
     /**
      * Create an empty {@link MutationConfig}.
-     * 
+     *
      * @return the config
      */
     public static MutationConfig createConfig() {
@@ -137,7 +161,7 @@ public class TestHelper {
 
     /**
      * Create a {@link MutationConfig} with some initial properties.
-     * 
+     *
      * @return the config
      */
     public static MutationConfig createConfig(final Map<String, Object> properties) {
@@ -147,7 +171,7 @@ public class TestHelper {
     }
 
     public static String serialize(final Document doc) {
-        try ( final StringWriter writer = new StringWriter() ) {
+        try (final StringWriter writer = new StringWriter()) {
             final Transformer transformer = ObjectFactory.createTransformer(true);
             transformer.transform(new DOMSource(doc), new StreamResult(writer));
             return writer.toString();
@@ -161,7 +185,8 @@ public class TestHelper {
     }
 
     public static Stream<Node> stream(final NodeList list, final short... types) {
-        return IntStream.range(0, list.getLength()).mapToObj(list::item).filter(n -> ArrayUtils.contains(types, n.getNodeType()));
+        return IntStream.range(0, list.getLength()).mapToObj(list::item)
+                .filter(n -> ArrayUtils.contains(types, n.getNodeType()));
     }
 
 }

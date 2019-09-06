@@ -15,15 +15,17 @@
         <!-- Own properties -->
         <log4j.version>2.12.0</log4j.version>
         <slf4j.version>1.7.26</slf4j.version>
+        <xmlunit.version>2.6.3</xmlunit.version>
         <saxon-he.version>9.8.0-11</saxon-he.version>
-        <antlr.version>4.5.1-1</antlr.version>
+        <antlr.version>4.7.1</antlr.version>
         <picocli.version>4.0.1</picocli.version>
         <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
             the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
-        <mvn.surefire.version>2.19.1</mvn.surefire.version>
+
+        <mvn.surefire.version>3.0.0-M3</mvn.surefire.version>
         <mvn.surefire.junit.platform.provider>1.1.0</mvn.surefire.junit.platform.provider>
 
-        <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
+        <mvn.junit.engine.version>5.4.0</mvn.junit.engine.version>
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
 
@@ -51,7 +53,32 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.1.0</version>
+            <version>${mvn.junit.engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${mvn.junit.engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <version>${xmlunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-assertj</artifactId>
+            <version>${xmlunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-matchers</artifactId>
+            <version>${xmlunit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -123,34 +150,49 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Now adding antlr generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/antlr</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-
-                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                    <!-- false=does it incremental , true is not incremental-->
+                    <useIncrementalCompilation>true</useIncrementalCompilation>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${mvn.surefire.version}</version>
                 <dependencies>
-                    <dependency>
+                    <!--    <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
                         <version>${mvn.surefire.junit.platform.provider}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${mvn.junit.engine.version}</version>
-                    </dependency>
+                    </dependency> -->
+
                 </dependencies>
-                <configuration>
+                <!-- <configuration>
                     <useFile>false</useFile>
                     <trimStackTrace>false</trimStackTrace>
-                </configuration>
+                </configuration> -->
             </plugin>
 
             <plugin>
@@ -158,17 +200,17 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${mvn.surefire.version}</version>
                 <dependencies>
-
+                    <!--
                     <dependency>
                         <groupId>org.junit.platform</groupId>
                         <artifactId>junit-platform-surefire-provider</artifactId>
                         <version>${mvn.surefire.junit.platform.provider}</version>
-                    </dependency>
-                    <dependency>
+                    </dependency> -->
+                    <!-- <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
                         <version>${mvn.junit.engine.version}</version>
-                    </dependency>
+                    </dependency> -->
                 </dependencies>
                 <executions>
                     <execution>

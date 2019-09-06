@@ -10,10 +10,12 @@ import java.util.stream.IntStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import de.kosit.xmlmutate.mutation.Mutant;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
@@ -45,6 +47,12 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     }
 
     @Override
+    public List<Mutant> mutate(MutatorInstruction instruction) {
+        throw new UnsupportedOperationException();
+        // return null;
+    }
+
+    @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
         final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE)
                 .collect(Collectors.toList());
@@ -65,4 +73,5 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
         context.getTarget().removeChild(commentToUncomment);
 
     }
+
 }

@@ -6,7 +6,8 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 
 /**
  * Testet das {@link MutationConfig}-Objekt.

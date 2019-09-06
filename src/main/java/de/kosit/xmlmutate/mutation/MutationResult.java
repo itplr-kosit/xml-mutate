@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 
 /**
  * Mutationsergebnis aus den diversen Schritten.

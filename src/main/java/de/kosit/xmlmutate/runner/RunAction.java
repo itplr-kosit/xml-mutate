@@ -4,7 +4,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
  * Action for XMute Runner.
- *
+ * 
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
@@ -20,5 +20,7 @@ interface RunAction {
      *                               MutationRunner
      */
     void run(Mutation mutation);
+
+    void run(RunnerDocumentContext context);
 
 }

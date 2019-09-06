@@ -8,11 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
 import lombok.RequiredArgsConstructor;
-
+import de.kosit.xmlmutate.mutation.Mutant;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
@@ -37,6 +38,12 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public List<Mutant> mutate(MutatorInstruction instruction) {
+        throw new UnsupportedOperationException();
+        // return null;
     }
 
     @Override
@@ -97,4 +104,5 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         return m;
 
     }
+
 }

@@ -20,7 +20,6 @@ import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
 
@@ -46,7 +45,7 @@ public class ValidateAction implements RunAction {
         this.log.info("validating {}", mutation.getIdentifier());
         schemaValidation(mutation);
         schematronValidation(mutation);
-        mutation.setState(State.VALIDATED);
+        mutation.setState(MutationState.VALIDATED);
     }
 
     private void schematronValidation(final Mutation mutation) {
@@ -81,6 +80,11 @@ public class ValidateAction implements RunAction {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    @Override
+    public void run(RunnerDocumentContext context) {
 
     }
 }

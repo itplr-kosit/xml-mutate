@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.mutator.CodeMutationGenerator.Code;
@@ -34,11 +35,13 @@ public class CodeFactoryTest {
 
     @Test
     public void testWrongKey() {
-        assertThrows(MutationException.class,
+        assertThrows(
+                MutationException.class,
                 () -> CodeFactory.resolveCodes(TEST_ROOT.resolve("genericode/example2.xml"), "doesNotExist"));
     }
 
     @Test
+    @DisplayName("Test fetching remote Genericode from XRepository")
     @Disabled
     public void testParseRemote() {
         final List<Code> result = CodeFactory.resolveCodes(REMOTE_URI, "Schlüssel");
@@ -48,8 +51,8 @@ public class CodeFactoryTest {
 
     @Test
     public void testLocal() {
-        final List<Code> result = CodeFactory.resolveCodes(SRC_TEST_RESOURCES.resolve("genericode/example2.xml"),
-                "Schlüssel");
+        final List<Code> result = CodeFactory
+                .resolveCodes(SRC_TEST_RESOURCES.resolve("genericode/example2.xml"), "Schlüssel");
         assertThat(result).isNotEmpty();
         assertThat(result).hasSize(4);
     }

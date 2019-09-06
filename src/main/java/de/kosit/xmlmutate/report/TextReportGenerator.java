@@ -27,10 +27,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 
 /**
  * A {@link ReportGenerator} that prints results to the console.
@@ -578,7 +577,8 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
-        grid.addCell(mutation.getMutator() != null ? mutation.getMutator().getName() + " " + mutation.getIdentifier() : "");
+        grid.addCell(
+                mutation.getMutator() != null ? mutation.getMutator().getName() + " " + mutation.getIdentifier() : "");
         grid.addCell(mutation.getContext().getLineNumber());
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
@@ -637,7 +637,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell("N", Code.RED);
     }
 
-    private List<Cell> createSchematronExpectationCells(final boolean isProcessed, final List<SchematronRuleExpectation> failed) {
+    private List<Cell> createSchematronExpectationCells(final boolean isProcessed,
+            final List<SchematronRuleExpectation> failed) {
         final List<Cell> cells = new ArrayList<>();
 
         if (!isProcessed) {

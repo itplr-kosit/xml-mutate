@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -87,7 +88,7 @@ public class MutationConfig {
 
     /**
      * Returns a string-representation of a defined property.
-     * 
+     *
      * @param propKey the key of the property
      * @return String representation or null
      */

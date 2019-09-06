@@ -12,8 +12,9 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
- * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s nach der Mutation wieder her.
- * 
+ * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s nach der
+ * Mutation wieder her.
+ *
  * @author Andreas Penski
  */
 class ResetAction implements RunAction {
@@ -43,6 +44,7 @@ class ResetAction implements RunAction {
         final Element root = context.getDocument().getDocumentElement();
 
         // remove all attributes from root
+        
         while (root.getAttributes().getLength() > 0) {
             final Node att = root.getAttributes().item(0);
             root.getAttributes().removeNamedItem(att.getNodeName());
@@ -67,6 +69,11 @@ class ResetAction implements RunAction {
         while (children.getLength() > 0) {
             root.appendChild(children.item(0));
         }
+    }
+
+    @Override
+    public void run(RunnerDocumentContext context) {
+
     }
 
 }

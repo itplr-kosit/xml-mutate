@@ -20,7 +20,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
  * Serialisiert das mutierte {@link org.w3c.dom.Document} in eine Datei.
- * 
+ *
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
@@ -41,6 +41,11 @@ public class SerializeAction implements RunAction {
         } catch (final TransformerException | IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Override
+    public void run(RunnerDocumentContext context) {
+
     }
 
 }

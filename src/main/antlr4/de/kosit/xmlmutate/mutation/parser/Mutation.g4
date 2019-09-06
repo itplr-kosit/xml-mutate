@@ -35,7 +35,7 @@ options {
 
 }
 
-// lexer rules:
+// lexer rules: First ambigous rule matches
 LPAREN: '(';
 RPAREN: ')';
 AND: 'AND';

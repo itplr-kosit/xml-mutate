@@ -1,41 +1,40 @@
 package de.kosit.xmlmutate.runner;
 
+import static de.kosit.xmlmutate.runner.MutationProcessor.serialize;
+import static de.kosit.xmlmutate.runner.MutationProcessor.mutateDocument;
+
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 
-import lombok.extern.slf4j.Slf4j;
-
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 
 /**
- * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
+ * Runner coordinates whole process of Mutation and Testing.
  *
+ * @author Renzo Kottmann
  * @author Andreas Penski
  */
-@Slf4j
 public class MutationRunner {
-
+    private static final Logger log = LoggerFactory.getLogger(MutationRunner.class);
     private final RunnerConfig configuration;
 
-    private final MutationParser parser;
+    /**
+     * xmute Processing Instruction parser
+     */
 
     private final ExecutorService executorService;
 
@@ -43,16 +42,23 @@ public class MutationRunner {
 
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
-        this.parser = new MutationParser();
+
         this.executorService = executorService;
         this.templateRepository = Services.getTemplateRepository();
     }
 
     public void run() {
         prepare();
-        final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
-                .map(MutationRunner::awaitTermination).collect(Collectors.toList());
-        this.configuration.getReportGenerator().generate(results);
+        // executorService.
+        // final RunnerDocumentContext results =
+        // this.configuration.getDocuments().stream().map(this::process)
+        // .collect(Collectors.toList());
+        this.configuration.getDocuments().forEach(d -> {
+            process(d);
+        });
+        // map(this::process);
+        // .map(MutationRunner::awaitTermination);
+        // this.configuration.getReportGenerator().generate(results);
 
     }
 
@@ -62,56 +68,63 @@ public class MutationRunner {
                 .forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
     }
 
-    private static Pair<Path, List<Mutation>> awaitTermination(final Future<Pair<Path, List<Mutation>>> pairFuture) {
-        try {
-            return pairFuture.get();
-        } catch (final InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(e.getCause().getMessage(), e);
-        }
+    /**
+     * Processing a Document at given Path
+     *
+     * @param path
+     *                 to the Document
+     * @return
+     */
+    private RunnerDocumentContext process(final Path path) {
+
+        final Document d = DocumentParser.readDocument(path);
+        final List<MutatorInstruction> instructions = DocumentParser
+                .parseMutatorInstruction(d, path.getFileName().toString());
+        // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
+        // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem
+        // Kontext gerissen werden.
+        final List<MutatorInstruction> sorted = instructions.stream()
+                .sorted(Comparator.comparing(e -> e.getLevel(), Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+        RunnerDocumentContext context = new RunnerDocumentContext(d, sorted);
+        processInstructions(context);
+        return context;
+
     }
 
-    private Future<Pair<Path, List<Mutation>>> process(final Path path) {
-        return this.executorService.submit(() -> {
-            final Document d = DocumentParser.readDocument(path);
-            final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
-            // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
-            // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem
-            // Kontext gerissen werden.
-            final List<Mutation> sorted = mutations.stream()
-                    .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
-            process(sorted);
-            return new ImmutablePair<>(path, mutations);
-        });
+    /**
+     * Processing Actions for MutatorInstructions of an Document
+     */
+    private void process(final RunnerDocumentContext context) {
+        log.debug("Running MutatorInstruction ");
 
+        this.configuration.getActions().forEach(
+                a -> {
+
+                    // log.debug("Running {} for {}", a.getClass().getSimpleName(),
+                    // mutation.getIdentifier());
+                    a.run(context);
+
+                });
     }
 
-    private void process(final Mutation mutation) {
-        log.info("Running mutation {}", mutation.getIdentifier());
-        this.configuration.getActions().forEach(a -> {
-            if (mutation.isErroneous()) {
-                return;
-            }
+    private void processInstructions(final RunnerDocumentContext context) {
+        final Document d = context.getOriginalDocument();
+        final Path targetFolder = configuration.getTargetFolder();
+        context.getInstructions().forEach(
+                i -> i.createMutants().forEach(
 
-            try {
-                log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
-                a.run(mutation);
-            } catch (final MutationException e) {
-                log.error(
-                        MessageFormat.format(
-                                "Error running action {0} in mutation {1} ", a.getClass().getName(),
-                                mutation.getIdentifier()),
-                        e);
-                mutation.setErrorMessage(e.getLocalizedMessage());
-                mutation.setState(State.ERROR);
-            }
+                        m -> {
+                            // apply mutation to original doc
+                            mutateDocument(d, m, false);
 
-        });
-    }
+                            serialize(d, m, targetFolder);
+                        }
+                // validate against schema
+                // 3. validated against schematron(s)
+                // 4. evaluated against expectations
 
-    private void process(final List<Mutation> mutations) {
-        mutations.forEach(this::process);
+                ));
     }
 
     private List<Mutation> parseMutations(final Document origin, final String documentName) {
@@ -122,8 +135,8 @@ public class MutationRunner {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 final MutationContext context = new MutationContext(pi, documentName);
-                final List<Mutation> mutations = this.parser.parse(context);
-                all.addAll(mutations);
+                // final List<Mutation> mutations = this.parser.parse(context);
+                // all.addAll(mutations);
             }
         }
         return all;

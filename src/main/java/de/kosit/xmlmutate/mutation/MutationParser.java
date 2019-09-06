@@ -21,9 +21,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.MutatorContext;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.PropertyContext;
@@ -33,6 +32,7 @@ import de.kosit.xmlmutate.mutation.parser.MutationParser.SchematronKeywordContex
 import de.kosit.xmlmutate.mutation.parser.MutationParser.SchematronRuleContext;
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
+import de.kosit.xmlmutate.runner.MutationState;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
@@ -49,7 +49,7 @@ public class MutationParser {
     @RequiredArgsConstructor
     public class SchematronRulesParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
-        private final ExpectedResult expectedResult;
+        private final de.kosit.xmlmutate.expectation.ExpectedResult expectedResult;
 
         @Getter(AccessLevel.PACKAGE)
         private final List<SchematronRuleExpectation> expectations = new ArrayList<>();
@@ -201,7 +201,7 @@ public class MutationParser {
 
     private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
-        m.setState(State.ERROR);
+        m.setState(MutationState.ERROR);
         m.setErrorMessage(message);
         return Collections.singletonList(m);
     }

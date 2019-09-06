@@ -12,12 +12,12 @@ import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
+
 // import com.google.common.base.Optional;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
  * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem
@@ -45,7 +45,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                     "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getName(),
                     e.getRuleName(), e.mustPass(), e.mustFail(), valid);
         });
-        mutation.setState(State.CHECKED);
+        mutation.setState(MutationState.CHECKED);
     }
 
     // Evalutes if result matches expectation
@@ -68,6 +68,11 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
         boolean noFailedButExpected = !failed.isPresent() && expectation.mustPass();
         log.trace("failedAsExpected={} or  noFailedButExpected={}", failedAsExpected, noFailedButExpected);
         return failedAsExpected || noFailedButExpected;
+    }
+
+    @Override
+    public void run(RunnerDocumentContext context) {
+
     }
 
     // xmute mutator = "noop" schematron-invalid="UBL-CR-001"
