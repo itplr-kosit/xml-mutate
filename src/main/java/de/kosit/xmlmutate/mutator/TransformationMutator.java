@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
@@ -16,13 +17,15 @@ import org.w3c.dom.Node;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
+import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
  * Mutator which executes an XSLT-Script to mutate the origin document
- * 
+ *
  * @author Andreas Penski
  */
 @Slf4j
@@ -93,6 +96,11 @@ public class TransformationMutator extends BaseMutator {
             throw new MutationException(ErrorCode.TRANSFORM_ERROR, e.getMessage(), e);
         }
 
+    }
+
+    @Override
+    public List<Mutation> mutate(MutatorInstruction instruction) {
+        return null;
     }
 
 }

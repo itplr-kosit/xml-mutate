@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import lombok.Getter;
 
 import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.runner.MutationState;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -29,7 +30,7 @@ public class Mutation {
 
     private MutationResult result = new MutationResult();
 
-    private State state = State.CREATED;
+    private MutationState state = MutationState.CREATED;
 
     private String errorMessage = "";
 
@@ -57,9 +58,9 @@ public class Mutation {
         this.mutator = mutator;
     }
 
-    public void setState(State state) {
+    public void setState(MutationState state) {
         if (state == null) {
-            this.state = State.ERROR;
+            this.state = MutationState.ERROR;
             throw new IllegalArgumentException("State should not be set to null");
         }
         this.state = state;
@@ -101,11 +102,7 @@ public class Mutation {
     }
 
     public boolean isErroneous() {
-        return this.state == State.ERROR;
-    }
-
-    public enum State {
-        ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
+        return this.state == MutationState.ERROR;
     }
 
 }

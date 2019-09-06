@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -17,6 +19,10 @@ import javax.xml.parsers.SAXParserFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -27,10 +33,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
+import de.kosit.xmlmutate.parser.XMuteParser;
 
 /**
  * Parsing-Funktionalitäten.
- * 
+ *
  * @author Andreas Penski
  */
 @Slf4j
@@ -77,7 +85,8 @@ public class DocumentParser {
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
+        public void startElement(final String uri, final String localName, final String qName,
+                final Attributes attributes) {
             addTextIfNeeded();
             final Element el = this.doc.createElement(qName);
             for (int i = 0; i < attributes.getLength(); i++) {
@@ -119,15 +128,17 @@ public class DocumentParser {
     }
 
     /**
-     * Default-Parsing-Funktionalität via SAX. Dieser Parser ermittelt Zeileninformationen zur weiteren
-     * Verwendung/Lokalisierung innerhalb Durchlaufs.
-     * 
-     * @param path der Pfad des Dokuments.
+     * Default-Parsing-Funktionalität via SAX. Dieser Parser ermittelt
+     * Zeileninformationen zur weiteren Verwendung/Lokalisierung innerhalb
+     * Durchlaufs.
+     *
+     * @param path
+     *                 der Pfad des Dokuments.
      * @return das eingelesene Dokument
      */
     public static Document readDocument(final Path path) {
 
-        try ( final InputStream input = Files.newInputStream(path) ) {
+        try (final InputStream input = Files.newInputStream(path)) {
             return readDocument(input);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", path, e);
@@ -135,7 +146,8 @@ public class DocumentParser {
         }
     }
 
-    private static Document readDocument(final InputStream input) throws ParserConfigurationException, SAXException, IOException {
+    private static Document readDocument(final InputStream input)
+            throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
         final Document d = builder.newDocument();
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -151,7 +163,7 @@ public class DocumentParser {
     }
 
     public static Document readDocument(final String xml) {
-        try ( final InputStream input = new ByteArrayInputStream(xml.getBytes()) ) {
+        try (final InputStream input = new ByteArrayInputStream(xml.getBytes())) {
             return readDocument(input);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", xml, e);
@@ -160,18 +172,38 @@ public class DocumentParser {
     }
 
     /**
-     * Implementierung, welche das Dokument möglichst schnell, ohne weiteren Zeilenbezug o.ä. einliest
-     * 
-     * @param path der Pfad
+     * Implementierung, welche das Dokument möglichst schnell, ohne weiteren
+     * Zeilenbezug o.ä. einliest
+     *
+     * @param path
+     *                 der Pfad
      * @return das eingelesene Dokument
      */
     public static Document readDocumentPlain(final Path path) {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
-        try ( final InputStream input = Files.newInputStream(path) ) {
+        try (final InputStream input = Files.newInputStream(path)) {
             return builder.parse(input);
         } catch (final SAXException | IOException e) {
             log.error("Error opening document {}", path, e);
             throw new IllegalArgumentException("Can not open Document " + path, e);
         }
     }
+
+    public static List<MutatorInstruction> parseMutatorInstruction(final Document origin, final String documentName) {
+        final List<MutatorInstruction> allInstructions = new ArrayList<>();
+        final TreeWalker piWalker = ((DocumentTraversal) origin)
+                .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
+        final XMuteParser parser = new XMuteParser();
+        while (piWalker.nextNode() != null) {
+            final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
+            if (pi.getTarget().equals("xmute")) {
+                final MutatorInstruction mi = parser.parse(pi.getTextContent());
+                final MutatorDocumentContext context = new MutatorDocumentContext(pi, documentName);
+                mi.setDocumentContext(context);
+                allInstructions.add(mi);
+            }
+        }
+        return allInstructions;
+    }
+
 }

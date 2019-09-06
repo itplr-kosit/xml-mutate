@@ -14,6 +14,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
@@ -64,5 +65,10 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
         });
         context.getTarget().removeChild(commentToUncomment);
 
+    }
+
+    @Override
+    public List<Mutation> mutate(MutatorInstruction instruction) {
+        return null;
     }
 }

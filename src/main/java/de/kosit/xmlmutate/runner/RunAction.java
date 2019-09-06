@@ -21,4 +21,6 @@ interface RunAction {
      */
     void run(Mutation mutation);
 
+    void run(RunnerDocumentContext context);
+
 }

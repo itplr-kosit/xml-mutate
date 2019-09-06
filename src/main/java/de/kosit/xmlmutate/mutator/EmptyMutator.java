@@ -9,16 +9,17 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
 
 import lombok.extern.slf4j.Slf4j;
-
+import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Mutator, der ein Element leert. Enthält es Unterelemente, werden diese entfernt. Enthält es Text, werden diese
- * entfernt.
- * 
+ * Mutator, der ein Element leert. Enthält es Unterelemente, werden diese
+ * entfernt. Enthält es Text, werden diese entfernt.
+ *
  * @author Renzo Kottmann
  * @author Andreas Penski
  */
@@ -54,7 +55,8 @@ public class EmptyMutator extends BaseMutator {
         atts.forEach(a -> {
             final Node attr = target.getAttributes().getNamedItem(a.toString());
             if (attr == null) {
-                throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, String.format("Expected attribute %s not existing", a));
+                throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH,
+                        String.format("Expected attribute %s not existing", a));
             }
             attr.setTextContent("");
         });
@@ -77,6 +79,11 @@ public class EmptyMutator extends BaseMutator {
         final Comment comment = wrap(context.getDocument().createComment("Emptied: \n"), childs);
         childs.forEach(target::removeChild);
         target.appendChild(comment);
+    }
+
+    @Override
+    public List<Mutation> mutate(MutatorInstruction instruction) {
+        return null;
     }
 
 }

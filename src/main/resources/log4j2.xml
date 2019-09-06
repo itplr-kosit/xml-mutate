@@ -7,31 +7,26 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="trace">
             <AppenderRef ref="Console" />
         </Root>
 
-        <Logger name="de.kosit.xmlmutate.mutation" level="debug" additivity="true">
+        <Logger name="org.reflections.Reflections" level="error">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="de.kosit.xmlmutate.runner" level="debug" additivity="false">
+        <Logger name="de.kosit.xmlmutate.parser" level="trace" additivity="true">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="de.kosit.xmlmutate.runner.EvaluateSchematronExpectationsAction" level="debug" additivity="false">
+        <Logger name="de.kosit.xmlmutate.mutation" level="warn" additivity="true">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="de.kosit.xmlmutate.mutator" level="warn" additivity="false">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="de.kosit.xmlmutate.mutator.MutatorParser" level="warn" additivity="false">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="de.kosit.xmlmutate.mutator.PiDataParser" level="warn" additivity="false">
+        <Logger name="de.kosit.xmlmutate.runner" level="warn" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
 
-        <Logger name="de.kosit.xmlmutate.tester.SchematronTester" level="warn" additivity="false">
+        <Logger name="de.kosit.xmlmutate.mutator" level="error" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
+
     </Loggers>
 </Configuration>

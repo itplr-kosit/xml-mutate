@@ -37,6 +37,11 @@ class MarkMutationAction {
             }
         }
 
+        @Override
+        public void run(RunnerDocumentContext context) {
+            return;
+        }
+
     }
 
     static class RemoveCommentAction implements RunAction {
@@ -56,6 +61,11 @@ class MarkMutationAction {
                 mutation.getContext().getDocument().removeChild(pi.getPreviousSibling());
             }
 
+        }
+
+        @Override
+        public void run(RunnerDocumentContext context) {
+            return;
         }
     }
 }

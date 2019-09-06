@@ -11,41 +11,33 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.google.common.base.Charsets;
-
-import lombok.RequiredArgsConstructor;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.Mutation;
 
 /**
- * Serialisiert das mutierte {@link org.w3c.dom.Document} in eine Datei.
- *
- * @author Andreas Penski
+ * MutationProcessor
  */
-@RequiredArgsConstructor
-public class SerializeAction implements RunAction {
+public class MutationProcessor {
 
-    private final Path targetFolder;
+    public static void mutateDocument(Document d, Mutation mutation, Element target) {
 
-    @Override
-    public void run(final Mutation mutation) {
+    }
+
+    public static void serialize(Document d, Mutation mutation, Path targetFolder) {
         try {
-            final Path target = this.targetFolder.resolve(mutation.getResultDocument());
+            final Path target = targetFolder.resolve(mutation.getResultDocument());
             Files.createDirectories(target.getParent());
             final OutputStream out = Files.newOutputStream(target);
             final Transformer transformer = ObjectFactory.createTransformer(true);
-            transformer.transform(new DOMSource(mutation.getContext().getDocument()),
-                    new StreamResult(new OutputStreamWriter(out, Charsets.UTF_8)));
+            transformer.transform(
+                    new DOMSource(mutation.getContext().getDocument()),
+                    new StreamResult(new OutputStreamWriter(out, "UTF-8")));
             out.close();
         } catch (final TransformerException | IOException e) {
             throw new IllegalStateException(e);
         }
     }
-
-    @Override
-    public void run(RunnerDocumentContext context) {
-
-    }
-
 }

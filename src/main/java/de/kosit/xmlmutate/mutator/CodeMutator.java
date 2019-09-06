@@ -1,16 +1,21 @@
 package de.kosit.xmlmutate.mutator;
 
+import java.util.List;
+
 import org.w3c.dom.Node;
 
+import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Mutator für Codes. Erzeugt eine einfache Textersetzung der Code-Werte. Die eigentliche Konfiguration der
- * {@link de.kosit.xmlmutate.mutation.Mutation} erfolgt über den {@link CodeMutationGenerator}.
- * 
+ * Mutator für Codes. Erzeugt eine einfache Textersetzung der Code-Werte. Die
+ * eigentliche Konfiguration der {@link de.kosit.xmlmutate.mutation.Mutation}
+ * erfolgt über den {@link CodeMutationGenerator}.
+ *
  * @author Andreas Penski
  */
 public class CodeMutator extends BaseMutator {
@@ -30,7 +35,8 @@ public class CodeMutator extends BaseMutator {
     public void mutate(final MutationContext context, final MutationConfig config) {
         final Node target = resolveTarget(context, config);
         if (streamElements(target.getChildNodes()).count() > 0) {
-            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Found complex content, but was expecting a single text value");
+            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH,
+                    "Found complex content, but was expecting a single text value");
         }
         target.setTextContent(config.getProperties().get(INTERNAL_PROP_VALUE).toString());
     }
@@ -41,13 +47,19 @@ public class CodeMutator extends BaseMutator {
         if (attr != null) {
             target = context.getTarget().getAttributes().getNamedItem(attr.toString());
             if (target == null) {
-                throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, String.format("No attribute named %s found", attr.toString()));
+                throw new MutationException(ErrorCode.CONFIGURATION_ERRROR,
+                        String.format("No attribute named %s found", attr.toString()));
             }
 
         } else {
             target = context.getTarget();
         }
         return target;
+    }
+
+    @Override
+    public List<Mutation> mutate(MutatorInstruction instruction) {
+        return null;
     }
 
 }

@@ -13,6 +13,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.parser.MutatorInstruction;
 import de.kosit.xmlmutate.runner.Services;
 
 /**
@@ -96,5 +97,10 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
 
         return m;
 
+    }
+
+    @Override
+    public List<Mutation> mutate(MutatorInstruction instruction) {
+        return null;
     }
 }
