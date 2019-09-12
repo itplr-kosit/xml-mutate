@@ -1,21 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-
-import javax.xml.validation.Schema;
-
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
@@ -23,6 +7,20 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import javax.xml.validation.Schema;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Validator validating against XSD and Schematron.
@@ -77,7 +75,11 @@ public class ValidateAction implements RunAction {
                 mutation.getResult()
                         .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException | IOException e) {
-
+                // Wenn ein XML nicht eingelesen werden kann, kommt eine SAXParseException
+                if(e instanceof SAXParseException) {
+                    mutation.setState(State.ERROR);
+                    mutation.setErrorMessage("Invalid xml mutation produced");
+                }
                 e.printStackTrace();
             }
         }
