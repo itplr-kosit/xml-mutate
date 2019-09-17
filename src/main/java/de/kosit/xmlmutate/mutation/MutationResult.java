@@ -59,8 +59,8 @@ public class MutationResult {
      *
      * @return
      */
-    public boolean allSchematronRulesAsExpected() {
-        return this.schematronExpectationMatches.size() > 0 && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
+    boolean allSchematronRulesAsExpected() {
+        return !this.schematronExpectationMatches.isEmpty() && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
     }
 
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
