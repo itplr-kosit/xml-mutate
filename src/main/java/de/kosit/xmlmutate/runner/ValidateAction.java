@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import javax.xml.validation.Schema;
 import java.io.IOException;
@@ -74,13 +73,12 @@ public class ValidateAction implements RunAction {
                 log.debug("Schema valid={}", result.isValid());
                 mutation.getResult()
                         .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
-            } catch (final SAXException | IOException e) {
-                // Wenn ein XML nicht eingelesen werden kann, kommt eine SAXParseException
-                if(e instanceof SAXParseException) {
-                    mutation.setState(State.ERROR);
-                    mutation.setErrorMessage("Invalid xml mutation produced");
-                }
-                e.printStackTrace();
+            } catch (final SAXException  e) {
+                mutation.setState(State.ERROR);
+                mutation.setErrorMessage("Invalid xml mutation produced");
+            } catch (final IOException e) {
+                mutation.setState(State.ERROR);
+                mutation.setErrorMessage("Error while while trying to read the xml mutation file");
             }
         }
 
