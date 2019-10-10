@@ -119,6 +119,8 @@ public class MutationRunner {
                             mutateDocument(d, m, false);
 
                             serialize(d, m, targetFolder);
+
+                            validateSchema(d, m, configuration.getSchema());
                         }
                 // validate against schema
                 // 3. validated against schematron(s)

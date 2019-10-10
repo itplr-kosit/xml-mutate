@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import de.init.kosit.commons.Result;
 import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 

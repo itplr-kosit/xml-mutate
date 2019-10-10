@@ -35,7 +35,7 @@ Here it is about technical details of design decisions and the implementations.
 * Mutation Run Context
   > Is the changing context of a Mutation runner process of a single document
 
-A `MutatorInstruction` OR `Mutator` is the result of parsing a PI. It has a `name`. It contains `SchemaExpectation`s and `SchematronRuleExpectation`s. It might have a single `TestCase` (incl. id and description) and might belong to a `TestGroup`.
+A `MutatorInstruction`  is the result of parsing a Processing Instruction (PI). It has a `name`. It contains `SchemaExpectation`s and `SchematronRuleExpectation`s. It might have a single `TestCase` (incl. id and description) and might belong to a `TestGroup`.
 
 A `MutationRunner` reads each single Original Document, parses the Mutation Instructions and executes the mutation. The result of mutating a document is a list of `Mutation`s
 

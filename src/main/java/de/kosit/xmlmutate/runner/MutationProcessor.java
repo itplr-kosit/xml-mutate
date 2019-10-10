@@ -6,10 +6,13 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import javax.xml.validation.Validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.cli.XmlMutateUtil;
@@ -65,6 +71,43 @@ public class MutationProcessor {
         } catch (final TransformerException | IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static void validateSchema(final Document doc, Mutant mutant, Schema schema) {
+
+        // final CollectingErrorEventHandler errorHandler = new
+        // CollectingErrorEventHandler();
+        try {
+            final Validator validator = createValidator(schema);
+            // validator.setErrorHandler(errorHandler);
+            validator.validate(new DOMSource(doc));
+
+            // final Result<Boolean, SyntaxError> result =
+
+        } catch (final SAXException | IOException e) {
+
+            throw new IllegalStateException(e);
+        }
+
+    }
+
+    private static Validator createValidator(final Schema schema) {
+        final Validator validator = schema.newValidator();
+        try {
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        } catch (final SAXNotRecognizedException | SAXNotSupportedException e) {
+            log.warn("Can not disable external DTD access. Maybe an unsupported JAXP implementation is used.");
+            log.error(e.getMessage(), e);
+        }
+        try {
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        } catch (final SAXNotRecognizedException | SAXNotSupportedException e) {
+            log.warn("Can not disable external DTD access. Maybe an unsupported JAXP implementation is used.");
+            log.error(e.getMessage(), e);
+
+        }
+
+        return validator;
     }
 
 }

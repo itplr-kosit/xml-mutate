@@ -11,7 +11,7 @@ import de.kosit.xmlmutate.mutator.Mutator;
 
 /**
  * MutatorPool
- * 
+ *
  * @author Renzo Kottmann
  * @author Andreas Penski
  */
@@ -41,7 +41,7 @@ public class MutatorPool {
     }
 
     /**
-     * Gets a Muator with given Name.
+     * Gets a Mutator with given name.
      *
      * @param name
      *                 der Name des Mutators
