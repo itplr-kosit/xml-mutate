@@ -79,6 +79,10 @@ public class Mutation {
         return this.result.isSchemaValid();
     }
 
+    public boolean isSchematronValid() {
+        return this.result.isSchematronValid();
+    }
+
     public boolean isSchemaProcessed() {
         return result.isSchemaProcessed();
     }

@@ -1,36 +1,27 @@
 package de.kosit.xmlmutate.report;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fusesource.jansi.AnsiRenderer;
 import org.fusesource.jansi.AnsiRenderer.Code;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A {@link ReportGenerator} that prints results to the console.
@@ -567,6 +558,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean isSchemaValid = mutation.isSchemaValid();
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
+        final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.getResult()
                 .getSchematronValidation() != ValidationState.UNPROCESSED;
 
@@ -584,7 +576,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
         grid.addCell(createSchemaExpectationCell(asSchemaExpected));
 
-        grid.addCell(createSchematronValidationCell(isSchematronProcessed, mutation));
+        grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
         grid.addCell(mutation.getErrorMessage());
 
@@ -621,17 +613,13 @@ public class TextReportGenerator extends BaseReportGenerator {
         return overall;
     }
 
-    private Cell createSchematronValidationCell(final boolean isProcessed, final Mutation mutation) {
+    private Cell createSchematronValidationCell(final boolean isProcessed, final boolean isValid) {
 
         if (!isProcessed) {
             return new Cell("NA", Code.RED);
         }
 
-        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
-                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
-                .collect(Collectors.toList());
-
-        if (failed.size() == 0) {
+        if (isValid) {
             return new Cell("Y", Code.GREEN);
         }
         return new Cell("N", Code.RED);
