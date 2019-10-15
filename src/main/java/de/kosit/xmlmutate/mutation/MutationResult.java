@@ -1,20 +1,13 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-
+import de.init.kosit.commons.SyntaxError;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
-import de.init.kosit.commons.SyntaxError;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Mutationsergebnis aus den diversen Schritten.
@@ -45,6 +38,11 @@ public class MutationResult {
 
     public boolean isSchemaValid() {
         return this.schemaValidation.equals(ValidationState.VALID)
+                || this.schemaValidation.equals(ValidationState.UNPROCESSED);
+    }
+
+    public boolean isSchematronValid() {
+        return this.schematronValidation.equals(ValidationState.VALID)
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
 
