@@ -1,9 +1,27 @@
 package de.kosit.xmlmutate.cli;
 
+import de.kosit.xmlmutate.mutation.NamedTemplate;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.schematron.SchematronCompiler;
+import lombok.extern.slf4j.Slf4j;
+import org.fusesource.jansi.AnsiConsole;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParseResult;
+
+import javax.xml.validation.Schema;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,25 +30,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.xml.validation.Schema;
-
-import org.fusesource.jansi.AnsiConsole;
-
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.NamedTemplate;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.MutationRunner;
-import de.kosit.xmlmutate.runner.RunMode;
-import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.Services;
-
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParseResult;
 
 /**
  * Base class for command line interface.
@@ -130,8 +129,13 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Schematron> prepareSchematron() {
-        return this.schematrons.entrySet().stream().map(e -> new Schematron(e.getKey(), e.getValue().toUri()))
-                .collect(Collectors.toList());
+        final SchematronCompiler compiler = new SchematronCompiler();
+        final List<Schematron> schematronList = new ArrayList<>();
+        for (Map.Entry<String,Path> entry : this.schematrons.entrySet()) {
+            final URI compiledSchematron = compiler.compile(entry.getValue().toUri());
+            schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
+        }
+        return schematronList;
     }
 
     private List<Path> prepareDocuments() {

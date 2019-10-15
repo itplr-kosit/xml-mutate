@@ -1,10 +1,11 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.net.URI;
-import java.util.Objects;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Information about a Schematron file.
@@ -27,6 +28,20 @@ public class Schematron {
      * The URI of the Schematron file.
      */
     private final URI uri;
+
+    /**
+     * The list of all rules-Ids contained within the schematron file
+     */
+    private final List<String> rulesIds;
+
+    /**
+     * Check if a given rule id is declared in this schematron file
+     * @param id
+     * @return
+     */
+    public boolean hasRule(final String id) {
+        return rulesIds.contains(id);
+    }
 
     @Override
     public boolean equals(final Object o) {
