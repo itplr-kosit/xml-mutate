@@ -1,36 +1,27 @@
 package de.kosit.xmlmutate.report;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fusesource.jansi.AnsiRenderer;
 import org.fusesource.jansi.AnsiRenderer.Code;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A {@link ReportGenerator} that prints results to the console.
@@ -649,7 +640,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             cells.add(new Cell("Y", Code.GREEN));
             return cells;
         }
-        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N" + "\n", Code.RED)));
+        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N", Code.RED)));
         return cells;
     }
 
