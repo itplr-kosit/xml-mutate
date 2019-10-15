@@ -1,5 +1,18 @@
 package de.kosit.xmlmutate.runner;
 
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationParser;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.Document;
+import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
+
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,21 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Document;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.traversal.DocumentTraversal;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.TreeWalker;
-
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
  * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
@@ -103,7 +101,7 @@ public class MutationRunner {
                                 "Error running action {0} in mutation {1} ", a.getClass().getName(),
                                 mutation.getIdentifier()),
                         e);
-                mutation.setErrorMessage(e.getLocalizedMessage());
+                mutation.addErrorMessage("NA", e.getLocalizedMessage());
                 mutation.setState(State.ERROR);
             }
 

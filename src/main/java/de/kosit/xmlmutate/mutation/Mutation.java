@@ -5,6 +5,8 @@ import lombok.Getter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -30,7 +32,7 @@ public class Mutation {
 
     private State state = State.CREATED;
 
-    private String errorMessage = "";
+    private Map<String, String> errorMessages = new HashMap<>();
 
     /**
      * Constructor.
@@ -51,7 +53,7 @@ public class Mutation {
     }
 
     public Mutation(final MutationContext context, final String identifier, MutationConfig configuration,
-            Mutator mutator) {
+                    Mutator mutator) {
         this(context, identifier, configuration);
         this.mutator = mutator;
     }
@@ -64,11 +66,8 @@ public class Mutation {
         this.state = state;
     }
 
-    public void setErrorMessage(String message) {
-        if (message == null) {
-            this.errorMessage = "";
-        }
-        this.errorMessage = message;
+    public void addErrorMessage(String ruleName, String message) {
+        this.errorMessages.put(ruleName, message);
     }
 
     public Path getResultDocument() {
