@@ -578,7 +578,11 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
-        grid.addCell(mutation.getErrorMessage());
+        if (failed.size() == 0 && isSchematronProcessed) {
+            grid.addCell("");
+        } else {
+            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(0).getText().get(0).getText()));
+        }
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
         if (description != null) {
@@ -596,7 +600,8 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(expectationCells.get(i));
-            grid.addCell(EMPTY);
+            // add also error messages
+            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
             grid.addCell(EMPTY);
         }
     }

@@ -33,7 +33,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
             mutation.getResult().getSchematronExpectationMatches().put(e, valid);
             // Todo if this is needed
             if (!valid) {
-                mutation.setErrorMessage("Failed expectation assert for " + e.getRuleName());
+                mutation.addErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
             }
             log.trace(
                     "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
