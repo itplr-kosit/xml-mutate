@@ -10,6 +10,7 @@ import de.kosit.xmlmutate.mutation.Schematron;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Validator validating against XSD and Schematron.
@@ -52,6 +54,8 @@ public class ValidateAction implements RunAction {
 
         boolean unknownRulenameExist = false;
 
+        boolean failedRulesAreListed = false;
+
         for (final Schematron s : getSchematronRules()) {
 
             unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
@@ -64,14 +68,17 @@ public class ValidateAction implements RunAction {
             failedAssertCount += out.getFailedAsserts().size();
             this.log.debug("failed asserts=" + failedAssertCount);
             mutation.getResult().addSchematronResult(s, out);
+
+            List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream().map(e -> e.getRuleName()).collect(Collectors.toList());
+            List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(n -> n.getId()).collect(Collectors.toList());
+            if (CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed)) {
+                failedRulesAreListed = true;
+            }
+
         }
 
-        if (unknownRulenameExist) {
-            mutation.getResult().setSchematronValidation(ValidationState.INVALID);
-        } else {
-            mutation.getResult()
-                    .setSchematronValidation(failedAssertCount > 0 ? ValidationState.INVALID : ValidationState.VALID);
-        }
+        mutation.getResult()
+                .setSchematronValidation(failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID : ValidationState.VALID);
 
     }
 
