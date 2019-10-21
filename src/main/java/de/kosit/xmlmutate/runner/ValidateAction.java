@@ -1,21 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-
-import javax.xml.validation.Schema;
-
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
@@ -23,6 +7,19 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.validation.Schema;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Validator validating against XSD and Schematron.
@@ -50,9 +47,16 @@ public class ValidateAction implements RunAction {
     }
 
     private void schematronValidation(final Mutation mutation) {
+
         long failedAssertCount = 0;
 
+        boolean unknownRulenameExist = false;
+
         for (final Schematron s : getSchematronRules()) {
+
+            unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
+                    .anyMatch(n -> !s.getRulesIds().contains(n));
+
             this.log.debug("Using schematron=" + s.getName());
             final SchematronOutput out = Services.getSchematronService()
                     .validate(s.getUri(), mutation.getContext().getDocument());
@@ -61,8 +65,14 @@ public class ValidateAction implements RunAction {
             this.log.debug("failed asserts=" + failedAssertCount);
             mutation.getResult().addSchematronResult(s, out);
         }
-        mutation.getResult()
-                .setSchematronValidation(failedAssertCount > 0 ? ValidationState.INVALID : ValidationState.VALID);
+
+        if (unknownRulenameExist) {
+            mutation.getResult().setSchematronValidation(ValidationState.INVALID);
+        } else {
+            mutation.getResult()
+                    .setSchematronValidation(failedAssertCount > 0 ? ValidationState.INVALID : ValidationState.VALID);
+        }
+
     }
 
     private void schemaValidation(final Mutation mutation) {
