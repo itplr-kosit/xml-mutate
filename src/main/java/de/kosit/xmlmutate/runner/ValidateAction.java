@@ -55,7 +55,7 @@ public class ValidateAction implements RunAction {
         for (final Schematron s : getSchematronRules()) {
 
             unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
-                    .anyMatch(n -> !s.getRulesIds().contains(n));
+                    .anyMatch(n -> !s.getRulesIds().contains(n.getRuleName()));
 
             this.log.debug("Using schematron=" + s.getName());
             final SchematronOutput out = Services.getSchematronService()
