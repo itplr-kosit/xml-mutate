@@ -1,7 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +73,25 @@ public class MutationResult {
     public Optional<SchematronOutput> getSchematronResult(final String schematronSource) {
         return this.schematronResult.entrySet().stream().filter(e -> e.getKey().getName().equals(schematronSource))
                 .map(Entry::getValue).findFirst();
+    }
+
+    public boolean isExpectationCompliant() {
+        final ExpectationCompliance schematronExpectationCompliant = isSchematronExpectationCompliant();
+        final ExpectationCompliance schemaExpectationCompliant = isSchemaExpectationCompliant();
+        return ExpectationCompliance.COMPLIANT.equals(schematronExpectationCompliant)
+                && ExpectationCompliance.COMPLIANT.equals(schemaExpectationCompliant);
+    }
+
+    private ExpectationCompliance isSchemaExpectationCompliant() {
+        return ExpectationCompliance.NOT_COMPLIANT;
+    }
+
+    public ExpectationCompliance isSchematronExpectationCompliant() {
+        return ExpectationCompliance.NOT_AVAILABLE;
+    }
+
+    public enum ExpectationCompliance {
+        NOT_AVAILABLE, COMPLIANT, NOT_COMPLIANT
     }
 
     @Getter

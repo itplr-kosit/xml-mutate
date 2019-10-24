@@ -24,14 +24,8 @@ public class SchematronRuleExpectation {
      */
     private ExpectedResult expectedResult;
 
-    private SchematronRuleExpectation() {
-        source = "";
-        ruleName = "";
-        expectedResult = ExpectedResult.UNDEFINED;
-    }
 
-    public SchematronRuleExpectation(String schematronSource, String ruleName, ExpectedResult expectation) {
-        this();
+    public SchematronRuleExpectation(final String schematronSource, final String ruleName, final ExpectedResult expectation) {
         this.source = schematronSource;
         this.ruleName = ruleName;
         this.expectedResult = expectation;
@@ -55,15 +49,18 @@ public class SchematronRuleExpectation {
     /**
      * Is expected to fail?
      */
-    public boolean mustFail() {
+    public boolean expectInvalid() {
         return ExpectedResult.FAIL.equals(this.expectedResult);
     }
 
     /**
      * Is the expected to pass?
      */
-    public boolean mustPass() {
+    public boolean expectValid() {
         return ExpectedResult.PASS.equals(this.expectedResult);
     }
 
+    public enum ExpectedResult {
+        FAIL, PASS
+    }
 }

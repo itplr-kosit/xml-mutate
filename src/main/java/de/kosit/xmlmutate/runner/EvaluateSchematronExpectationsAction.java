@@ -3,7 +3,6 @@ package de.kosit.xmlmutate.runner;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -12,12 +11,11 @@ import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
-
-// import com.google.common.base.Optional;
-
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+
+// import com.google.common.base.Optional;
 
 /**
  * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem
@@ -42,14 +40,14 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 mutation.setErrorMessage("Failed expectation assert for " + e.getRuleName());
             }
             log.trace(
-                    "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getName(),
-                    e.getRuleName(), e.mustPass(), e.mustFail(), valid);
+                    "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(), e.getRuleName(),
+                    e.expectValid(), e.expectInvalid(), valid);
         });
         mutation.setState(MutationState.CHECKED);
     }
 
     // Evalutes if result matches expectation
-    private boolean evaluate(final SchematronRuleExpectation expectation, MutationResult result) {
+    private boolean evaluate(final SchematronRuleExpectation expectation, final MutationResult result) {
         final Collection<SchematronOutput> targets;
         if (expectation.getSource() != null) {
             final Optional<SchematronOutput> schematronResult = result.getSchematronResult(expectation.getSource());
@@ -64,14 +62,14 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                     // log.debug("FA id={} flag={}", f.getId(), f.getFlag());
                 }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
         // log.debug("Evaluation for {} ", failed.)
-        boolean failedAsExpected = failed.isPresent() && expectation.mustFail();
-        boolean noFailedButExpected = !failed.isPresent() && expectation.mustPass();
+        final boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();
+        final boolean noFailedButExpected = !failed.isPresent() && expectation.expectValid();
         log.trace("failedAsExpected={} or  noFailedButExpected={}", failedAsExpected, noFailedButExpected);
         return failedAsExpected || noFailedButExpected;
     }
 
     @Override
-    public void run(RunnerDocumentContext context) {
+    public void run(final RunnerDocumentContext context) {
 
     }
 
