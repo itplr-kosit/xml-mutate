@@ -190,7 +190,7 @@ public class MutationParser {
     private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setState(State.ERROR);
-        m.setErrorMessage(message);
+        m.addErrorMessage("NA", message);
         return Collections.singletonList(m);
     }
 

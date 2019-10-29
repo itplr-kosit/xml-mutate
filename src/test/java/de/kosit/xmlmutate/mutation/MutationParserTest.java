@@ -96,7 +96,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessage()).isNotEmpty();
+        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getErrorMessages().get("NA")).isEqualToIgnoringCase("No valid mutator found for unknown");
     }
 
     @Test
@@ -106,7 +107,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessage()).isNotEmpty();
+        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getErrorMessages().get("NA")).containsIgnoringCase(" mismatched input 'schema-' expecting 'mutator'");
     }
 
     @Test
@@ -116,7 +118,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessage()).isNotEmpty();
+        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getErrorMessages().get("NA")).containsIgnoringCase("missing {'valid', 'invalid'} at 'val'");
     }
 
     @Test
@@ -129,7 +132,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessage()).isNotEmpty();
+        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getErrorMessages().get("NA")).isEqualToIgnoringCase("No mutation can be found for test. Is PI last element?");
     }
 
     private void assertValid(final List<Mutation> mutations) {

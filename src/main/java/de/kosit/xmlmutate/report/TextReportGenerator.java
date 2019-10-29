@@ -558,6 +558,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean isSchemaValid = mutation.isSchemaValid();
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
+        final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.getResult()
                 .getSchematronValidation() != ValidationState.UNPROCESSED;
 
@@ -575,9 +576,13 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
         grid.addCell(createSchemaExpectationCell(asSchemaExpected));
 
-        grid.addCell(createSchematronValidationCell(isSchematronProcessed, mutation));
+        grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
-        grid.addCell(mutation.getErrorMessage());
+        if (failed.size() == 0 && isSchematronProcessed) {
+            grid.addCell("");
+        } else {
+            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(0).getText().get(0).getText()));
+        }
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
         if (description != null) {
@@ -595,7 +600,8 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(expectationCells.get(i));
-            grid.addCell(EMPTY);
+            // add also error messages
+            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
             grid.addCell(EMPTY);
         }
     }
@@ -612,17 +618,13 @@ public class TextReportGenerator extends BaseReportGenerator {
         return overall;
     }
 
-    private Cell createSchematronValidationCell(final boolean isProcessed, final Mutation mutation) {
+    private Cell createSchematronValidationCell(final boolean isProcessed, final boolean isValid) {
 
         if (!isProcessed) {
             return new Cell("NA", Code.RED);
         }
 
-        final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
-                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
-                .collect(Collectors.toList());
-
-        if (failed.size() == 0) {
+        if (isValid) {
             return new Cell("Y", Code.GREEN);
         }
         return new Cell("N", Code.RED);
