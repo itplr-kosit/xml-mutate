@@ -1,5 +1,4 @@
-package de.kosit.xmlmutate.mutation;
-
+package de.kosit.xmlmutate.expectation;
 
 /**
  * Expectation on the validation after mutation of a Schematron Rule Schematron-
@@ -13,25 +12,20 @@ public class SchematronRuleExpectation {
     /**
      * The symbolic short name of the Schematron source.
      */
-    private final String source;
+    private String source;
 
     /**
      * Name of schematron rule on which expectation is expressed.
      */
-    private final String ruleName;
+    private String ruleName;
 
     /**
      * The actual expectation value.
      */
-    private final ExpectedResult expectedResult;
+    private ExpectedResult expectedResult;
 
-    private SchematronRuleExpectation() {
-        source = "";
-        ruleName = "";
-        expectedResult = ExpectedResult.UNDEFINED;
-    }
 
-    public SchematronRuleExpectation(String schematronSource, String ruleName, ExpectedResult expectation) {
+    public SchematronRuleExpectation(final String schematronSource, final String ruleName, final ExpectedResult expectation) {
         this.source = schematronSource;
         this.ruleName = ruleName;
         this.expectedResult = expectation;
@@ -55,18 +49,18 @@ public class SchematronRuleExpectation {
     /**
      * Is expected to fail?
      */
-    public boolean mustFail() {
+    public boolean expectInvalid() {
         return ExpectedResult.FAIL.equals(this.expectedResult);
     }
 
     /**
      * Is the expected to pass?
      */
-    public boolean mustPass() {
+    public boolean expectValid() {
         return ExpectedResult.PASS.equals(this.expectedResult);
     }
 
     public enum ExpectedResult {
-        FAIL, PASS, UNDEFINED
+        FAIL, PASS
     }
 }

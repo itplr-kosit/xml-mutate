@@ -2,7 +2,7 @@ package de.kosit.xmlmutate.report;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;

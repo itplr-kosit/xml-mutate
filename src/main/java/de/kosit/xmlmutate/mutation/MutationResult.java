@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -49,7 +50,7 @@ public class MutationResult {
     public boolean isUnprocessed() {
         return this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
-    
+
     public boolean isSchematronValid() {
         return this.schematronValidation.equals(ValidationState.VALID)
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
@@ -80,6 +81,25 @@ public class MutationResult {
     public Optional<SchematronOutput> getSchematronResult(final String schematronSource) {
         return this.schematronResult.entrySet().stream().filter(e -> e.getKey().getName().equals(schematronSource))
                 .map(Entry::getValue).findFirst();
+    }
+
+    public boolean isExpectationCompliant() {
+        final ExpectationCompliance schematronExpectationCompliant = isSchematronExpectationCompliant();
+        final ExpectationCompliance schemaExpectationCompliant = isSchemaExpectationCompliant();
+        return ExpectationCompliance.COMPLIANT.equals(schematronExpectationCompliant)
+                && ExpectationCompliance.COMPLIANT.equals(schemaExpectationCompliant);
+    }
+
+    private ExpectationCompliance isSchemaExpectationCompliant() {
+        return ExpectationCompliance.NOT_COMPLIANT;
+    }
+
+    public ExpectationCompliance isSchematronExpectationCompliant() {
+        return ExpectationCompliance.NOT_AVAILABLE;
+    }
+
+    public enum ExpectationCompliance {
+        NOT_AVAILABLE, COMPLIANT, NOT_COMPLIANT
     }
 
     @Getter

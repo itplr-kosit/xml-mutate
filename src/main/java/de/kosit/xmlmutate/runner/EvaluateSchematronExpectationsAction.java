@@ -4,7 +4,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
             log.trace(
                     "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
-                    e.getRuleName(), e.mustPass(), e.mustFail(), valid);
+                    e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
         });
         mutation.setState(State.CHECKED);
     }
@@ -74,8 +74,8 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                     // log.debug("FA id={} flag={}", f.getId(), f.getFlag());
                 }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
         // log.debug("Evaluation for {} ", failed.)
-        boolean failedAsExpected = failed.isPresent() && expectation.mustFail();
-        boolean noFailedButExpected = !failed.isPresent() && expectation.mustPass() && !unknownRule;
+        boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();
+        boolean noFailedButExpected = !failed.isPresent() && expectation.expectValid() && !unknownRule;
         log.trace("failedAsExpected={} or  noFailedButExpected={}", failedAsExpected, noFailedButExpected);
         return failedAsExpected || noFailedButExpected;
     }

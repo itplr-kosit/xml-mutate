@@ -1,14 +1,10 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.*;
 
 /**
  * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im
