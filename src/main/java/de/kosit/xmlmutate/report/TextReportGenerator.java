@@ -610,11 +610,11 @@ public class TextReportGenerator extends BaseReportGenerator {
         final Cell overall;
         if (mutation.isAllAsExpected()) {
             overall = new Cell("Y", Code.GREEN);
+        } else  if (mutation.isAllUnprocessed()){
+            overall = new Cell("NA", Code.RED);
         } else {
-
             overall = new Cell("N", Code.RED);
         }
-
         return overall;
     }
 

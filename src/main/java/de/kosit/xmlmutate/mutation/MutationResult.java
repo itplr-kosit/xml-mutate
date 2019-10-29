@@ -41,9 +41,19 @@ public class MutationResult {
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
 
+    /**
+     * Prüft ob die Mutation keine Schemavalidierung hatte = UNPROCESSED
+     *
+     * @return ob UNPROCESSED oder nicht
+     */
+    public boolean isUnprocessed() {
+        return this.schemaValidation.equals(ValidationState.UNPROCESSED);
+    }
+    
     public boolean isSchematronValid() {
         return this.schematronValidation.equals(ValidationState.VALID)
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
+
     }
 
     public boolean isSchematronProcessed() {
@@ -55,8 +65,8 @@ public class MutationResult {
      *
      * @return
      */
-    public boolean allSchematronRulesAsExpected() {
-        return this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
+    boolean allSchematronRulesAsExpected() {
+        return !this.schematronExpectationMatches.isEmpty() && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
     }
 
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
@@ -64,7 +74,6 @@ public class MutationResult {
     }
 
     /**
-     *
      * @param schematronSource
      * @return
      */

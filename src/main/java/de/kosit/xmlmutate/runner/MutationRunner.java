@@ -4,6 +4,7 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationParser;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,6 +40,9 @@ public class MutationRunner {
 
     private final TemplateRepository templateRepository;
 
+    @Getter
+    private boolean errorPresent;
+
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
         this.parser = new MutationParser();
@@ -50,8 +54,14 @@ public class MutationRunner {
         prepare();
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
+        checkIfErrorStatePresent(results);
         this.configuration.getReportGenerator().generate(results);
+    }
 
+    private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
+        results.forEach(o -> {
+            errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR);
+        });
     }
 
     private void prepare() {

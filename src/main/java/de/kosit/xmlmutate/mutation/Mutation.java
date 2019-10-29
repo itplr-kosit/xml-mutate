@@ -37,10 +37,8 @@ public class Mutation {
     /**
      * Constructor.
      *
-     * @param context
-     *                       der {@link MutationContext}
-     * @param identifier
-     *                       ein Name / Bezeichner für die Mutation
+     * @param context    der {@link MutationContext}
+     * @param identifier ein Name / Bezeichner für die Mutation
      */
     public Mutation(final MutationContext context, final String identifier) {
         this.context = context;
@@ -99,6 +97,15 @@ public class Mutation {
         return this.isSchemaValidationAsExpected() && result.allSchematronRulesAsExpected();
     }
 
+    /**
+     * Prüft ob eine Mutation Schema- und Schematron-validiert wurde
+     *
+     * @return ob eine Mutation Schema- und Schematron-validiert wurde
+     */
+    public boolean isAllUnprocessed() {
+        return this.result.isUnprocessed() && !result.isSchematronProcessed();
+    }
+
     public boolean hasUnexpectedValidation() {
         return !isAllAsExpected();
     }
@@ -106,6 +113,7 @@ public class Mutation {
     public boolean isErroneous() {
         return this.state == State.ERROR;
     }
+
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
