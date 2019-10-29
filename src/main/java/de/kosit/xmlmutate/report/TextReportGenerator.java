@@ -600,7 +600,6 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(expectationCells.get(i));
-            // add also error messages
             grid.addCell(mutation.getErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
             grid.addCell(EMPTY);
         }
@@ -631,6 +630,7 @@ public class TextReportGenerator extends BaseReportGenerator {
     }
 
     private List<Cell> createSchematronExpectationCells(final boolean isProcessed, final List<SchematronRuleExpectation> failed) {
+
         final List<Cell> cells = new ArrayList<>();
 
         if (!isProcessed) {
@@ -642,7 +642,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             cells.add(new Cell("Y", Code.GREEN));
             return cells;
         }
-        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N", Code.RED)));
+        failed.forEach(e -> cells.add(new Cell( e.getRuleName() + ":N", Code.RED)));
         return cells;
     }
 
