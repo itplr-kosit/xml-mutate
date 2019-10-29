@@ -75,10 +75,10 @@ public class ValidateAction implements RunAction {
                         .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
-                mutation.setErrorMessage("Invalid xml mutation produced");
+                mutation.addErrorMessage("NA","Invalid xml mutation produced");
             } catch (final IOException e) {
                 mutation.setState(State.ERROR);
-                mutation.setErrorMessage("Error while while trying to read the xml mutation file");
+                mutation.addErrorMessage("NA","Error while while trying to read the xml mutation file");
             }
         }
 
