@@ -41,7 +41,6 @@ public class MutationResult {
                 || this.schemaValidation.equals(ValidationState.UNPROCESSED);
     }
 
-<<<<<<< src/main/java/de/kosit/xmlmutate/mutation/MutationResult.java
     /**
      * Prüft ob die Mutation keine Schemavalidierung hatte = UNPROCESSED
      *
