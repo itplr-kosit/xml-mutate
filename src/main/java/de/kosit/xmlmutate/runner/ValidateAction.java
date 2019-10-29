@@ -93,9 +93,12 @@ public class ValidateAction implements RunAction {
                 log.debug("Schema valid={}", result.isValid());
                 mutation.getResult()
                         .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
-            } catch (final SAXException | IOException e) {
-
-                e.printStackTrace();
+            } catch (final SAXException  e) {
+                mutation.setState(State.ERROR);
+                mutation.setErrorMessage("Invalid xml mutation produced");
+            } catch (final IOException e) {
+                mutation.setState(State.ERROR);
+                mutation.setErrorMessage("Error while while trying to read the xml mutation file");
             }
         }
 

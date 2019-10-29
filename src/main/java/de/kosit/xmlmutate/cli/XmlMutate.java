@@ -92,8 +92,7 @@ public class XmlMutate implements Callable<Integer> {
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
         runner.run();
         executor.shutdown();
-
-        return 0;
+        return runner.isErrorPresent() ? 1 : 0;
     }
 
     /**
