@@ -19,95 +19,77 @@ import java.util.Map.Entry;
 @Setter
 public class MutationResult {
 
-    private Map<Schematron, SchematronOutput> schematronResult = new HashMap<>();
+    // Validation states (Schema and Schematron)
+    private ValidationState schemaValidationState = ValidationState.UNPROCESSED;
+    private ValidationState schematronValidationState = ValidationState.UNPROCESSED;
 
+    // Schema error and expectation match
+    private boolean schemaValidationAsExpected;
     private List<SyntaxError> schemaValidationErrors = new ArrayList<>();
 
-    private ValidationState schemaValidation = ValidationState.UNPROCESSED;
-
-    private ValidationState schematronValidation = ValidationState.UNPROCESSED;
-
+    // Schematron expectations matches and schematron result
     private Map<SchematronRuleExpectation, Boolean> schematronExpectationMatches = new HashMap<>();
-
-    public boolean isAllValid() {
-        return isSchemaValid() && allSchematronRulesAsExpected();
-    }
-
-    public boolean isSchemaProcessed() {
-        return !this.schematronValidation.equals(ValidationState.UNPROCESSED);
-    }
-
-    public boolean isSchemaValid() {
-        return this.schemaValidation.equals(ValidationState.VALID)
-                || this.schemaValidation.equals(ValidationState.UNPROCESSED);
-    }
-
-    /**
-     * Prüft ob die Mutation keine Schemavalidierung hatte = UNPROCESSED
-     *
-     * @return ob UNPROCESSED oder nicht
-     */
-    public boolean isUnprocessed() {
-        return this.schemaValidation.equals(ValidationState.UNPROCESSED);
-    }
-
-    public boolean isSchematronValid() {
-        return this.schematronValidation.equals(ValidationState.VALID)
-                || this.schemaValidation.equals(ValidationState.UNPROCESSED);
-
-    }
-
-    public boolean isSchematronProcessed() {
-        return !this.schematronValidation.equals(ValidationState.UNPROCESSED);
-    }
-
-    /**
-     * Evaluiert den
-     *
-     * @return
-     */
-    boolean allSchematronRulesAsExpected() {
-        return !this.schematronExpectationMatches.isEmpty() && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
-    }
-
+    private Map<Schematron, SchematronOutput> schematronResult = new HashMap<>();
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
         this.schematronResult.put(schematron, out);
     }
-
-    /**
-     * @param schematronSource
-     * @return
-     */
     public Optional<SchematronOutput> getSchematronResult(final String schematronSource) {
         return this.schematronResult.entrySet().stream().filter(e -> e.getKey().getName().equals(schematronSource))
                 .map(Entry::getValue).findFirst();
     }
 
+
+    // CHECK IF PROCESSED
+    boolean isSchemaProcessed() {
+        return !this.schematronValidationState.equals(ValidationState.UNPROCESSED);
+    }
+    boolean isSchematronProcessed() {
+        return !this.schematronValidationState.equals(ValidationState.UNPROCESSED);
+    }
+
+    // CHECK IF VALID
+    boolean isSchemaValid() {
+        return this.schemaValidationState.equals(ValidationState.VALID)
+                || this.schemaValidationState.equals(ValidationState.UNPROCESSED);
+    }
+    boolean isSchematronValid() {
+        return this.schematronValidationState.equals(ValidationState.VALID)
+                || this.schemaValidationState.equals(ValidationState.UNPROCESSED);
+
+    }
+
+
+    // CHECK IF EXPECTATION COMPLIANT
+    public enum ExpectationCompliance {
+        NOT_AVAILABLE, COMPLIANT, NOT_COMPLIANT
+    }
     public boolean isExpectationCompliant() {
         final ExpectationCompliance schematronExpectationCompliant = isSchematronExpectationCompliant();
         final ExpectationCompliance schemaExpectationCompliant = isSchemaExpectationCompliant();
         return ExpectationCompliance.COMPLIANT.equals(schematronExpectationCompliant)
                 && ExpectationCompliance.COMPLIANT.equals(schemaExpectationCompliant);
     }
-
-    private ExpectationCompliance isSchemaExpectationCompliant() {
-        return ExpectationCompliance.NOT_COMPLIANT;
-    }
-
     public ExpectationCompliance isSchematronExpectationCompliant() {
-        return ExpectationCompliance.NOT_AVAILABLE;
+        if (this.schematronExpectationMatches.isEmpty()) {
+            return ExpectationCompliance.NOT_AVAILABLE;
+        }
+        return allSchematronRulesAsExpected() ? ExpectationCompliance.COMPLIANT : ExpectationCompliance.NOT_COMPLIANT;
+    }
+    public ExpectationCompliance isSchemaExpectationCompliant() {
+        if (this.schemaValidationState == ValidationState.UNPROCESSED) {
+            return ExpectationCompliance.NOT_AVAILABLE;
+        }
+        return isSchemaValidationAsExpected() ? ExpectationCompliance.COMPLIANT : ExpectationCompliance.NOT_COMPLIANT;
+    }
+    boolean allSchematronRulesAsExpected() {
+        return !this.schematronExpectationMatches.isEmpty() && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
     }
 
-    public enum ExpectationCompliance {
-        NOT_AVAILABLE, COMPLIANT, NOT_COMPLIANT
-    }
 
     @Getter
     @RequiredArgsConstructor
     public enum ValidationState {
-
         UNPROCESSED(""), VALID("OK"), INVALID("FAILED");
-
         private final String text;
     }
 }

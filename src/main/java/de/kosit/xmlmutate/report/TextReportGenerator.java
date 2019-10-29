@@ -560,7 +560,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.getResult()
-                .getSchematronValidation() != ValidationState.UNPROCESSED;
+                .getSchematronValidationState() != ValidationState.UNPROCESSED;
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)

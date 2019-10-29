@@ -54,6 +54,7 @@ public class Mutation {
                     Mutator mutator) {
         this(context, identifier, configuration);
         this.mutator = mutator;
+        this.result.setSchemaValidationAsExpected(configuration.isSchemaValidationAsExpected());
     }
 
     public void setState(State state) {
@@ -88,13 +89,9 @@ public class Mutation {
         return configuration.isSchemaValidationAsExpected();
     }
 
-    public boolean isSchematronProcessed() {
-        return result.isSchematronProcessed();
-    }
 
     public boolean isAllAsExpected() {
-
-        return this.isSchemaValidationAsExpected() && result.allSchematronRulesAsExpected();
+        return result.isExpectationCompliant();
     }
 
     /**
@@ -103,7 +100,7 @@ public class Mutation {
      * @return ob eine Mutation Schema- und Schematron-validiert wurde
      */
     public boolean isAllUnprocessed() {
-        return this.result.isUnprocessed() && !result.isSchematronProcessed();
+        return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
     }
 
     public boolean hasUnexpectedValidation() {

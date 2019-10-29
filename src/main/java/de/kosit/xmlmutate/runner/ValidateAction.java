@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.runner;
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
@@ -11,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,16 +63,16 @@ public class ValidateAction implements RunAction {
             unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
                     .anyMatch(n -> !s.hasRule(n.getRuleName()));
 
-            this.log.debug("Using schematron=" + s.getName());
+            this.log.debug("Using schematron={}",s.getName());
             final SchematronOutput out = Services.getSchematronService()
                     .validate(s.getUri(), mutation.getContext().getDocument());
-            this.log.debug("result=" + out.getText());
+            this.log.debug("result={}",out.getText());
             failedAssertCount += out.getFailedAsserts().size();
-            this.log.debug("failed asserts=" + failedAssertCount);
+            this.log.debug("failed asserts={}",failedAssertCount);
             mutation.getResult().addSchematronResult(s, out);
 
-            List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream().map(e -> e.getRuleName()).collect(Collectors.toList());
-            List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(n -> n.getId()).collect(Collectors.toList());
+            List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream().map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
+            List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
             if (CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed)) {
                 failedRulesAreListed = true;
             }
@@ -78,7 +80,7 @@ public class ValidateAction implements RunAction {
         }
 
         mutation.getResult()
-                .setSchematronValidation(failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID : ValidationState.VALID);
+                .setSchematronValidationState(failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID : ValidationState.VALID);
 
     }
 
@@ -92,7 +94,7 @@ public class ValidateAction implements RunAction {
                 mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
                 log.debug("Schema valid={}", result.isValid());
                 mutation.getResult()
-                        .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+                        .setSchemaValidationState(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
                 mutation.addErrorMessage("NA","Invalid xml mutation produced");
