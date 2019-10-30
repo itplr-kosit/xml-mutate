@@ -1,6 +1,5 @@
 package de.kosit.xmlmutate.expectation;
 
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.MutationResult.ExpectationCompliance;
 import org.junit.jupiter.api.DisplayName;

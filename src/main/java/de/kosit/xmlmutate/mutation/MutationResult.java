@@ -9,6 +9,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutput;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Mutationsergebnis aus den diversen Schritten.
@@ -28,6 +29,7 @@ public class MutationResult {
     private List<SyntaxError> schemaValidationErrors = new ArrayList<>();
 
     // Schematron expectations matches and schematron result
+    private boolean schematronGlobalValidationAsExpected;
     private Map<SchematronRuleExpectation, Boolean> schematronExpectationMatches = new HashMap<>();
     private Map<Schematron, SchematronOutput> schematronResult = new HashMap<>();
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
@@ -91,5 +93,11 @@ public class MutationResult {
     public enum ValidationState {
         UNPROCESSED(""), VALID("OK"), INVALID("FAILED");
         private final String text;
+    }
+
+    public List<SchematronRuleExpectation> getFailedSchematronExpectations() {
+        return this.schematronExpectationMatches.entrySet()
+                .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

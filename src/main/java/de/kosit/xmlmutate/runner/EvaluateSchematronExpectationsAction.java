@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// import com.google.common.base.Optional;
 
 /**
  * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem
@@ -35,7 +34,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
             final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
 
             mutation.getResult().getSchematronExpectationMatches().put(e, valid);
-            // Todo if this is needed
+
             if (unknownRuleName) {
                 mutation.addErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
             } else if (!valid) {
@@ -71,7 +70,6 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
         // get all failed assertions of schematron which matches the given expection
         final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
                 .flatMap(List::stream).peek(f -> {
-                    // log.debug("FA id={} flag={}", f.getId(), f.getFlag());
                 }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
         // log.debug("Evaluation for {} ", failed.)
         boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();

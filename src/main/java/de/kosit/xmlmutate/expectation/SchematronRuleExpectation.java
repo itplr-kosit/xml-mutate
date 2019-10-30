@@ -36,7 +36,7 @@ public class SchematronRuleExpectation {
      */
     public String getSource() {
         return this.source;
-    };
+    }
 
     /**
      * Of() what do we expect something e.g. which Schematron rule do we expect to
@@ -44,7 +44,14 @@ public class SchematronRuleExpectation {
      */
     public String getRuleName() {
         return this.ruleName;
-    };
+    }
+
+    /**
+     * Retrieve the expected result of a schematron rule
+     */
+    public ExpectedResult getExpectedResult() {
+        return this.expectedResult;
+    }
 
     /**
      * Is expected to fail?
@@ -60,7 +67,5 @@ public class SchematronRuleExpectation {
         return ExpectedResult.PASS.equals(this.expectedResult);
     }
 
-    public enum ExpectedResult {
-        FAIL, PASS
-    }
+
 }

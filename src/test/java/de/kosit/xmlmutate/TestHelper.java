@@ -1,5 +1,15 @@
 package de.kosit.xmlmutate;
 
+import de.init.kosit.commons.ObjectFactory;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import org.apache.commons.lang3.ArrayUtils;
+import org.w3c.dom.*;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -8,22 +18,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ProcessingInstruction;
-
-import de.init.kosit.commons.ObjectFactory;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
  * Some helper function for testing.
@@ -48,6 +42,17 @@ public class TestHelper {
      */
     public static MutationContext createContext() {
         return createContext(NOOP);
+    }
+
+
+    /**
+     * Create a mutation context with a give document for testing
+     * @param doc
+     * @return
+     */
+    public static MutationContext createContext(final Document doc, final String documentName) {
+        final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", "mutator=noop");
+        return new MutationContext(pi, documentName);
     }
 
     /**

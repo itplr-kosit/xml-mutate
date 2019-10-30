@@ -1,7 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation.ExpectedResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

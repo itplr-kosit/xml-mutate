@@ -28,7 +28,7 @@ public class OverallExpectationComplianceTest {
         final MutationResult result = new MutationResult();
 
         final Map<SchematronRuleExpectation, Boolean> exp = new HashMap<>();
-        exp.put(new SchematronRuleExpectation("test", "test", SchematronRuleExpectation.ExpectedResult.PASS), true);
+        exp.put(new SchematronRuleExpectation("test", "test", ExpectedResult.PASS), true);
         result.setSchematronExpectationMatches(exp);
 
         result.setSchemaValidationAsExpected(true);
@@ -44,7 +44,7 @@ public class OverallExpectationComplianceTest {
         final MutationResult result = new MutationResult();
 
         final Map<SchematronRuleExpectation, Boolean> exp = new HashMap<>();
-        exp.put(new SchematronRuleExpectation("test", "test", SchematronRuleExpectation.ExpectedResult.FAIL), true);
+        exp.put(new SchematronRuleExpectation("test", "test", ExpectedResult.FAIL), true);
         result.setSchematronExpectationMatches(exp);
 
         result.setSchemaValidationAsExpected(true);
@@ -60,7 +60,7 @@ public class OverallExpectationComplianceTest {
         final MutationResult result = new MutationResult();
 
         final Map<SchematronRuleExpectation, Boolean> exp = new HashMap<>();
-        exp.put(new SchematronRuleExpectation("test", "test", SchematronRuleExpectation.ExpectedResult.PASS), false);
+        exp.put(new SchematronRuleExpectation("test", "test", ExpectedResult.PASS), false);
         result.setSchematronExpectationMatches(exp);
 
         result.setSchemaValidationAsExpected(false);
@@ -76,7 +76,7 @@ public class OverallExpectationComplianceTest {
         final MutationResult result = new MutationResult();
 
         final Map<SchematronRuleExpectation, Boolean> exp = new HashMap<>();
-        exp.put(new SchematronRuleExpectation("test", "test", SchematronRuleExpectation.ExpectedResult.FAIL), false);
+        exp.put(new SchematronRuleExpectation("test", "test", ExpectedResult.FAIL), false);
         result.setSchematronExpectationMatches(exp);
 
         result.setSchemaValidationAsExpected(false);

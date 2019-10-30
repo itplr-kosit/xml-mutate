@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.runner;
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
@@ -38,7 +39,7 @@ public class ValidateAction implements RunAction {
 
     private final Schema schema;
 
-    private final List<Schematron> schematronRules;
+    private final List<Schematron> schematronFiles;
 
     private final Path targetFolder;
 
@@ -53,35 +54,52 @@ public class ValidateAction implements RunAction {
     private void schematronValidation(final Mutation mutation) {
 
         long failedAssertCount = 0;
-
         boolean unknownRulenameExist = false;
-
         boolean failedRulesAreListed = false;
+        final List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations()
+                .stream().map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
 
-        for (final Schematron s : getSchematronRules()) {
+        for (final Schematron schematron : getSchematronFiles()) {
 
-            unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
-                    .anyMatch(n -> !s.hasRule(n.getRuleName()));
+            // Check if unknown rule names were declared
+            if (!unknownRulenameExist) {
+                unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
+                        .anyMatch(n -> !schematron.hasRule(n.getRuleName()));
+            }
 
-            this.log.debug("Using schematron={}",s.getName());
-            final SchematronOutput out = Services.getSchematronService()
-                    .validate(s.getUri(), mutation.getContext().getDocument());
+            this.log.debug("Using schematron={}",schematron.getName());
+            final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
             this.log.debug("result={}",out.getText());
             failedAssertCount += out.getFailedAsserts().size();
             this.log.debug("failed asserts={}",failedAssertCount);
-            mutation.getResult().addSchematronResult(s, out);
+            mutation.getResult().addSchematronResult(schematron, out);
 
-            List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream().map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
-            List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
-            if (CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed)) {
-                failedRulesAreListed = true;
+            // Check if failed rules were also declared
+            if (!failedRulesAreListed) {
+                failedRulesAreListed = checkPresenceOfFailedRules(out, ruleNamesDeclared);
             }
+
 
         }
 
-        mutation.getResult()
-                .setSchematronValidationState(failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID : ValidationState.VALID);
+        // Set validation state and expectation state
+        final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ?
+                ValidationState.INVALID : ValidationState.VALID;
+        mutation.getResult().setSchematronValidationState(schematronValidationState);
 
+        final ExpectedResult schematronExp = mutation.getConfiguration().getSchematronExpectations().stream().findFirst().get().getExpectedResult();
+        if (schematronExp.equals(ExpectedResult.PASS) && schematronValidationState.equals(ValidationState.VALID)
+        || schematronExp.equals(ExpectedResult.FAIL) && schematronValidationState.equals(ValidationState.INVALID)) {
+            mutation.getResult().setSchematronGlobalValidationAsExpected(true);
+        } else {
+            mutation.getResult().setSchematronGlobalValidationAsExpected(false);
+        }
+    }
+
+    private boolean checkPresenceOfFailedRules(final SchematronOutput out, final List<String> ruleNamesDeclared) {
+        final List<String> ruleNamesFailed = out.getFailedAsserts()
+                .stream().map(FailedAssert::getId).collect(Collectors.toList());
+        return CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed);
     }
 
     private void schemaValidation(final Mutation mutation) {
