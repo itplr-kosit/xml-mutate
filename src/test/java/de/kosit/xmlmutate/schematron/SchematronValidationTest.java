@@ -41,19 +41,19 @@ public class SchematronValidationTest {
 
     private static final String TEST_RESOURCES_FOLDER = "src/test/resources";
 
-    private static final Path SCHEMA_FILE = Paths.get(TEST_RESOURCES_FOLDER, "/xsd/maindoc/UBL-Invoice-2.1.xsd");
-    private static final Path SCHEMATRON_FILE = Paths.get(TEST_RESOURCES_FOLDER, "/XRechnung-UBL-validation-Invoice.xsl");
+    private static final Path SCHEMA_FILE = Paths.get(TEST_RESOURCES_FOLDER, "/book/book.xsd");
+    private static final Path SCHEMATRON_FILE = Paths.get(TEST_RESOURCES_FOLDER, "/book/book.xsl");
 
     @Test
     @DisplayName("Test with a DECLARED rule that is known, failed and failed-expected")
     public void testSimpleFailedAndExpected() {
         // FAILED OR SUCCESS depending on xml file content
-        final String documentName = "Test_with_failed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-2", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -66,12 +66,12 @@ public class SchematronValidationTest {
     @DisplayName("Test with a DECLARED rule that is known, failed but passed-expected")
     public void testSimpleFailedNotExpected() {
         // FAILED OR SUCCESS depending on xml file content
-        final String documentName = "Test_with_failed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-2", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -84,12 +84,12 @@ public class SchematronValidationTest {
     @DisplayName("Test with a DECLARED rule that is known, passed and passed-expected")
     public void testSimplePassedAndExpected() {
         // FAILED OR SUCCESS depending on xml file content
-        final String documentName = "Test_with_passed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_passed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-2", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -102,12 +102,12 @@ public class SchematronValidationTest {
     @DisplayName("Test with a DECLARED rule that is known, passed and failed-expected")
     public void testSimplePassedNotExpected() {
         // FAILED OR SUCCESS depending on xml file content
-        final String documentName = "Test_with_passed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_passed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-2", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -119,11 +119,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with NOT-DECLARED rule that fails and a DECLARED rule known, passed and passed-expected ")
     public void testNonDeclaredFailedAndDeclaredPassedAndExp() {
-        final String documentName = "Test_with_failed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-1", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -135,11 +135,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with NOT-DECLARED rule that fails and a DECLARED rule known, passed and failed-expected ")
     public void testNonDeclaredFailedAndDeclaredPassedNotExp() {
-        final String documentName = "Test_with_failed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-1", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -151,11 +151,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with NOT-DECLARED rule that fails and a DECLARED rule known, failed and passed-expected ")
     public void testNonDeclaredFailedAndDeclaredFailedNotExp() {
-        final String documentName = "Test_with_failed_BR-DE-1_and_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-1_and_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-1", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -167,11 +167,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with NOT-DECLARED rule that fails and a DECLARED rule known, failed and failed-expected ")
     public void testNonDeclaredFailedAndDeclaredFailedAndExp() {
-        final String documentName = "Test_with_failed_BR-DE-1_and_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_failed_Book-1_and_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-1", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -184,11 +184,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with DECLARED rule that is unknown and expected failed")
     public void testUnknownDeclaredRuleFailedExp() {
-        final String documentName = "Test_with_passed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_passed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-145", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-145", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -200,11 +200,11 @@ public class SchematronValidationTest {
     @Test
     @DisplayName("Test with DECLARED rule that is unknown and expected passed")
     public void testUnknownDeclaredRulePassedExp() {
-        final String documentName = "Test_with_passed_BR-DE-2.xml";
-        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "validation/", documentName).toString());
+        final String documentName = "book_with_passed_Book-2.xml";
+        final Document doc = getXmlDocument(Paths.get(TEST_RESOURCES_FOLDER, "schematron-validation/", documentName).toString());
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "BR-DE-145", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("test", "Book-145", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -220,7 +220,7 @@ public class SchematronValidationTest {
         final Schema schema = Services.getSchemaRepository().createSchema(SCHEMA_FILE.toUri());
 
         // Only extracted rule names BR-DE-1 and BR-DE-2 for this specific testing
-        final Schematron schematron = new Schematron("schematron file", SCHEMATRON_FILE.toUri(), Arrays.asList("BR-DE-1", "BR-DE-2"));
+        final Schematron schematron = new Schematron("schematron file", SCHEMATRON_FILE.toUri(), Arrays.asList("Book-1", "Book-2"));
         schematronFiles.add(schematron);
         return new ValidateAction(schema, schematronFiles, targetFolder);
     }
