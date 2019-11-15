@@ -1,7 +1,8 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.*;
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;

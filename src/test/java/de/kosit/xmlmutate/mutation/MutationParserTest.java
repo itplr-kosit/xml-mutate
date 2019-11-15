@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
