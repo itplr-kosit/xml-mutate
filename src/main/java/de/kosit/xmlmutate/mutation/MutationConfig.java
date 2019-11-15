@@ -1,6 +1,5 @@
 package de.kosit.xmlmutate.mutation;
 
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,7 @@ public class MutationConfig {
 
     private Map<String, Object> properties = new HashMap<>();
 
-    private boolean schemaValidationAsExpected;
+    private ExpectedResult schemaValidationExpectation;
 
     private List<SchematronRuleExpectation> schematronExpectations = new ArrayList<>();
 
@@ -73,6 +72,7 @@ public class MutationConfig {
         c.getProperties().putAll(this.properties);
         c.setMutatorName(this.mutatorName);
         c.getSchematronExpectations().addAll(this.getSchematronExpectations());
+        c.setSchemaValidationExpectation(this.schemaValidationExpectation);
         return c;
     }
 

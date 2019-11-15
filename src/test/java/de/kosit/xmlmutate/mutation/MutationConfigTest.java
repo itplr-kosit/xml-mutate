@@ -1,12 +1,11 @@
 package de.kosit.xmlmutate.mutation;
 
-import de.kosit.xmlmutate.expectation.ExpectedResult;
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Testet das {@link MutationConfig}-Objekt.

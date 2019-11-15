@@ -1,12 +1,13 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutator.Mutator;
 import lombok.Getter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -32,7 +33,11 @@ public class Mutation {
 
     private State state = State.CREATED;
 
-    private Map<String, String> errorMessages = new HashMap<>();
+    private Map<String, String> schematronErrorMessages = new HashMap<>();
+
+    private List<String> schemaErrorMessages = new ArrayList<>();
+
+    private List<String> globalErrorMessages = new ArrayList<>();
 
     /**
      * Constructor.
@@ -65,8 +70,13 @@ public class Mutation {
         this.state = state;
     }
 
-    public void addErrorMessage(String ruleName, String message) {
-        this.errorMessages.put(ruleName, message);
+    public void addSchematronErrorMessage(final String ruleName, final String message) {
+        this.schematronErrorMessages.put(ruleName, message);
+    }
+
+    public void addSchemaErrorMessages(final Collection<SyntaxError> syntaxErrors) {
+        this.result.getSchemaValidationErrors().addAll(syntaxErrors);
+        this.schemaErrorMessages.addAll(syntaxErrors.stream().map(SyntaxError::getMessage).collect(Collectors.toList()));
     }
 
     public Path getResultDocument() {
@@ -90,7 +100,7 @@ public class Mutation {
     }
 
     public boolean isSchemaValidationAsExpected() {
-        return configuration.isSchemaValidationAsExpected();
+        return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation().meetsValidationState(this.result.getSchemaValidation());
     }
 
 
@@ -114,6 +124,8 @@ public class Mutation {
     public boolean isErroneous() {
         return this.state == State.ERROR;
     }
+
+
 
 
     public enum State {

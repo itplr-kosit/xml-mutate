@@ -3,12 +3,11 @@ package de.kosit.xmlmutate.runner;
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.expectation.ExpectedResult;
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -109,16 +108,16 @@ public class ValidateAction implements RunAction {
                         .parse(this.targetFolder.resolve(mutation.getResultDocument()).toFile());
                 final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService()
                         .validate(this.schema, document);
-                mutation.getResult().getSchemaValidationErrors().addAll(result.getErrors());
+                mutation.addSchemaErrorMessages(result.getErrors());
                 log.debug("Schema valid={}", result.isValid());
                 mutation.getResult()
-                        .setSchemaValidationState(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+                        .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
-                mutation.addErrorMessage("NA","Invalid xml mutation produced");
+                mutation.getGlobalErrorMessages().add("Invalid xml mutation produced");
             } catch (final IOException e) {
                 mutation.setState(State.ERROR);
-                mutation.addErrorMessage("NA","Error while while trying to read the xml mutation file");
+                mutation.getGlobalErrorMessages().add("Error while while trying to read the xml mutation file");
             }
         }
 

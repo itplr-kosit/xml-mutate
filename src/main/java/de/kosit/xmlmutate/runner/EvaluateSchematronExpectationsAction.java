@@ -36,9 +36,9 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
             mutation.getResult().getSchematronExpectationMatches().put(e, valid);
 
             if (unknownRuleName) {
-                mutation.addErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
+                mutation.addSchematronErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
             } else if (!valid) {
-                mutation.addErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
+                mutation.addSchematronErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
             }
 
             log.trace(
