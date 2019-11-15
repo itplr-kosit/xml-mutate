@@ -1,20 +1,15 @@
 package de.kosit.xmlmutate.mutator;
 
+import de.kosit.xmlmutate.mutation.*;
+import de.kosit.xmlmutate.runner.Services;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Node;
-
-import lombok.RequiredArgsConstructor;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  *
@@ -69,7 +64,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         l.add(create(config.cloneConfig(), context.cloneContext(), length));
         l.add(create(config.cloneConfig(), context.cloneContext(), length - 1));
         final Mutation violation = create(config.cloneConfig(), context.cloneContext(), length + 1);
-        violation.getConfiguration().setSchemaValidationAsExpected(false);
+        violation.getConfiguration().setSchemaValidationExpectation(ExpectedResult.FAIL);
         l.add(violation);
 
         return l;
@@ -83,7 +78,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
             l.add(create(config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength) + 1));
             final Mutation violation = create(
                     config.cloneConfig(), context.cloneContext(), Integer.parseInt(minLength) - 1);
-            violation.getConfiguration().setSchemaValidationAsExpected(false);
+            violation.getConfiguration().setSchemaValidationExpectation(ExpectedResult.FAIL);
             l.add(violation);
         }
         return l;
@@ -93,10 +88,7 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
         final String baseName = "length-" + length;
         cloneConfig.getProperties().put(LENGTH_PARAM, length);
 
-        final Mutation m = new Mutation(cloneContext, Services.getNameGenerator().generateName("", baseName),
+        return new Mutation(cloneContext, Services.getNameGenerator().generateName("", baseName),
                 cloneConfig, Services.getRegistry().getMutator(NAME));
-
-        return m;
-
     }
 }

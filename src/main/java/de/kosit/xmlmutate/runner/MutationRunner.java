@@ -111,7 +111,7 @@ public class MutationRunner {
                                 "Error running action {0} in mutation {1} ", a.getClass().getName(),
                                 mutation.getIdentifier()),
                         e);
-                mutation.addErrorMessage("NA", e.getLocalizedMessage());
+                mutation.getGlobalErrorMessages().add(e.getLocalizedMessage());
                 mutation.setState(State.ERROR);
             }
 

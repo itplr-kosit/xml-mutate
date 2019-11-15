@@ -51,8 +51,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param name
-         *                 the name of the column
+         * @param name the name of the column
          */
         public ColumnDefinition(final String name) {
             this(name, -1, 3);
@@ -61,10 +60,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param name
-         *                   the name of the column
-         * @param length
-         *                   the max length of the column
+         * @param name   the name of the column
+         * @param length the max length of the column
          */
         public ColumnDefinition(final String name, final int length) {
             this(name, length, 3);
@@ -73,12 +70,9 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param name
-         *                     the name of the column
-         * @param length
-         *                     the max length of the column
-         * @param maxLines
-         *                     the max lines per cell
+         * @param name     the name of the column
+         * @param length   the max length of the column
+         * @param maxLines the max lines per cell
          */
         public ColumnDefinition(final String name, final int length, final int maxLines) {
             this.name = name;
@@ -98,8 +92,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Sets a calculated length for the column.
          *
-         * @param length
-         *                   the length
+         * @param length the length
          */
         public void setLength(final int length) {
             if (this.definedLength < 0 && getLength() < length) {
@@ -124,8 +117,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param def
-         *                {@link ColumnDefinition}s
+         * @param def {@link ColumnDefinition}s
          */
         public Grid(final ColumnDefinition... def) {
             Stream.of(def).forEach(this::addColumn);
@@ -149,8 +141,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Adds new a column definition.
          *
-         * @param def
-         *                definitions
+         * @param def definitions
          * @return this grid
          */
         public Grid addColumn(final ColumnDefinition def) {
@@ -389,8 +380,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Sets explicit text color.
          *
-         * @param textColor
-         *                      the color.
+         * @param textColor the color.
          * @return this {@link Format}
          */
         public Format color(final Code textColor) {
@@ -401,8 +391,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Sets explicit background color.
          *
-         * @param color
-         *                  the color.
+         * @param color the color.
          * @return this {@link Format}
          */
         public Format background(final Code color) {
@@ -413,8 +402,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Fügt weitere Formatierungscodes hinzu.
          *
-         * @param codes
-         *                  die Codes
+         * @param codes die Codes
          * @return this {@link Format}
          */
         public Format addCodes(final Code... codes) {
@@ -436,8 +424,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param format
-         *                   the configured base format
+         * @param format the configured base format
          */
         public Line(final Format format) {
             this.baseFormat = format;
@@ -446,8 +433,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Constructor.
          *
-         * @param codes
-         *                  Ansi escape codes for formatting
+         * @param codes Ansi escape codes for formatting
          */
         public Line(final Code... codes) {
             this(new Format().addCodes(codes));
@@ -456,8 +442,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         /**
          * Add some text to the line.
          *
-         * @param text
-         *                 the text
+         * @param text the text
          * @return this line
          */
         public Line add(final Text text) {
@@ -536,7 +521,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
                     new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
-                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 15),
+                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 50),
                     new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
@@ -568,6 +553,10 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
 
+        boolean oneSchemaErrorPrinted = false;
+        boolean oneOtherErrorPrinted = false;
+        boolean oneSchematronErrorPrinted = false;
+
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
         grid.addCell(mutation.getMutator() != null ? mutation.getMutator().getNames() + " " + mutation.getIdentifier() : "");
@@ -575,13 +564,21 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
         grid.addCell(createSchemaExpectationCell(asSchemaExpected));
-
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
-        if (failed.size() == 0 && isSchematronProcessed) {
-            grid.addCell("");
+
+        // Create first error message
+        if (failed.isEmpty() && mutation.getSchemaErrorMessages().isEmpty() && !mutation.getGlobalErrorMessages().isEmpty()) {
+            oneOtherErrorPrinted = true;
+            grid.addCell(mutation.getGlobalErrorMessages().get(0));
+        } else if (failed.isEmpty() && isSchematronProcessed && !mutation.getSchemaErrorMessages().isEmpty()) {
+            oneSchemaErrorPrinted = true;
+            grid.addCell(mutation.getSchemaErrorMessages().get(0));
+        } else if (!failed.isEmpty() && isSchematronProcessed) {
+            oneSchematronErrorPrinted = true;
+            grid.addCell(mutation.getSchematronErrorMessages().get(expectationCells.get(0).getText().get(0).getText()));
         } else {
-            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(0).getText().get(0).getText()));
+            grid.addCell("");
         }
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
@@ -590,26 +587,66 @@ public class TextReportGenerator extends BaseReportGenerator {
         } else {
             grid.addCell(EMPTY);
         }
-        // if more than one schematron expectation failed
-        for (int i = 1; i < expectationCells.size(); i++) {
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(EMPTY);
-            grid.addCell(expectationCells.get(i));
-            grid.addCell(mutation.getErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
-            grid.addCell(EMPTY);
+
+        // Rest of error messages
+        // If already one error, there is no schema or schematron messages
+        if (oneOtherErrorPrinted) {
+            for (int k = 1; k < mutation.getGlobalErrorMessages().size(); k++) {
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(mutation.getGlobalErrorMessages().get(k));
+                grid.addCell(EMPTY);
+            }
+        } else {
+            // First schematron messages
+            int p = 0;
+            if (oneSchematronErrorPrinted) {
+                p++;
+            }
+            for (int i = p; i < expectationCells.size(); i++) {
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(expectationCells.get(i));
+                grid.addCell(mutation.getSchematronErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
+                grid.addCell(EMPTY);
+            }
+            // add schema error messages at the end
+            for (final String errorMessage : mutation.getSchemaErrorMessages()) {
+                if (oneSchemaErrorPrinted) {
+                    continue;
+                }
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(EMPTY);
+                grid.addCell(errorMessage);
+                grid.addCell(EMPTY);
+            }
         }
+
     }
+
 
     private Cell createOverallResult(final Mutation mutation) {
         final Cell overall;
         if (mutation.isAllAsExpected()) {
             overall = new Cell("Y", Code.GREEN);
-        } else  if (mutation.isAllUnprocessed()){
+        } else if (mutation.isAllUnprocessed()) {
             overall = new Cell("NA", Code.RED);
         } else {
             overall = new Cell("N", Code.RED);
@@ -638,11 +675,11 @@ public class TextReportGenerator extends BaseReportGenerator {
             return cells;
         }
 
-        if (failed.size() == 0) {
+        if (failed.isEmpty()) {
             cells.add(new Cell("Y", Code.GREEN));
             return cells;
         }
-        failed.forEach(e -> cells.add(new Cell( e.getRuleName() + ":N", Code.RED)));
+        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N", Code.RED)));
         return cells;
     }
 
@@ -651,7 +688,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             return new Cell("NA", Code.RED);
         }
 
-        return new Cell(isValid ? "Y" : "Nss", isValid ? Code.GREEN : Code.RED);
+        return new Cell(isValid ? "Y" : "N", isValid ? Code.GREEN : Code.RED);
     }
 
     private Cell createSchemaExpectationCell(final boolean asExpected) {

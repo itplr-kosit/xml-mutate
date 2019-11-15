@@ -1,14 +1,9 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.*;
 
 /**
  * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im
@@ -23,7 +18,7 @@ public class MutationConfig {
 
     private Map<String, Object> properties = new HashMap<>();
 
-    private boolean schemaValidationAsExpected;
+    private ExpectedResult schemaValidationExpectation;
 
     private List<SchematronRuleExpectation> schematronExpectations = new ArrayList<>();
 
@@ -77,6 +72,7 @@ public class MutationConfig {
         c.getProperties().putAll(this.properties);
         c.setMutatorName(this.mutatorName);
         c.getSchematronExpectations().addAll(this.getSchematronExpectations());
+        c.setSchemaValidationExpectation(this.schemaValidationExpectation);
         return c;
     }
 

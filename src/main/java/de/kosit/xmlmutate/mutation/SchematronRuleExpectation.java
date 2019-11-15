@@ -42,20 +42,22 @@ public class SchematronRuleExpectation {
      */
     public String getSource() {
         return this.source;
-    };
+    }
 
     /**
      * Of() what do we expect something e.g. which Schematron rule do we expect to
      * be true/or false
      */
     public String getRuleName() {
+
         return this.ruleName;
-    };
+    }
 
     /**
      * Is expected to fail?
      */
     public boolean mustFail() {
+
         return ExpectedResult.FAIL.equals(this.expectedResult);
     }
 
@@ -63,10 +65,9 @@ public class SchematronRuleExpectation {
      * Is the expected to pass?
      */
     public boolean mustPass() {
+
         return ExpectedResult.PASS.equals(this.expectedResult);
     }
 
-    public enum ExpectedResult {
-        FAIL, PASS, UNDEFINED
-    }
+
 }

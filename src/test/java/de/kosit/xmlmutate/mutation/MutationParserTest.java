@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.kosit.xmlmutate.mutation.Mutation.State;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -96,8 +97,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getErrorMessages().get("NA")).isEqualToIgnoringCase("No valid mutator found for unknown");
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"No valid mutator found for unknown"))).isTrue();
     }
 
     @Test
@@ -107,8 +108,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getErrorMessages().get("NA")).containsIgnoringCase(" mismatched input 'schema-' expecting 'mutator'");
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"mismatched input 'schema-' expecting 'mutator'"))).isTrue();
     }
 
     @Test
@@ -118,8 +119,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getErrorMessages().get("NA")).containsIgnoringCase("missing {'valid', 'invalid'} at 'val'");
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"missing {'valid', 'invalid'} at 'val'"))).isTrue();
     }
 
     @Test
@@ -132,8 +133,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getErrorMessages().get("NA")).isEqualToIgnoringCase("No mutation can be found for test. Is PI last element?");
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"No mutation can be found for test. Is PI last element?"))).isTrue();
     }
 
     private void assertValid(final List<Mutation> mutations) {

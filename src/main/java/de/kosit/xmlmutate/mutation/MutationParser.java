@@ -1,7 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation.ExpectedResult;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.*;
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
@@ -87,9 +86,8 @@ public class MutationParser {
         @Override
         public void exitSchemaKeyword(final SchemaKeywordContext ctx) {
             final String keyword = ctx.assertion().getText();
-            final boolean valid = "valid".equals(keyword);
-            log.debug("Schema {} expectation is={}", keyword, valid);
-            this.config.setSchemaValidationAsExpected(valid);
+            log.debug("Schema expectation is={}", keyword);
+            this.config.setSchemaValidationExpectation("valid".equalsIgnoreCase(keyword)?ExpectedResult.PASS:ExpectedResult.FAIL);
         }
 
         @Override
@@ -190,7 +188,7 @@ public class MutationParser {
     private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setState(State.ERROR);
-        m.addErrorMessage("NA", message);
+        m.getGlobalErrorMessages().add(message);
         return Collections.singletonList(m);
     }
 
