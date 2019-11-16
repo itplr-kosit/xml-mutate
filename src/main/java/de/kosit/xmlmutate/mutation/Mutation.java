@@ -59,7 +59,7 @@ public class Mutation {
                     Mutator mutator) {
         this(context, identifier, configuration);
         this.mutator = mutator;
-        this.result.setSchemaValidationAsExpected(configuration.isSchemaValidationAsExpected());
+        this.result.setSchemaValidationAsExpected(isSchemaValidationAsExpected());
     }
 
     public void setState(State state) {
@@ -100,7 +100,7 @@ public class Mutation {
     }
 
     public boolean isSchemaValidationAsExpected() {
-        return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation().meetsValidationState(this.result.getSchemaValidation());
+        return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation().meetsValidationState(this.result.getSchemaValidationState());
     }
 
 

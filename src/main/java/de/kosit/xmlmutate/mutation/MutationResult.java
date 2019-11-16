@@ -29,7 +29,6 @@ public class MutationResult {
     private List<SyntaxError> schemaValidationErrors = new ArrayList<>();
 
     // Schematron expectations matches and schematron result
-    private boolean schematronGlobalValidationAsExpected;
     private Map<SchematronRuleExpectation, Boolean> schematronExpectationMatches = new HashMap<>();
     private Map<Schematron, SchematronOutput> schematronResult = new HashMap<>();
     public void addSchematronResult(final Schematron schematron, final SchematronOutput out) {
@@ -86,6 +85,7 @@ public class MutationResult {
     boolean allSchematronRulesAsExpected() {
         return !this.schematronExpectationMatches.isEmpty() && this.schematronExpectationMatches.entrySet().stream().allMatch(Entry::getValue);
     }
+
 
 
     @Getter

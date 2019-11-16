@@ -1,6 +1,10 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.*;
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.Services;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

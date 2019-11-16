@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A test class for all relevant combinations concerning schematron rules being declared or not
- *
+ * <p>
  * The schema validation is being ignored
  *
  * @author Victor del Campo
@@ -53,13 +53,13 @@ public class SchematronValidationTest {
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL));
+        final SchematronRuleExpectation ruleExpectation = new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL);
+        config.addExpectation(ruleExpectation);
 
         final Mutation mutation = new Mutation(createContext(doc, documentName), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isTrue();
     }
 
     @Test
@@ -77,7 +77,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isFalse();
+
     }
 
     @Test
@@ -95,7 +95,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.VALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isTrue();
+
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.VALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isFalse();
+
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.VALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isTrue();
+
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.VALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isFalse();
+
     }
 
     @Test
@@ -161,7 +161,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isFalse();
+
     }
 
     @Test
@@ -177,7 +177,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isTrue();
+
     }
 
 
@@ -194,7 +194,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isTrue();
+
     }
 
     @Test
@@ -210,7 +210,7 @@ public class SchematronValidationTest {
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.INVALID);
-        assertThat(mutation.getResult().isSchematronGlobalValidationAsExpected()).isFalse();
+
     }
 
 

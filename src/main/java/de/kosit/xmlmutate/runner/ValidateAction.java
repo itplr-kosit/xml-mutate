@@ -3,11 +3,11 @@ package de.kosit.xmlmutate.runner;
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.mutation.SchematronRuleExpectation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -81,18 +81,11 @@ public class ValidateAction implements RunAction {
 
         }
 
-        // Set validation state and expectation state
+        // Set validation state
         final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ?
                 ValidationState.INVALID : ValidationState.VALID;
         mutation.getResult().setSchematronValidationState(schematronValidationState);
 
-        final ExpectedResult schematronExp = mutation.getConfiguration().getSchematronExpectations().stream().findFirst().get().getExpectedResult();
-        if (schematronExp.equals(ExpectedResult.PASS) && schematronValidationState.equals(ValidationState.VALID)
-        || schematronExp.equals(ExpectedResult.FAIL) && schematronValidationState.equals(ValidationState.INVALID)) {
-            mutation.getResult().setSchematronGlobalValidationAsExpected(true);
-        } else {
-            mutation.getResult().setSchematronGlobalValidationAsExpected(false);
-        }
     }
 
     private boolean checkPresenceOfFailedRules(final SchematronOutput out, final List<String> ruleNamesDeclared) {
@@ -110,8 +103,7 @@ public class ValidateAction implements RunAction {
                         .validate(this.schema, document);
                 mutation.addSchemaErrorMessages(result.getErrors());
                 log.debug("Schema valid={}", result.isValid());
-                mutation.getResult()
-                        .setSchemaValidation(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+                mutation.getResult().setSchemaValidationState(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
                 mutation.getGlobalErrorMessages().add("Invalid xml mutation produced");
