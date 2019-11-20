@@ -6,7 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static de.kosit.xmlmutate.TestHelper.createContext;
@@ -136,6 +138,58 @@ public class MutationParserTest {
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
         assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
         assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"No mutation can be found for test. Is PI last element?"))).isTrue();
+    }
+
+    @Test
+    @DisplayName("Test with a PI with correct id and tag names")
+    public void testCorrectIdAndTags() {
+        final MutationContext context = createContext("mutator=remove id=\"id1\" tag=\"tag1, tag2\"");
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getState()).isEqualTo(State.CREATED);
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isEqualTo(0);
+        assertThat(Collections.disjoint(mutations.get(0).getConfiguration().getTagNames(), Arrays.asList("tag1", "tag2"))).isFalse();
+    }
+
+    @Test
+    @DisplayName("Test with a PI with an empty id")
+    public void testEmptyId() {
+        final MutationContext context = createContext("mutator=remove id=\"\"");
+        // remove target
+        context.getParentElement().removeChild(context.getTarget());
+
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction id can not be empty"))).isTrue();
+    }
+
+    @Test
+    @DisplayName("Test with a PI with an empty tag")
+    public void testEmptyTag() {
+        final MutationContext context = createContext("mutator=remove tag=\"\"");
+        // remove target
+        context.getParentElement().removeChild(context.getTarget());
+
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction tag can not be empty"))).isTrue();
+    }
+    @Test
+    @DisplayName("Test with a PI with several ids")
+    public void testSeveralIds() {
+        final MutationContext context = createContext("mutator=remove id=\"id1, id2\"");
+        // remove target
+        context.getParentElement().removeChild(context.getTarget());
+
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction can only have 1 id"))).isTrue();
     }
 
     private void assertValid(final List<Mutation> mutations) {

@@ -46,8 +46,7 @@ COLON: ':';
 WS: [ \t\r\n\u000C]+ -> skip;
 DASH:'-';
 
-STRING_LITERAL:
-	'"' (~('"' | '\\' | '\r' | '\n') | '\\' ('"' | '\\'))* '"';
+STRING_LITERAL: '"' (~('"' | '\\'  | '\u0000' .. '\u001F' |'\u007F' .. '\u009F') | '\\' ('"' | '\\'))* '"';
 QUOTE :'"';
 LITERAL: [a-zA-Z_] CHARACTER*;
 
@@ -61,7 +60,7 @@ mutator: 'mutator' EQUALITY_OPERATOR name;
 
 configuration: (keyword | property);
 
-keyword: schemaKeyword | schematronKeyword;
+keyword: schemaKeyword | schematronKeyword | idKeyword | tagKeyword;
 
 schemaKeyword: 'schema-' assertion;
 
@@ -75,6 +74,11 @@ assertion: 'valid' | 'invalid';
 property: identifier EQUALITY_OPERATOR value;
 
 value: identifier;
+
+tagKeyword: 'tag' EQUALITY_OPERATOR tagText;
+tagText: STRING_LITERAL;
+idKeyword: 'id' EQUALITY_OPERATOR idText;
+idText:  STRING_LITERAL;
 
 
 name: identifier;

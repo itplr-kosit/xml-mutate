@@ -122,15 +122,25 @@ public class MutationRunner {
         mutations.forEach(this::process);
     }
 
-    private List<Mutation> parseMutations(final Document origin, final String documentName) {
+    List<Mutation> parseMutations(final Document origin, final String documentName) {
         final List<Mutation> all = new ArrayList<>();
         final TreeWalker piWalker = ((DocumentTraversal) origin)
                 .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
+        final List<String> alreadyDeclaredIds = new ArrayList<>();
         while (piWalker.nextNode() != null) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 final MutationContext context = new MutationContext(pi, documentName);
-                final List<Mutation> mutations = this.parser.parse(context);
+                List<Mutation> mutations = this.parser.parse(context);
+                // Check if PI id is duplicated
+                if (!mutations.isEmpty()) {
+                    final String currentId = mutations.get(0).getConfiguration().getMutationId();
+                    if (currentId != null && !alreadyDeclaredIds.contains(currentId)) {
+                        alreadyDeclaredIds.add(currentId);
+                    } else if (currentId != null){
+                        mutations.forEach(e -> e.getGlobalErrorMessages().add("Mutation instruction id was already declared"));
+                    }
+                }
                 all.addAll(mutations);
             }
         }

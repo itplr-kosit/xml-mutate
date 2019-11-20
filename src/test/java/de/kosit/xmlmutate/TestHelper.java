@@ -3,6 +3,9 @@ package de.kosit.xmlmutate;
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.Services;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.*;
 
@@ -10,11 +13,14 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -169,4 +175,47 @@ public class TestHelper {
         return IntStream.range(0, list.getLength()).mapToObj(list::item).filter(n -> ArrayUtils.contains(types, n.getNodeType()));
     }
 
+
+    public static RunnerConfig createRunnerConfig(final String documentPath) {
+        final RunnerConfig runnerConfig = new RunnerConfig();
+        runnerConfig.setTargetFolder(createTestTargetFolder("doc/test"));
+        runnerConfig.setDocuments(getSingleDocument(documentPath));
+        runnerConfig.setSchematronRules(getBookSchematronRules());
+        runnerConfig.setSchema(createBookSchema());
+        runnerConfig.setTemplates(new ArrayList<>());
+        return runnerConfig;
+    }
+
+    private static List<Path> getSingleDocument(final String stringPath) {
+        final Path path = Paths.get(stringPath);
+        return Collections.singletonList(path);
+    }
+
+    private static Schema createBookSchema() {
+        final URI uri = Paths.get("src/test/resources/book/book.xsd").toUri();
+        return Services.getSchemaRepository().createSchema(uri);
+    }
+
+    private static List<Schematron> getBookSchematronRules() {
+        final List<Schematron> schematronList = new ArrayList<>();
+        final URI uri = Paths.get("src/test/resources/book/book.xsl").toUri();
+        // Only with BR-DE-1 and BR-DE-2 as known rule names
+        final List<String> list = Arrays.asList("Book-1", "Book-2");
+        final Schematron schematron = new Schematron("schematron", uri, list);
+        schematronList.add(schematron);
+        return schematronList;
+    }
+
+    private static Path createTestTargetFolder(final String path) {
+        Path testPath = Paths.get(path);
+        try {
+            Files.createDirectories(testPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Files.exists(testPath) && !Files.isWritable(testPath)) {
+            throw new IllegalArgumentException("Target folder is not writable");
+        }
+        return testPath;
+    }
 }

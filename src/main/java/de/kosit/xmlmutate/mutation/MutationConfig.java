@@ -26,6 +26,10 @@ public class MutationConfig {
 
     private String mutatorName;
 
+    private String mutationId;
+
+    private List<String> tagNames = new ArrayList<>();
+
     /**
      * Fügt einen weiteren Parameter hinzu.
      *

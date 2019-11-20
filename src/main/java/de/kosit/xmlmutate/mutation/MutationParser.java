@@ -16,9 +16,11 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.apache.commons.lang3.RegExUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -36,7 +38,7 @@ import java.util.stream.Collectors;
 public class MutationParser {
 
     @RequiredArgsConstructor
-    public class SchematronRulesParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
+    public static class SchematronRulesParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
 
         private final ExpectedResult expectedResult;
 
@@ -56,8 +58,6 @@ public class MutationParser {
      */
     @RequiredArgsConstructor
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
-
-        private static final String COLON = ":";
 
         private final MutationContext context;
 
@@ -108,6 +108,33 @@ public class MutationParser {
             return ctx.assertion().getText().equals("valid") ? ExpectedResult.PASS : ExpectedResult.FAIL;
         }
 
+
+        @Override
+        public void exitTagKeyword(final TagKeywordContext ctx) {
+            if (ctx.tagText() != null) {
+                final String tag = StringUtils.deleteWhitespace(unquote(ctx.tagText().getText()));
+                if (tag.length() == 0) {
+                    throw new ParseCancellationException("Mutation instruction tag can not be empty");
+                }
+                final List<String> tagNames = Arrays.asList(tag.split(","));
+                tagNames.forEach(e -> this.config.getTagNames().add(e));
+            }
+        }
+        @Override
+        public void exitIdKeyword(final IdKeywordContext ctx) {
+            if (ctx.idText() != null) {
+                final String id = unquote(ctx.idText().getText());
+                if (StringUtils.deleteWhitespace(id).length() == 0) {
+                    throw new ParseCancellationException("Mutation instruction id can not be empty");
+                }
+                if (id.contains(",") || id.contains(" ")) {
+                    throw new ParseCancellationException("Mutation instruction can only have 1 id");
+                } else {
+                    this.config.setMutationId(unquote(ctx.idText().getText()));
+                }
+            }
+        }
+
         @Override
         public void exitMutation(final de.kosit.xmlmutate.mutation.parser.MutationParser.MutationContext ctx) {
             if (validate()) {
@@ -119,6 +146,7 @@ public class MutationParser {
                 this.mutations = generator.generateMutations(this.config, this.context);
             }
         }
+
 
         private boolean validate() {
             if (this.config.getMutatorName() == null
@@ -142,7 +170,7 @@ public class MutationParser {
 
     public static class ThrowingErrorListener extends BaseErrorListener {
 
-        public static final ThrowingErrorListener INSTANCE = new ThrowingErrorListener();
+        static final ThrowingErrorListener INSTANCE = new ThrowingErrorListener();
 
         @Override
         public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line,
