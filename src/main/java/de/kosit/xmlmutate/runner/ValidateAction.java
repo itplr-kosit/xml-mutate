@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.runner;
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
+import de.init.kosit.commons.util.CommonException;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
@@ -67,24 +68,30 @@ public class ValidateAction implements RunAction {
             }
 
             this.log.debug("Using schematron={}",schematron.getName());
-            final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
-            this.log.debug("result={}",out.getText());
-            failedAssertCount += out.getFailedAsserts().size();
-            this.log.debug("failed asserts={}",failedAssertCount);
-            mutation.getResult().addSchematronResult(schematron, out);
 
-            // Check if failed rules were also declared
-            if (!failedRulesAreListed) {
-                failedRulesAreListed = checkPresenceOfFailedRules(out, ruleNamesDeclared);
+            try {
+                final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
+                this.log.debug("result={}",out.getText());
+                failedAssertCount += out.getFailedAsserts().size();
+                this.log.debug("failed asserts={}",failedAssertCount);
+                mutation.getResult().addSchematronResult(schematron, out);
+
+                // Check if failed rules were also declared
+                if (!failedRulesAreListed) {
+                    failedRulesAreListed = checkPresenceOfFailedRules(out, ruleNamesDeclared);
+                }
+                // Set validation state
+                final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ?
+                        ValidationState.INVALID : ValidationState.VALID;
+                mutation.getResult().setSchematronValidationState(schematronValidationState);
+            } catch (final CommonException e) {
+                this.log.debug("Schematron validation runtime error={}",e.getMessage());
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getMessage());
+                // Set validation state
+                mutation.getResult().setSchematronValidationState(ValidationState.UNPROCESSED);
             }
 
-
         }
-
-        // Set validation state
-        final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ?
-                ValidationState.INVALID : ValidationState.VALID;
-        mutation.getResult().setSchematronValidationState(schematronValidationState);
 
     }
 
@@ -106,10 +113,10 @@ public class ValidateAction implements RunAction {
                 mutation.getResult().setSchemaValidationState(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
-                mutation.getGlobalErrorMessages().add("Invalid xml mutation produced");
+                mutation.getMutationErrorContainer().addGlobalErrorMessage("Invalid xml mutation produced");
             } catch (final IOException e) {
                 mutation.setState(State.ERROR);
-                mutation.getGlobalErrorMessages().add("Error while while trying to read the xml mutation file");
+                mutation.getMutationErrorContainer().addGlobalErrorMessage("Error while while trying to read the xml mutation file");
             }
         }
 

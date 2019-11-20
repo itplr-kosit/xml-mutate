@@ -7,6 +7,7 @@ import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.*;
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
+import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -114,7 +115,7 @@ public class MutationParser {
             if (ctx.tagText() != null) {
                 final String tag = StringUtils.deleteWhitespace(unquote(ctx.tagText().getText()));
                 if (tag.length() == 0) {
-                    throw new ParseCancellationException("Mutation instruction tag can not be empty");
+                    throw new MutationException(ErrorCode.TAG_CONTENT_EMPTY);
                 }
                 final List<String> tagNames = Arrays.asList(tag.split(","));
                 tagNames.forEach(e -> this.config.getTagNames().add(e));
@@ -125,10 +126,10 @@ public class MutationParser {
             if (ctx.idText() != null) {
                 final String id = unquote(ctx.idText().getText());
                 if (StringUtils.deleteWhitespace(id).length() == 0) {
-                    throw new ParseCancellationException("Mutation instruction id can not be empty");
+                    throw new MutationException(ErrorCode.ID_CONTENT_EMPTY);
                 }
                 if (id.contains(",") || id.contains(" ")) {
-                    throw new ParseCancellationException("Mutation instruction can only have 1 id");
+                    throw new MutationException(ErrorCode.MORE_THAN_ONE_ID);
                 } else {
                     this.config.setMutationId(unquote(ctx.idText().getText()));
                 }
@@ -218,7 +219,7 @@ public class MutationParser {
     private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setState(State.ERROR);
-        m.getGlobalErrorMessages().add(message);
+        m.getMutationErrorContainer().addGlobalErrorMessage(message);
         return Collections.singletonList(m);
     }
 

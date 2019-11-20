@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.runner;
 
+import de.kosit.xmlmutate.mutation.ErrorCode;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
@@ -105,13 +106,12 @@ public class MutationRunner {
             try {
                 log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                 a.run(mutation);
-            } catch (final MutationException e) {
-                log.error(
-                        MessageFormat.format(
-                                "Error running action {0} in mutation {1} ", a.getClass().getName(),
-                                mutation.getIdentifier()),
-                        e);
-                mutation.getGlobalErrorMessages().add(e.getLocalizedMessage());
+            } catch (final Exception e) {
+                final String message = MessageFormat.format(
+                        "Error running action {0} in mutation {1} ", a.getClass().getName(),
+                        mutation.getIdentifier());
+                log.error(message, e);
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getLocalizedMessage() == null ? message : e.getLocalizedMessage());
                 mutation.setState(State.ERROR);
             }
 
@@ -138,7 +138,7 @@ public class MutationRunner {
                     if (currentId != null && !alreadyDeclaredIds.contains(currentId)) {
                         alreadyDeclaredIds.add(currentId);
                     } else if (currentId != null){
-                        mutations.forEach(e -> e.getGlobalErrorMessages().add("Mutation instruction id was already declared"));
+                        mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(ErrorCode.ID_ALREADY_DECLARED.getTemplate()));
                     }
                 }
                 all.addAll(mutations);

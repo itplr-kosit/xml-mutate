@@ -27,34 +27,42 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
     @Override
     public void run(final Mutation mutation) {
 
-        mutation.getConfiguration().getSchematronExpectations().forEach(e -> {
+        if (!mutation.getResult().getSchematronResult().isEmpty()) {
+            mutation.getConfiguration().getSchematronExpectations().forEach(e -> {
 
-            final boolean unknownRuleName = this.checkeUnkknownRuleNames (e, mutation.getResult().getSchematronResult());
+                final boolean unknownRuleName = this.checkeUnkknownRuleNames (e, mutation.getResult().getSchematronResult());
 
-            final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
+                final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
 
-            mutation.getResult().getSchematronExpectationMatches().put(e, valid);
+                mutation.getResult().getSchematronExpectationMatches().put(e, valid);
 
-            if (unknownRuleName) {
-                mutation.addSchematronErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
-            } else if (!valid) {
-                mutation.addSchematronErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
-            }
+                if (unknownRuleName) {
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
+                } else if (!valid) {
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
+                }
 
-            log.trace(
-                    "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
-                    e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
-        });
-        mutation.setState(State.CHECKED);
+                log.trace(
+                        "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
+                        e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
+            });
+            mutation.setState(State.CHECKED);
+        } else {
+            mutation.setState(State.ERROR);
+        }
+
     }
 
     private boolean checkeUnkknownRuleNames(SchematronRuleExpectation e, Map<Schematron, SchematronOutput> schematronResult) {
-
-        final List<String> existingRuleNames  = schematronResult.keySet().stream()
-                .map(Schematron::getRulesIds)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        return !existingRuleNames.contains(e.getRuleName());
+        if(!schematronResult.isEmpty())  {
+            final List<String> existingRuleNames  = schematronResult.keySet().stream()
+                    .map(Schematron::getRulesIds)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            return !existingRuleNames.contains(e.getRuleName());
+        } else {
+            return false;
+        }
     }
 
     // Evalutes if result matches expectation

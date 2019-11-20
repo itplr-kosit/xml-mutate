@@ -28,11 +28,11 @@ public class MutationRunnerTest {
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)), "book_duplicate_ids.xml");
         assertThat(mutations).hasSize(2);
         assertThat(mutations.get(0).getState()).isEqualTo(Mutation.State.CREATED);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isEqualTo(0);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isEqualTo(0);
         // #46 "Tough question. I would say it should NOT lead to an error mutation"
         assertThat(mutations.get(1).getState()).isEqualTo(Mutation.State.CREATED);
-        assertThat(mutations.get(1).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(1).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction id was already declared"))).isTrue();
+        assertThat(mutations.get(1).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(1).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction id was already declared"))).isTrue();
     }
 
 }

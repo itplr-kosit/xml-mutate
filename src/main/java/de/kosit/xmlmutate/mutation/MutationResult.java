@@ -42,7 +42,7 @@ public class MutationResult {
 
     // CHECK IF PROCESSED
     boolean isSchemaProcessed() {
-        return !this.schematronValidationState.equals(ValidationState.UNPROCESSED);
+        return !this.schemaValidationState.equals(ValidationState.UNPROCESSED);
     }
     boolean isSchematronProcessed() {
         return !this.schematronValidationState.equals(ValidationState.UNPROCESSED);
