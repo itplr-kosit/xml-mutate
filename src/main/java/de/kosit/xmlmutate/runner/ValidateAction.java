@@ -110,7 +110,11 @@ public class ValidateAction implements RunAction {
                         .validate(this.schema, document);
                 mutation.addSchemaErrorMessages(result.getErrors());
                 log.debug("Schema valid={}", result.isValid());
-                mutation.getResult().setSchemaValidationState(result.isValid() ? ValidationState.VALID : ValidationState.INVALID);
+                final ValidationState schemaValidationState = result.isValid() ? ValidationState.VALID : ValidationState.INVALID;
+                mutation.getResult().setSchemaValidationState(schemaValidationState);
+                if(mutation.getConfiguration().getSchemaValidationExpectation() != null) {
+                    mutation.getResult().setSchemaValidationAsExpected(mutation.getConfiguration().getSchemaValidationExpectation().meetsValidationState(schemaValidationState));
+                }
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
                 mutation.getMutationErrorContainer().addGlobalErrorMessage("Invalid xml mutation produced");

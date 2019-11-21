@@ -2,7 +2,6 @@ package de.kosit.xmlmutate.report;
 
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -540,8 +539,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
-        final boolean isSchematronProcessed = mutation.getResult()
-                .getSchematronValidationState() != MutationResult.ValidationState.UNPROCESSED;
+        final boolean isSchematronProcessed = mutation.isSchematronProcessed();
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Map.Entry::getKey)
