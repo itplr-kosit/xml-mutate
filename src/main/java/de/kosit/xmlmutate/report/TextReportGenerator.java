@@ -537,9 +537,11 @@ public class TextReportGenerator extends BaseReportGenerator {
 
         final boolean isSchemaValid = mutation.isSchemaValid();
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
+        final boolean isSchemaExpectationSet = mutation.isSchemaExpectationSet();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.isSchematronProcessed();
+        final boolean isSchematronExpectationSet = mutation.isSchematronExpectationSet();
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Map.Entry::getKey)
@@ -549,7 +551,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final List<String> allErrors = mutation.getMutationErrorContainer().getAllErrorMessagesSorted(failed.stream()
                 .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList()));
 
-        final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
+        final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, isSchematronExpectationSet,  failed);
 
 
         // grid.addCell(mutation.getIdentifier());
@@ -558,7 +560,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(mutation.getContext().getLineNumber());
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
-        grid.addCell(createSchemaExpectationCell(isSchemaProcessed, asSchemaExpected));
+        grid.addCell(createSchemaExpectationCell(isSchemaProcessed, isSchemaExpectationSet, asSchemaExpected));
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
 
@@ -621,11 +623,11 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell("N", Code.RED);
     }
 
-    private List<Cell> createSchematronExpectationCells(final boolean isProcessed, final List<SchematronRuleExpectation> failed) {
+    private List<Cell> createSchematronExpectationCells(final boolean isProcessed, final boolean isSchematronExpectationSet, final List<SchematronRuleExpectation> failed) {
 
         final List<Cell> cells = new ArrayList<>();
 
-        if (!isProcessed) {
+        if (!isProcessed || !isSchematronExpectationSet) {
             cells.add(new Cell("NA", Code.RED));
             return cells;
         }
@@ -646,8 +648,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell(isValid ? "Y" : "N", isValid ? Code.GREEN : Code.RED);
     }
 
-    private Cell createSchemaExpectationCell(final boolean isProcessed, final boolean asExpected) {
-        if (!isProcessed) {
+    private Cell createSchemaExpectationCell(final boolean isProcessed, final boolean isSchemaExpectationSet, final boolean asExpected) {
+        if (!isProcessed || !isSchemaExpectationSet) {
             return new Cell("NA", Code.RED);
         }
         return new Cell(asExpected ? "Y" : "N", asExpected ? Code.GREEN : Code.RED);
