@@ -1,6 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import de.kosit.xmlmutate.mutation.ErrorCode;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
@@ -16,7 +15,6 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 
 import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -60,9 +58,7 @@ public class MutationRunner {
     }
 
     private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
-        results.forEach(o -> {
-            errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR);
-        });
+        results.forEach(o -> errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR));
     }
 
     private void prepare() {
@@ -99,7 +95,7 @@ public class MutationRunner {
     private void process(final Mutation mutation) {
         log.info("Running mutation {}", mutation.getIdentifier());
         this.configuration.getActions().forEach(a -> {
-            if (mutation.isErroneous()) {
+            if (mutation.isErroneous() && !(a instanceof ResetAction) && !(a instanceof MarkMutationAction.RemoveCommentAction)) {
                 return;
             }
 
@@ -107,11 +103,9 @@ public class MutationRunner {
                 log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                 a.run(mutation);
             } catch (final Exception e) {
-                final String message = MessageFormat.format(
-                        "Error running action {0} in mutation {1} ", a.getClass().getName(),
-                        mutation.getIdentifier());
-                log.error(message, e);
-                mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getLocalizedMessage() == null ? message : e.getLocalizedMessage());
+                final MutationException mutationException = new MutationException(ErrorCode.ACTION_RUNNER_ERROR, a.getClass().getName(), mutation.getIdentifier());
+                log.error(mutationException.getMessage(), e);
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getLocalizedMessage() == null ? mutationException : e);
                 mutation.setState(State.ERROR);
             }
 
@@ -137,8 +131,8 @@ public class MutationRunner {
                     final String currentId = mutations.get(0).getConfiguration().getMutationId();
                     if (currentId != null && !alreadyDeclaredIds.contains(currentId)) {
                         alreadyDeclaredIds.add(currentId);
-                    } else if (currentId != null){
-                        mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(ErrorCode.ID_ALREADY_DECLARED.getTemplate()));
+                    } else if (currentId != null) {
+                        mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
                     }
                 }
                 all.addAll(mutations);

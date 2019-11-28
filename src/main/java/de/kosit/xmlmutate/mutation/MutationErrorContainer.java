@@ -1,39 +1,37 @@
 package de.kosit.xmlmutate.mutation;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
+
 public class MutationErrorContainer {
 
     // Map because each schematron rule name will have a respective error message
-    private Map<String, String> schematronErrorMessages = new HashMap<>();
+    private Map<String, Exception> schematronErrorMessages = new HashMap<>();
 
-    private List<String> schemaErrorMessages = new ArrayList<>();
+    private List<Exception> schemaErrorMessages = new ArrayList<>();
 
-    private List<String> globalErrorMessages = new ArrayList<>();
+    // Getter needed for tests
+    @Getter
+    private List<Exception> globalErrorMessages = new ArrayList<>();
 
-    private List<String> allErrorMessages = new ArrayList<>();
 
-
-    public void addSchematronErrorMessage(final String ruleName, final String message) {
-        this.getSchematronErrorMessages().put(ruleName, message);
+    public void addSchematronErrorMessage(final String ruleName, final Exception exception) {
+        this.schematronErrorMessages.put(ruleName, exception);
     }
 
-    public void addSchemaErrorMessage(final String message) {
-        this.getSchemaErrorMessages().add(message);
+    public void addSchemaErrorMessage(final Exception exception) {
+
+        this.schemaErrorMessages.add(exception);
     }
 
-    public void addGlobalErrorMessage(final String message) {
-        this.getGlobalErrorMessages().add(message);
+    public void addGlobalErrorMessage(final Exception exception) {
+        this.globalErrorMessages.add(exception);
     }
 
     /**
@@ -41,12 +39,14 @@ public class MutationErrorContainer {
      *
      * @param schematronRuleNamesFailed - the list of the schematron rules that failed
      */
-    public void createCommonErrorMessageList(final List<String> schematronRuleNamesFailed) {
+    public List<String> getAllErrorMessagesSorted(final List<String> schematronRuleNamesFailed) {
+        final List<String> allErrorsList = new ArrayList<>();
         for (final String ruleNameFailed : schematronRuleNamesFailed) {
-            this.allErrorMessages.add(this.schematronErrorMessages.get(ruleNameFailed + ":N"));
+            allErrorsList.add(this.schematronErrorMessages.get(ruleNameFailed).getMessage());
         }
-        this.allErrorMessages.addAll(this.globalErrorMessages);
-        this.allErrorMessages.addAll(this.schemaErrorMessages);
+        allErrorsList.addAll(this.globalErrorMessages.stream().map(Throwable::getMessage).collect(Collectors.toList()));
+        allErrorsList.addAll(this.schemaErrorMessages.stream().map(Throwable::getMessage).collect(Collectors.toList()));
+        return allErrorsList;
     }
 
 }

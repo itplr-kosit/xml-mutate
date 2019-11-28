@@ -546,7 +546,8 @@ public class TextReportGenerator extends BaseReportGenerator {
                 .collect(Collectors.toList());
 
         // Create common error message list
-        mutation.getMutationErrorContainer().createCommonErrorMessageList(failed.stream().map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList()));
+        final List<String> allErrors = mutation.getMutationErrorContainer().getAllErrorMessagesSorted(failed.stream()
+                .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList()));
 
         final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
 
@@ -562,10 +563,10 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(expectationCells.get(0));
 
         // Create first error message
-        if(mutation.getMutationErrorContainer().getAllErrorMessages().isEmpty()) {
+        if (allErrors.isEmpty()) {
             grid.addCell("");
         } else {
-            grid.addCell(mutation.getMutationErrorContainer().getAllErrorMessages().get(0));
+            grid.addCell(allErrors.get(0));
         }
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
@@ -576,7 +577,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
 
         // Rest of error messages and failed schematron rules (if they exist)
-        for (int i = 1; i < mutation.getMutationErrorContainer().getAllErrorMessages().size(); i++) {
+        for (int i = 1; i < allErrors.size(); i++) {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
@@ -584,12 +585,12 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
-            if(expectationCells.size() > i) {
+            if (expectationCells.size() > i) {
                 grid.addCell(expectationCells.get(i));
             } else {
                 grid.addCell(EMPTY);
             }
-            grid.addCell(mutation.getMutationErrorContainer().getAllErrorMessages().get(i));
+            grid.addCell(allErrors.get(i));
             grid.addCell(EMPTY);
         }
 

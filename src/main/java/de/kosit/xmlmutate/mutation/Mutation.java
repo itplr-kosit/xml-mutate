@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.mutation;
 
 import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.runner.MutationException;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -66,7 +67,7 @@ public class Mutation {
 
     public void addSchemaErrorMessages(final Collection<SyntaxError> syntaxErrors) {
         this.result.getSchemaValidationErrors().addAll(syntaxErrors);
-        syntaxErrors.forEach(e -> this.mutationErrorContainer.addSchemaErrorMessage(e.getMessage()));
+        syntaxErrors.forEach(e -> this.mutationErrorContainer.addSchemaErrorMessage(new MutationException(ErrorCode.SCHEMA_ERROR, e.getMessage())));
     }
 
     public Path getResultDocument() {
@@ -116,10 +117,8 @@ public class Mutation {
     }
 
 
-
-
     public enum State {
-        ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
+        ERROR, CREATED, MUTATED, VALIDATED, CHECKED
     }
 
 }

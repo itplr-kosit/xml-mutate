@@ -16,7 +16,13 @@ public enum ErrorCode implements NamedError {
 
     MORE_THAN_ONE_ID("Mutation instruction can only have 1 id"),
 
-    ID_ALREADY_DECLARED("Mutation instruction id was already declared");
+    NO_MUTATOR_FOUND("No valid mutator found for {0}"),
+
+    NO_MUTATION_FOUND("No mutation can be found for {0}. Is PI last element?"),
+
+    SCHEMA_ERROR("Schema validation error: {0}");
+
+
 
     @Getter
     private final String template;

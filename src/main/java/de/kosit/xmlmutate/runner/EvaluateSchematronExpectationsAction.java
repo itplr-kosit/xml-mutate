@@ -37,9 +37,9 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 mutation.getResult().getSchematronExpectationMatches().put(e, valid);
 
                 if (unknownRuleName) {
-                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName() + ":N", "Rule " + e.getRuleName() + " does not exist");
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_NOT_EXIST, e.getRuleName()));
                 } else if (!valid) {
-                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName() + ":N", "Failed expectation assert for " + e.getRuleName());
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION, e.getRuleName()));
                 }
 
                 log.trace(
@@ -47,10 +47,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                         e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
             });
             mutation.setState(State.CHECKED);
-        } else {
-            mutation.setState(State.ERROR);
         }
-
     }
 
     private boolean checkeUnkknownRuleNames(SchematronRuleExpectation e, Map<Schematron, SchematronOutput> schematronResult) {

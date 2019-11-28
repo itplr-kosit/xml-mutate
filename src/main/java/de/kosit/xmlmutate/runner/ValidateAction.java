@@ -48,7 +48,9 @@ public class ValidateAction implements RunAction {
         this.log.info("validating {}", mutation.getIdentifier());
         schemaValidation(mutation);
         schematronValidation(mutation);
-        mutation.setState(State.VALIDATED);
+        if(!mutation.getState().equals(State.ERROR)) {
+            mutation.setState(State.VALIDATED);
+        }
     }
 
     private void schematronValidation(final Mutation mutation) {
@@ -86,9 +88,10 @@ public class ValidateAction implements RunAction {
                 mutation.getResult().setSchematronValidationState(schematronValidationState);
             } catch (final CommonException e) {
                 this.log.debug("Schematron validation runtime error={}",e.getMessage());
-                mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getMessage());
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.SCHEMATRON_EVALUATION_ERROR, e.getMessage()));
                 // Set validation state
                 mutation.getResult().setSchematronValidationState(ValidationState.UNPROCESSED);
+                mutation.setState(State.ERROR);
             }
 
         }
@@ -117,10 +120,10 @@ public class ValidateAction implements RunAction {
                 }
             } catch (final SAXException  e) {
                 mutation.setState(State.ERROR);
-                mutation.getMutationErrorContainer().addGlobalErrorMessage("Invalid xml mutation produced");
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.INVALID_MUTATION_PRODUCED));
             } catch (final IOException e) {
                 mutation.setState(State.ERROR);
-                mutation.getMutationErrorContainer().addGlobalErrorMessage("Error while while trying to read the xml mutation file");
+                mutation.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM));
             }
         }
 
