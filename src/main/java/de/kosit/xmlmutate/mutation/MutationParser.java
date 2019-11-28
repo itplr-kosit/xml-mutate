@@ -7,6 +7,7 @@ import de.kosit.xmlmutate.mutation.parser.MutationLexer;
 import de.kosit.xmlmutate.mutation.parser.MutationParser.*;
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
+import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,7 +89,7 @@ public class MutationParser {
         public void exitSchemaKeyword(final SchemaKeywordContext ctx) {
             final String keyword = ctx.assertion().getText();
             log.debug("Schema expectation is={}", keyword);
-            this.config.setSchemaValidationExpectation("valid".equalsIgnoreCase(keyword)?ExpectedResult.PASS:ExpectedResult.FAIL);
+            this.config.setSchemaValidationExpectation("valid".equalsIgnoreCase(keyword) ? ExpectedResult.PASS : ExpectedResult.FAIL);
         }
 
         @Override
@@ -114,21 +114,22 @@ public class MutationParser {
             if (ctx.tagText() != null) {
                 final String tag = StringUtils.deleteWhitespace(unquote(ctx.tagText().getText()));
                 if (tag.length() == 0) {
-                    throw new ParseCancellationException("Mutation instruction tag can not be empty");
+                    throw new MutationException(ErrorCode.TAG_CONTENT_EMPTY);
                 }
                 final List<String> tagNames = Arrays.asList(tag.split(","));
                 tagNames.forEach(e -> this.config.getTagNames().add(e));
             }
         }
+
         @Override
         public void exitIdKeyword(final IdKeywordContext ctx) {
             if (ctx.idText() != null) {
                 final String id = unquote(ctx.idText().getText());
                 if (StringUtils.deleteWhitespace(id).length() == 0) {
-                    throw new ParseCancellationException("Mutation instruction id can not be empty");
+                    throw new MutationException(ErrorCode.ID_CONTENT_EMPTY);
                 }
                 if (id.contains(",") || id.contains(" ")) {
-                    throw new ParseCancellationException("Mutation instruction can only have 1 id");
+                    throw new MutationException(ErrorCode.MORE_THAN_ONE_ID);
                 } else {
                     this.config.setMutationId(unquote(ctx.idText().getText()));
                 }
@@ -151,17 +152,13 @@ public class MutationParser {
         private boolean validate() {
             if (this.config.getMutatorName() == null
                     || Services.getRegistry().getMutator(this.config.getMutatorName()) == null) {
-                this.mutations = (createErrorMutation(
-                        this.context,
-                        MessageFormat.format("No valid mutator found for {0}", this.config.getMutatorName())));
+                this.mutations = createErrorMutation(
+                        this.context, new MutationException(ErrorCode.NO_MUTATOR_FOUND, this.config.getMutatorName()));
             }
 
             if (this.context.getTarget() == null) {
                 this.mutations = createErrorMutation(
-                        this.context,
-                        MessageFormat.format(
-                                "No mutation can be found for {0}. Is PI last " + "element?",
-                                this.context.getDocumentName()));
+                        this.context, new MutationException(ErrorCode.NO_MUTATION_FOUND, this.context.getDocumentName()));
             }
             return this.mutations == null;
         }
@@ -174,7 +171,7 @@ public class MutationParser {
 
         @Override
         public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line,
-                final int charPositionInLine, final String msg, final RecognitionException e) {
+                                final int charPositionInLine, final String msg, final RecognitionException e) {
             throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
@@ -182,8 +179,7 @@ public class MutationParser {
     /**
      * Parsed den gegebenen Kontext
      *
-     * @param context
-     *                    der Kontext im Dokument; entspricht einer PI
+     * @param context der Kontext im Dokument; entspricht einer PI
      * @return Liste mit den generierten Mutationen
      */
     public List<Mutation> parse(final MutationContext context) {
@@ -191,12 +187,12 @@ public class MutationParser {
         return parse(context.getPi().getTextContent(), listener, parser -> {
             parser.mutation();
             return listener.getMutations();
-        }, e -> createErrorMutation(context, e.getMessage()));
+        }, e -> createErrorMutation(context, e));
     }
 
     private static <T> T parse(final String text, final ParseTreeListener listener,
-            final Function<de.kosit.xmlmutate.mutation.parser.MutationParser, T> function,
-            final Function<Exception, T> errorFunction) {
+                               final Function<de.kosit.xmlmutate.mutation.parser.MutationParser, T> function,
+                               final Function<Exception, T> errorFunction) {
         final CharStream cs = new ANTLRInputStream(text);
         final MutationLexer lexer = new MutationLexer(cs);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -215,10 +211,10 @@ public class MutationParser {
 
     }
 
-    private List<Mutation> createErrorMutation(final MutationContext context, final String message) {
+    private List<Mutation> createErrorMutation(final MutationContext context, final Exception exception) {
         final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
         m.setState(State.ERROR);
-        m.getGlobalErrorMessages().add(message);
+        m.getMutationErrorContainer().addGlobalErrorMessage(exception);
         return Collections.singletonList(m);
     }
 

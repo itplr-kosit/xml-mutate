@@ -2,7 +2,6 @@ package de.kosit.xmlmutate.report;
 
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -540,18 +539,18 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean isSchemaProcessed = mutation.isSchemaProcessed();
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
-        final boolean isSchematronProcessed = mutation.getResult()
-                .getSchematronValidationState() != MutationResult.ValidationState.UNPROCESSED;
+        final boolean isSchematronProcessed = mutation.isSchematronProcessed();
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
+        // Create common error message list
+        final List<String> allErrors = mutation.getMutationErrorContainer().getAllErrorMessagesSorted(failed.stream()
+                .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList()));
+
         final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, failed);
 
-        boolean oneSchemaErrorPrinted = false;
-        boolean oneOtherErrorPrinted = false;
-        boolean oneSchematronErrorPrinted = false;
 
         // grid.addCell(mutation.getIdentifier());
         grid.addCell(Integer.toString(mutationNum + 1));
@@ -559,22 +558,15 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(mutation.getContext().getLineNumber());
         grid.addCell(createOverallResult(mutation));
         grid.addCell(createSchemaValidationCell(isSchemaProcessed, isSchemaValid));
-        grid.addCell(createSchemaExpectationCell(asSchemaExpected));
+        grid.addCell(createSchemaExpectationCell(isSchemaProcessed, asSchemaExpected));
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
 
         // Create first error message
-        if (failed.isEmpty() && mutation.getSchemaErrorMessages().isEmpty() && !mutation.getGlobalErrorMessages().isEmpty()) {
-            oneOtherErrorPrinted = true;
-            grid.addCell(mutation.getGlobalErrorMessages().get(0));
-        } else if (failed.isEmpty() && isSchematronProcessed && !mutation.getSchemaErrorMessages().isEmpty()) {
-            oneSchemaErrorPrinted = true;
-            grid.addCell(mutation.getSchemaErrorMessages().get(0));
-        } else if (!failed.isEmpty() && isSchematronProcessed) {
-            oneSchematronErrorPrinted = true;
-            grid.addCell(mutation.getSchematronErrorMessages().get(expectationCells.get(0).getText().get(0).getText()));
-        } else {
+        if (allErrors.isEmpty()) {
             grid.addCell("");
+        } else {
+            grid.addCell(allErrors.get(0));
         }
 
         final Object description = mutation.getConfiguration().getProperties().get("description");
@@ -584,55 +576,22 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
         }
 
-        // Rest of error messages
-        // If already one error, there is no schema or schematron messages
-        if (oneOtherErrorPrinted) {
-            for (int k = 1; k < mutation.getGlobalErrorMessages().size(); k++) {
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(mutation.getGlobalErrorMessages().get(k));
-                grid.addCell(EMPTY);
-            }
-        } else {
-            // First schematron messages
-            int p = 0;
-            if (oneSchematronErrorPrinted || failed.isEmpty()) {
-                p++;
-            }
-            for (int i = p; i < expectationCells.size(); i++) {
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
+        // Rest of error messages and failed schematron rules (if they exist)
+        for (int i = 1; i < allErrors.size(); i++) {
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            grid.addCell(EMPTY);
+            if (expectationCells.size() > i) {
                 grid.addCell(expectationCells.get(i));
-                grid.addCell(mutation.getSchematronErrorMessages().get(expectationCells.get(i).getText().get(0).getText()));
+            } else {
                 grid.addCell(EMPTY);
             }
-            // add schema error messages at the end
-            for (final String errorMessage : mutation.getSchemaErrorMessages()) {
-                if (oneSchemaErrorPrinted) {
-                    continue;
-                }
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(EMPTY);
-                grid.addCell(errorMessage);
-                grid.addCell(EMPTY);
-            }
+            grid.addCell(allErrors.get(i));
+            grid.addCell(EMPTY);
         }
 
     }
@@ -687,11 +646,10 @@ public class TextReportGenerator extends BaseReportGenerator {
         return new Cell(isValid ? "Y" : "N", isValid ? Code.GREEN : Code.RED);
     }
 
-    private Cell createSchemaExpectationCell(final boolean asExpected) {
-        if (asExpected) {
-            return new Cell("Y", Code.GREEN);
+    private Cell createSchemaExpectationCell(final boolean isProcessed, final boolean asExpected) {
+        if (!isProcessed) {
+            return new Cell("NA", Code.RED);
         }
-        return new Cell("N", Code.RED);
+        return new Cell(asExpected ? "Y" : "N", asExpected ? Code.GREEN : Code.RED);
     }
-
 }

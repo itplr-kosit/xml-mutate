@@ -17,7 +17,24 @@ public enum ErrorCode implements NamedError {
 
     WRONG_PARENT("There is structural error. Parents are not the same, but this is expected"),
 
-    STRUCTURAL_MISMATCH("Structural mismatch: {0}"), CONFIGURATION_ERRROR("Configuration error: {0}");
+    STRUCTURAL_MISMATCH("Structural mismatch: {0}"),
+
+    CONFIGURATION_ERRROR("Configuration error: {0}"),
+
+    INVALID_MUTATION_PRODUCED("Invalid xml mutation produced"),
+
+    MUTATION_XML_FILE_READ_PROBLEM("Error while while trying to read the xml mutation file"),
+
+    SCHEMATRON_RULE_NOT_EXIST("Rule {0} does not exist"),
+
+    SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation assert for {0}"),
+
+    ACTION_RUNNER_ERROR("Error running action {0} in mutation {1} "),
+
+    ID_ALREADY_DECLARED("Mutation instruction id was already declared"),
+
+    SCHEMATRON_EVALUATION_ERROR("Schematron evaluation error: {0}");
+
 
     @Getter
     private final String template;

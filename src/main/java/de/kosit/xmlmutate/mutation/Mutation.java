@@ -2,12 +2,12 @@ package de.kosit.xmlmutate.mutation;
 
 import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.runner.MutationException;
 import lombok.Getter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
  */
 
 @Getter
-
 public class Mutation {
 
     private final MutationContext context;
@@ -33,11 +32,7 @@ public class Mutation {
 
     private State state = State.CREATED;
 
-    private Map<String, String> schematronErrorMessages = new HashMap<>();
-
-    private List<String> schemaErrorMessages = new ArrayList<>();
-
-    private List<String> globalErrorMessages = new ArrayList<>();
+    private MutationErrorContainer mutationErrorContainer = new MutationErrorContainer();
 
     /**
      * Constructor.
@@ -70,13 +65,9 @@ public class Mutation {
         this.state = state;
     }
 
-    public void addSchematronErrorMessage(final String ruleName, final String message) {
-        this.schematronErrorMessages.put(ruleName, message);
-    }
-
     public void addSchemaErrorMessages(final Collection<SyntaxError> syntaxErrors) {
         this.result.getSchemaValidationErrors().addAll(syntaxErrors);
-        this.schemaErrorMessages.addAll(syntaxErrors.stream().map(SyntaxError::getMessage).collect(Collectors.toList()));
+        syntaxErrors.forEach(e -> this.mutationErrorContainer.addSchemaErrorMessage(new MutationException(ErrorCode.SCHEMA_ERROR, e.getMessage())));
     }
 
     public Path getResultDocument() {
@@ -126,10 +117,8 @@ public class Mutation {
     }
 
 
-
-
     public enum State {
-        ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
+        ERROR, CREATED, MUTATED, VALIDATED, CHECKED
     }
 
 }

@@ -100,8 +100,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"No valid mutator found for unknown"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"No valid mutator found for unknown"))).isTrue();
     }
 
     @Test
@@ -111,8 +111,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"mismatched input 'schema-' expecting 'mutator'"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"mismatched input 'schema-' expecting 'mutator'"))).isTrue();
     }
 
     @Test
@@ -122,8 +122,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"missing {'valid', 'invalid'} at 'val'"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"missing {'valid', 'invalid'} at 'val'"))).isTrue();
     }
 
     @Test
@@ -136,8 +136,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"No mutation can be found for test. Is PI last element?"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"No mutation can be found for test. Is PI last element?"))).isTrue();
     }
 
     @Test
@@ -147,7 +147,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.CREATED);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isEqualTo(0);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isEqualTo(0);
         assertThat(Collections.disjoint(mutations.get(0).getConfiguration().getTagNames(), Arrays.asList("tag1", "tag2"))).isFalse();
     }
 
@@ -161,8 +161,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction id can not be empty"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"Mutation instruction id can not be empty"))).isTrue();
     }
 
     @Test
@@ -175,8 +175,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction tag can not be empty"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"Mutation instruction tag can not be empty"))).isTrue();
     }
     @Test
     @DisplayName("Test with a PI with several ids")
@@ -188,8 +188,8 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e,"Mutation instruction can only have 1 id"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"Mutation instruction can only have 1 id"))).isTrue();
     }
 
     private void assertValid(final List<Mutation> mutations) {
