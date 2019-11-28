@@ -94,6 +94,14 @@ public class Mutation {
         return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation().meetsValidationState(this.result.getSchemaValidationState());
     }
 
+    public boolean isSchemaExpectationSet() {
+        return configuration.getSchemaValidationExpectation() != null;
+    }
+
+    public boolean isSchematronExpectationSet() {
+        return !configuration.getSchematronExpectations().isEmpty();
+    }
+
 
     public boolean isAllAsExpected() {
         return result.isExpectationCompliant();
