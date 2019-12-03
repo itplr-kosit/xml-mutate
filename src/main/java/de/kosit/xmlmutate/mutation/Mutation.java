@@ -124,6 +124,10 @@ public class Mutation {
         return this.state == State.ERROR;
     }
 
+    public boolean isErroneousOrContainsErrorMessages() {
+        return this.state == State.ERROR || this.mutationErrorContainer.hasAnyErrors();
+    }
+
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED

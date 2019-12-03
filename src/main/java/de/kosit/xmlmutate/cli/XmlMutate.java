@@ -2,10 +2,7 @@ package de.kosit.xmlmutate.cli;
 
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.MutationRunner;
-import de.kosit.xmlmutate.runner.RunMode;
-import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.runner.*;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
 import lombok.extern.slf4j.Slf4j;
 import org.fusesource.jansi.AnsiConsole;
@@ -62,6 +59,10 @@ public class XmlMutate implements Callable<Integer> {
             "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
     private Map<String, Path> transformations = new HashMap<String, Path>();
 
+    @Option(names = { "-f",
+            "--fail" }, paramLabel = "MODE", description = "The run failure control mode", defaultValue = "FAIL_AT_END")
+    private FailureMode failureMode;
+
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
@@ -106,7 +107,8 @@ public class XmlMutate implements Callable<Integer> {
         }
         return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
                 .checkSchematron(prepareSchematron()).checkSchema(prepareSchema())
-                .useTransformations(prepareTransformations()).build();
+                .useTransformations(prepareTransformations())
+                .withFailureMode(this.failureMode).build();
 
     }
 

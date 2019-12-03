@@ -4,6 +4,7 @@ import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.Services;
 import org.apache.commons.lang3.ArrayUtils;
@@ -183,6 +184,7 @@ public class TestHelper {
         runnerConfig.setSchematronRules(getBookSchematronRules());
         runnerConfig.setSchema(createBookSchema());
         runnerConfig.setTemplates(new ArrayList<>());
+        runnerConfig.setFailureMode(FailureMode.FAIL_AT_END);
         return runnerConfig;
     }
 

@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.report;
 
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.runner.FailureMode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -472,7 +473,7 @@ public class TextReportGenerator extends BaseReportGenerator {
     private final Writer writer;
 
     @Override
-    public void generate(final List<Pair<Path, List<Mutation>>> results) {
+    public void generate(final List<Pair<Path, List<Mutation>>> results, final FailureMode failureMode) {
         try {
             // report on each mutation
             for (final Pair<Path, List<Mutation>> p : results) {
@@ -483,15 +484,16 @@ public class TextReportGenerator extends BaseReportGenerator {
             final List<Mutation> allMutations = results.stream().flatMap(p -> p.getValue().stream())
                     .collect(Collectors.toList());
             final Line summary = new Line(Code.BOLD).add("Generated").add(allMutations.size(), Code.YELLOW)
-                    .add("mutations. Passed:").add(countSuccessful(allMutations), Code.GREEN).add("Failed:")
-                    .add(countFailures(allMutations), Code.RED).add("Error:").add(countErrors(allMutations), Code.RED);
+                    .add("mutations. Passed:").add(countSuccessful(allMutations), Code.GREEN).add(". Failed:")
+                    .add(countFailures(allMutations), Code.RED).add(". Error:").add(countErrors(allMutations), Code.RED);
 
             final String dashes = StringUtils.rightPad("", summary.getLength(), "-");
             // now writing
             this.writer.write(dashes + "\n");
             final boolean sucess = countSuccessful(allMutations) == allMutations.size();
+            final boolean failureButSuccess = failureMode == FailureMode.FAIL_NEVER;
             this.writer.write(
-                    new Line((sucess ? Code.GREEN : Code.RED)).add("Result: " + (sucess ? "SUCCESSFUL" : "FAILURE"))
+                    new Line((sucess || failureButSuccess ? Code.GREEN : Code.RED)).add("Result: " + (sucess || failureButSuccess ? "SUCCESSFUL" :"FAILURE"))
                             .render());
             this.writer.write(summary.render());
             this.writer.write(dashes);
@@ -526,7 +528,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             final long failureCount = countFailures(mutations);
             final int errorCount = countErrors(mutations);
             final Line summary = new Line(failureCount + errorCount == 0 ? Code.GREEN : Code.RED);
-            summary.add("Mutations run:").add(mutations.size()).add("Failures:").add(failureCount).add("Errors:")
+            summary.add("Mutations run:").add(mutations.size()).add(". Failures:").add(failureCount).add(". Errors:")
                     .add(errorCount);
             this.writer.write(summary.render());
 

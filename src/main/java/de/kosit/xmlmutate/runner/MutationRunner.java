@@ -54,7 +54,7 @@ public class MutationRunner {
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
         checkIfErrorStatePresent(results);
-        this.configuration.getReportGenerator().generate(results);
+        this.configuration.getReportGenerator().generate(results, this.configuration.getFailureMode());
     }
 
     private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
@@ -80,16 +80,33 @@ public class MutationRunner {
         return this.executorService.submit(() -> {
             final Document d = DocumentParser.readDocument(path);
             final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
-            // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
-            // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem
-            // Kontext gerissen werden.
-            final List<Mutation> sorted = mutations.stream()
-                    .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
-                    .collect(Collectors.toList());
-            process(sorted);
-            return new ImmutablePair<>(path, mutations);
+            // If there is only mutation with an error, we dont need to process it
+            if (mutations.size() == 1 && mutations.stream().anyMatch(Mutation::isErroneousOrContainsErrorMessages)) {
+                return new ImmutablePair<>(path, mutations);
+            } else {
+                // Processing erfolgt sortiert nach nesting tiefe (von tief nach hoch)
+                // Grund hierfür ist, das durch Entfernen von Knoten möglicherweise PI aus dem
+                // Kontext gerissen werden.
+                final List<Mutation> sorted = mutations.stream()
+                        .sorted(Comparator.comparing(e -> e.getContext().getLevel(), Comparator.reverseOrder()))
+                        .collect(Collectors.toList());
+                final List<Mutation> mutationsProcessed = process(sorted);
+                return new ImmutablePair<>(path, mutationsProcessed);
+            }
         });
 
+    }
+
+    private List<Mutation> process(final List<Mutation> mutations) {
+        final List<Mutation> mutationsProcessed = new ArrayList<>();
+        for (final Mutation mutation : mutations) {
+            process(mutation);
+            mutationsProcessed.add(mutation);
+            if (checkIfStopProcess(mutation)) {
+                break;
+            }
+        }
+        return mutationsProcessed;
     }
 
     private void process(final Mutation mutation) {
@@ -112,16 +129,13 @@ public class MutationRunner {
         });
     }
 
-    private void process(final List<Mutation> mutations) {
-        mutations.forEach(this::process);
-    }
-
     List<Mutation> parseMutations(final Document origin, final String documentName) {
         final List<Mutation> all = new ArrayList<>();
         final TreeWalker piWalker = ((DocumentTraversal) origin)
                 .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
         final List<String> alreadyDeclaredIds = new ArrayList<>();
-        while (piWalker.nextNode() != null) {
+        boolean stopParsing = false;
+        while (piWalker.nextNode() != null && !stopParsing) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 final MutationContext context = new MutationContext(pi, documentName);
@@ -135,10 +149,18 @@ public class MutationRunner {
                         mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
                     }
                 }
+                // If Mode FAIL_FAST, stop process with first error mutation
+                stopParsing = mutations.stream().anyMatch(this::checkIfStopProcess);
+
                 all.addAll(mutations);
             }
         }
         return all;
+    }
+
+    private boolean checkIfStopProcess(final Mutation mutation) {
+        return this.configuration.getFailureMode() == FailureMode.FAIL_FAST
+                && mutation.isErroneousOrContainsErrorMessages();
     }
 
 }
