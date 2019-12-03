@@ -76,7 +76,7 @@ public class MutationRunner {
         }
     }
 
-    private Future<Pair<Path, List<Mutation>>> process(final Path path) {
+    Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
             final Document d = DocumentParser.readDocument(path);
             final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());

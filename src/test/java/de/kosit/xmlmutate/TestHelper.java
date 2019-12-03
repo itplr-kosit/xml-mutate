@@ -178,13 +178,25 @@ public class TestHelper {
 
 
     public static RunnerConfig createRunnerConfig(final String documentPath) {
-        final RunnerConfig runnerConfig = new RunnerConfig();
-        runnerConfig.setTargetFolder(createTestTargetFolder("doc/test"));
-        runnerConfig.setDocuments(getSingleDocument(documentPath));
-        runnerConfig.setSchematronRules(getBookSchematronRules());
-        runnerConfig.setSchema(createBookSchema());
-        runnerConfig.setTemplates(new ArrayList<>());
-        runnerConfig.setFailureMode(FailureMode.FAIL_AT_END);
+        return RunnerConfig.Builder
+                .forDocuments(getSingleDocument(documentPath))
+                .checkSchema(createBookSchema())
+                .checkSchematron(getBookSchematronRules())
+                .targetFolder(createTestTargetFolder("doc/test"))
+                .useTransformations(new ArrayList<>())
+                .withFailureMode(FailureMode.FAIL_AT_END)
+                .build();
+    }
+
+    public static RunnerConfig createRunnerConfig(final String documentPath, final FailureMode failureMode) {
+        final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
+        runnerConfig.setFailureMode(failureMode);
+        return runnerConfig;
+    }
+
+    public static RunnerConfig createRunnerConfigWithDefaultActions(final String documentPath, final FailureMode failureMode) {
+        final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
+        runnerConfig.setFailureMode(failureMode);
         return runnerConfig;
     }
 
