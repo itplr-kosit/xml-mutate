@@ -24,7 +24,6 @@ These can look like this for example:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<?xmute testsuite="Real business case" ?>
 <!-- namespace declarations omitted for brevity -->
 <ubl:Invoice>
     <cbc:CustomizationID>urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung_1.1</cbc:CustomizationID>
@@ -37,7 +36,7 @@ These can look like this for example:
     <cbc:TaxCurrencyCode>EUR</cbc:TaxCurrencyCode>
     <cbc:BuyerReference>04011000-12345-34</cbc:BuyerReference>
     <!-- Generate a new instances with next element removed-->
-    <?xmute mutator="remove-element" group="1" description="dieses soll x testen" ?>
+    <?xmute mutator="remove"  attribute="" description="dieses soll x testen" ?>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
@@ -45,10 +44,10 @@ These can look like this for example:
             </cac:PartyName>
             <cac:PostalAddress>
                 <!-- Generate new instances each with new random order of the following sibling elements-->
-                <?xmute mutator="randomize-element-order" xpath="."  group="1" schematron-invalid="bt-br-03" ?>
+                <?xmute mutator="remove"  schematron-invalid="bt-br-03" ?>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
                 <!-- Generate a new instance with next element content being empty -->
-                <?xmute mutator="empty" xpath="." schema-valid  schematron-invalid="bt-br-03" ?>
+                <?xmute mutator="empty" schema-valid  schematron-invalid="bt-br-03" ?>
                 <cbc:CityName>bremen</cbc:CityName>
                 <!-- Rest omitted for brevity -->
 
@@ -67,7 +66,7 @@ This way many kinds of mutations can be defined and combined with assertions abo
 * change text content from code lists
 * change text content from concrete values list as given in declaration
   * man koennte auch ein file angeben mit einem Value pro Zeile
-* laengen muator
+* Length mutator
 * character mutator: generiere sequenz von charactern, die aber Regeln entsprechen oder auch voellig random (koennte den laengen mutator beinhalten)
 * xslt mutator
 * eigene java based mutator (plugin maessig)
