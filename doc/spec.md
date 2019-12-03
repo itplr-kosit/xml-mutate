@@ -36,7 +36,7 @@ These can look like this for example:
     <cbc:TaxCurrencyCode>EUR</cbc:TaxCurrencyCode>
     <cbc:BuyerReference>04011000-12345-34</cbc:BuyerReference>
     <!-- Generate a new instances with next element removed-->
-    <?xmute mutator="remove"  attribute="" description="dieses soll x testen" ?>
+    <?xmute mutator="remove" description="dieses soll x testen" ?>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
@@ -114,7 +114,7 @@ Only XML processing instructions with name `xmute` are processed.
 The general data structure of an instruction is a list of `key="value"` configuration items as shown in this example:
 
 ```xml
-<?xmute mutator="randomize-element-order" xpath="."
+<?xmute mutator="remove" 
         schema-valid schematron-invalid="bt-br-03" ?>
 ```
 
