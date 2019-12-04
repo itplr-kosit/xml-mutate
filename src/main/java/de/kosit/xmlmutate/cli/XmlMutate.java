@@ -18,10 +18,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,9 +56,17 @@ public class XmlMutate implements Callable<Integer> {
             "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
     private Map<String, Path> transformations = new HashMap<String, Path>();
 
-    @Option(names = { "-f",
-            "--fail" }, paramLabel = "MODE", description = "The run failure control mode", defaultValue = "FAIL_AT_END")
-    private FailureMode failureMode;
+    @Option(names = { "-ff",
+            "--fail-fast" },  description = "The run failure control mode for fail fast")
+    private boolean failfast;
+
+    @Option(names = { "-fae",
+            "--fail-at-end" },  description = "The run failure control mode for fail at end")
+    private boolean failatend;
+
+    @Option(names = { "-fn",
+            "--fail-never" },  description = "The run failure control mode for fail never")
+    private boolean failnever;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
@@ -108,7 +113,28 @@ public class XmlMutate implements Callable<Integer> {
         return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
                 .checkSchematron(prepareSchematron()).checkSchema(prepareSchema())
                 .useTransformations(prepareTransformations())
-                .withFailureMode(this.failureMode).build();
+                .withFailureMode(getFailureMode()).build();
+
+    }
+
+    private FailureMode getFailureMode() {
+        final HashMap<FailureMode, Boolean> modeActivations = new HashMap<>();
+        modeActivations.put(FailureMode.FAIL_FAST, this.failfast);
+        modeActivations.put(FailureMode.FAIL_AT_END, this.failatend);
+        modeActivations.put(FailureMode.FAIL_NEVER, this.failnever);
+
+        final long countActive = modeActivations.values().stream().filter(b -> b).count();
+        if (countActive > 1) {
+            throw new IllegalArgumentException("Only one failure mode is allowed");
+        } else if (countActive == 0){
+            return FailureMode.FAIL_AT_END;
+        } else {
+            return  modeActivations.entrySet().stream()
+                    .filter(Map.Entry::getValue)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList())
+                    .get(0);
+        }
 
     }
 
