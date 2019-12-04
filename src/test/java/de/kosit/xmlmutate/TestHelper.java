@@ -4,6 +4,7 @@ import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.Services;
 import org.apache.commons.lang3.ArrayUtils;
@@ -177,12 +178,25 @@ public class TestHelper {
 
 
     public static RunnerConfig createRunnerConfig(final String documentPath) {
-        final RunnerConfig runnerConfig = new RunnerConfig();
-        runnerConfig.setTargetFolder(createTestTargetFolder("doc/test"));
-        runnerConfig.setDocuments(getSingleDocument(documentPath));
-        runnerConfig.setSchematronRules(getBookSchematronRules());
-        runnerConfig.setSchema(createBookSchema());
-        runnerConfig.setTemplates(new ArrayList<>());
+        return RunnerConfig.Builder
+                .forDocuments(getSingleDocument(documentPath))
+                .checkSchema(createBookSchema())
+                .checkSchematron(getBookSchematronRules())
+                .targetFolder(createTestTargetFolder("doc/test"))
+                .useTransformations(new ArrayList<>())
+                .withFailureMode(FailureMode.FAIL_AT_END)
+                .build();
+    }
+
+    public static RunnerConfig createRunnerConfig(final String documentPath, final FailureMode failureMode) {
+        final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
+        runnerConfig.setFailureMode(failureMode);
+        return runnerConfig;
+    }
+
+    public static RunnerConfig createRunnerConfigWithDefaultActions(final String documentPath, final FailureMode failureMode) {
+        final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
+        runnerConfig.setFailureMode(failureMode);
         return runnerConfig;
     }
 

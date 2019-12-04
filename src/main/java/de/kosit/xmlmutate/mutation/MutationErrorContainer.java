@@ -49,4 +49,13 @@ public class MutationErrorContainer {
         return allErrorsList;
     }
 
+    /**
+     * To know if the mutation has any kind of error messages
+     *
+     * @return true or false
+     */
+    public boolean hasAnyErrors() {
+        return !globalErrorMessages.isEmpty() || !schemaErrorMessages.isEmpty() || !schematronErrorMessages.isEmpty();
+    }
+
 }
