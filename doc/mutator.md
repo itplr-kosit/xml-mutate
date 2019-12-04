@@ -1,10 +1,22 @@
 # Documentation of available mutators
 
+## Alternative Mutator
+
+Name: "alternative"
+
+Purpose: Iterates through comment children of the target node and mutually un-comments them. 
+(TODO: Alle Kindelemente aufeinmal außer das aktuelle oder eins nach dem anderen?)
+
+Configuration: none
+
+Example:
+
 ## Empty
 
 Name: "empty"
 
-Purpose: Removes all content from an element.
+Purpose: Removes all content from an element. 
+(TODO: auch für Attribut-Inhalte?)
 
 Default: Removes all content from next element.
 
@@ -31,7 +43,7 @@ Name: "change-text-content" abbreviation "ch-txt"
 Purpose: Changes text content of an element or attribute.
 
 Default: Changes text content of next element with values given in `values` separated by comma `,`.
-
+(TODO: Kann ein Separater mehr als ein Zeichen haben? Welche vorgegebenen Zeichen sind gültig, falls definiert?)
 Required items: "values"
 
 Optional items: "separator"
@@ -62,13 +74,18 @@ Configuration:
 * "_codeKey_"_ required for genericode, the name of the code key column to use for values of a genericode code list
 * "_attribute_": optional, the name of the attribute to mutate. If not configured the text content of the target element will be mutated
 
-## Alternative Mutator
+Example:
+```xml
+ <?xmute mutator="code" values="de, fr, es" ?>
+```
 
-Name: "alternative"
+Example:
 
-Purpose: Iterates through comment children of the target node and mutually un-comments them.
+(TODO: "CodeKey" in "column-id" umbenennen!)
 
-Configuration: none
+```xml
+ <?xmute mutator="code" genericode="https://www.xrepository.de/api/xrepository/urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staat_2019-04-01:technischerBestandteilGenericode:datei:staat_2019-04-01.xml/daten" codeKey="ISO_2" ?>
+```
 
 ## Identity Mutator
 
