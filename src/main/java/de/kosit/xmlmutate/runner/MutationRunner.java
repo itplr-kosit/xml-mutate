@@ -1,5 +1,8 @@
 package de.kosit.xmlmutate.runner;
 
+import de.init.kosit.commons.ObjectFactory;
+import de.init.kosit.commons.Result;
+import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationContext;
@@ -13,7 +16,9 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,10 +56,28 @@ public class MutationRunner {
 
     public void run() {
         prepare();
+        if (!this.configuration.isIgnoreSchemaInvalidity()) {
+            checkSchemaValidityOfOriginals(this.configuration.getDocuments());
+        }
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
         checkIfErrorStatePresent(results);
         this.configuration.getReportGenerator().generate(results, this.configuration.getFailureMode());
+    }
+
+    private void checkSchemaValidityOfOriginals(final List<Path> documents) {
+
+        for (final Path documentPath : documents) {
+            try {
+                final Document document = ObjectFactory.createDocumentBuilder(false).parse(documentPath.toFile());
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(), document);
+                if (result.isInvalid()) {
+                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
+                }
+            } catch (IOException | SAXException e) {
+                throw new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM);
+            }
+        }
     }
 
     private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {

@@ -194,11 +194,12 @@ public class TestHelper {
         return runnerConfig;
     }
 
-    public static RunnerConfig createRunnerConfigWithDefaultActions(final String documentPath, final FailureMode failureMode) {
+    public static RunnerConfig createRunnerConfig(final String documentPath, final boolean ignoreSchemainvalidity) {
         final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
-        runnerConfig.setFailureMode(failureMode);
+        runnerConfig.setIgnoreSchemaInvalidity(ignoreSchemainvalidity);
         return runnerConfig;
     }
+
 
     private static List<Path> getSingleDocument(final String stringPath) {
         final Path path = Paths.get(stringPath);
