@@ -68,6 +68,10 @@ public class XmlMutate implements Callable<Integer> {
             "--fail-never" },  description = "The run failure control mode for fail never")
     private boolean failnever;
 
+    @Option(names = { "-isi",
+            "--ignore-schema-invalidity" },  description = "If set, whenever an original document is not schema valid, it wont stop the programm")
+    private boolean ignoreSchemaInvalidity;
+
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
@@ -113,12 +117,14 @@ public class XmlMutate implements Callable<Integer> {
         return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
                 .checkSchematron(prepareSchematron()).checkSchema(prepareSchema())
                 .useTransformations(prepareTransformations())
-                .withFailureMode(getFailureMode()).build();
+                .withFailureMode(getFailureMode())
+                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
+                .build();
 
     }
 
     private FailureMode getFailureMode() {
-        final HashMap<FailureMode, Boolean> modeActivations = new HashMap<>();
+        final EnumMap<FailureMode, Boolean> modeActivations = new EnumMap<>(FailureMode.class);
         modeActivations.put(FailureMode.FAIL_FAST, this.failfast);
         modeActivations.put(FailureMode.FAIL_AT_END, this.failatend);
         modeActivations.put(FailureMode.FAIL_NEVER, this.failnever);

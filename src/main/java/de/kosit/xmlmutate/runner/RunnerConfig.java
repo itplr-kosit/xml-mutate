@@ -78,6 +78,11 @@ public class RunnerConfig {
             return this;
         }
 
+        public Builder withIgnoreSchemaInvalidity(final boolean ignoreSchemaInvalidity) {
+            this.config.setIgnoreSchemaInvalidity(ignoreSchemaInvalidity);
+            return this;
+        }
+
         public RunnerConfig build() {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
@@ -116,5 +121,7 @@ public class RunnerConfig {
     private ExecutorService executorService;
 
     private FailureMode failureMode;
+
+    private boolean ignoreSchemaInvalidity;
 
 }

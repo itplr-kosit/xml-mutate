@@ -33,7 +33,9 @@ public enum ErrorCode implements NamedError {
 
     ID_ALREADY_DECLARED("Mutation instruction id was already declared"),
 
-    SCHEMATRON_EVALUATION_ERROR("Schematron evaluation error: {0}");
+    SCHEMATRON_EVALUATION_ERROR("Schematron evaluation error: {0}"),
+
+    ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid");
 
 
     @Getter

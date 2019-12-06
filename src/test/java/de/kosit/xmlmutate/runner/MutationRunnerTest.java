@@ -16,6 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -40,7 +42,7 @@ public class MutationRunnerTest {
         // #46 "Tough question. I would say it should NOT lead to an error mutation"
         assertThat(mutations.get(1).getState()).isEqualTo(Mutation.State.CREATED);
         assertThat(mutations.get(1).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(1).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"Mutation instruction id was already declared"))).isTrue();
+        assertThat(mutations.get(1).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "Mutation instruction id was already declared"))).isTrue();
     }
 
     @Test
@@ -110,10 +112,10 @@ public class MutationRunnerTest {
         final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, executor);
 
-        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get( PATH_TO_BOOK_FOLDER + documentName));
+        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(PATH_TO_BOOK_FOLDER + documentName));
         try {
             assertThat(resultFuture.get().getValue()).hasSize(1);
-        } catch (InterruptedException |ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -125,10 +127,10 @@ public class MutationRunnerTest {
         final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, executor);
 
-        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get( PATH_TO_BOOK_FOLDER + documentName));
+        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(PATH_TO_BOOK_FOLDER + documentName));
         try {
             assertThat(resultFuture.get().getValue()).hasSize(2);
-        } catch (InterruptedException |ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -140,10 +142,10 @@ public class MutationRunnerTest {
         final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, executor);
 
-        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get( PATH_TO_BOOK_FOLDER + documentName));
+        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(PATH_TO_BOOK_FOLDER + documentName));
         try {
             assertThat(resultFuture.get().getValue()).hasSize(2);
-        } catch (InterruptedException |ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -155,14 +157,31 @@ public class MutationRunnerTest {
         final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_NEVER);
         final MutationRunner runner = new MutationRunner(runnerConfig, executor);
 
-        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get( PATH_TO_BOOK_FOLDER + documentName));
+        Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(PATH_TO_BOOK_FOLDER + documentName));
         try {
             assertThat(resultFuture.get().getValue()).hasSize(2);
-        } catch (InterruptedException |ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
 
+    @Test
+    @DisplayName("Test with an schema invalid original document that should not be ignored")
+    public void testOriginalXmlNotValidNotIgnore() {
+        final String documentName = "book_original_invalid_schema.xml";
+        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName);
+        final MutationRunner runner = new MutationRunner(runnerConfig, executor);
+        assertThrows(MutationException.class, runner::run, "Original document " + documentName + " is not schema valid");
+    }
+
+    @Test
+    @DisplayName("Test with an schema invalid original document that should be ignored")
+    public void testOriginalXmlNotValidIgnore() {
+        final String documentName = "book_original_invalid_schema.xml";
+        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, true);
+        final MutationRunner runner = new MutationRunner(runnerConfig, executor);
+        assertThatCode(runner::run).doesNotThrowAnyException();
+    }
 
 }
