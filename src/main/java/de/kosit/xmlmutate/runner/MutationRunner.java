@@ -1,23 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import de.init.kosit.commons.ObjectFactory;
-import de.init.kosit.commons.Result;
-import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.Document;
-import org.w3c.dom.ProcessingInstruction;
-import org.w3c.dom.traversal.DocumentTraversal;
-import org.w3c.dom.traversal.NodeFilter;
-import org.w3c.dom.traversal.TreeWalker;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,6 +9,26 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.w3c.dom.Document;
+import org.w3c.dom.ProcessingInstruction;
+import org.w3c.dom.traversal.DocumentTraversal;
+import org.w3c.dom.traversal.NodeFilter;
+import org.w3c.dom.traversal.TreeWalker;
+import org.xml.sax.SAXException;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import de.init.kosit.commons.ObjectFactory;
+import de.init.kosit.commons.Result;
+import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
  * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
@@ -56,9 +58,9 @@ public class MutationRunner {
 
     public void run() {
         prepare();
-        if (!this.configuration.isIgnoreSchemaInvalidity()) {
-            checkSchemaValidityOfOriginals(this.configuration.getDocuments());
-        }
+
+        checkSchemaValidityOfOriginals(this.configuration.getDocuments());
+
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
         checkIfErrorStatePresent(results);
@@ -70,9 +72,14 @@ public class MutationRunner {
         for (final Path documentPath : documents) {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false).parse(documentPath.toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(), document);
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(),
+                        document);
                 if (result.isInvalid()) {
-                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
+                    if (!this.configuration.isIgnoreSchemaInvalidity()) {
+                        throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
+                    } else {
+                        log.error(result.getErrorDescription());
+                    }
                 }
             } catch (IOException | SAXException e) {
                 throw new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM);
@@ -86,8 +93,7 @@ public class MutationRunner {
 
     private void prepare() {
         // register templates
-        this.configuration.getTemplates()
-                .forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
+        this.configuration.getTemplates().forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
     }
 
     private static Pair<Path, List<Mutation>> awaitTermination(final Future<Pair<Path, List<Mutation>>> pairFuture) {
@@ -143,7 +149,8 @@ public class MutationRunner {
                 log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                 a.run(mutation);
             } catch (final Exception e) {
-                final MutationException mutationException = new MutationException(ErrorCode.ACTION_RUNNER_ERROR, a.getClass().getName(), mutation.getIdentifier());
+                final MutationException mutationException = new MutationException(ErrorCode.ACTION_RUNNER_ERROR, a.getClass().getName(),
+                        mutation.getIdentifier());
                 log.error(mutationException.getMessage(), e);
                 mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getLocalizedMessage() == null ? mutationException : e);
                 mutation.setState(State.ERROR);
@@ -154,8 +161,8 @@ public class MutationRunner {
 
     List<Mutation> parseMutations(final Document origin, final String documentName) {
         final List<Mutation> all = new ArrayList<>();
-        final TreeWalker piWalker = ((DocumentTraversal) origin)
-                .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
+        final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null,
+                true);
         final List<String> alreadyDeclaredIds = new ArrayList<>();
         boolean stopParsing = false;
         while (piWalker.nextNode() != null && !stopParsing) {
@@ -169,7 +176,8 @@ public class MutationRunner {
                     if (currentId != null && !alreadyDeclaredIds.contains(currentId)) {
                         alreadyDeclaredIds.add(currentId);
                     } else if (currentId != null) {
-                        mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
+                        mutations.forEach(e -> e.getMutationErrorContainer()
+                                .addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
                     }
                 }
                 // If Mode FAIL_FAST, stop process with first error mutation
@@ -182,8 +190,7 @@ public class MutationRunner {
     }
 
     private boolean checkIfStopProcess(final Mutation mutation) {
-        return this.configuration.getFailureMode() == FailureMode.FAIL_FAST
-                && mutation.isErroneousOrContainsErrorMessages();
+        return this.configuration.getFailureMode() == FailureMode.FAIL_FAST && mutation.isErroneousOrContainsErrorMessages();
     }
 
 }
