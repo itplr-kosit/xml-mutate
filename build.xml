@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="xml-mutate" default="run-xmute-tutorial">
+  <property name="xmute.jar" value="xml-mutate-1.0-SNAPSHOT.jar" />
+  <property name="lib.dir" value="${basedir}/target" />
+  <property name="xmute.tutorial.dir" value="${basedir}/src/test/resources/book" />
+  <property name="xmute.tutorial.output.dir" value="${basedir}/tutorial" />
+  <property name="xmute.xml.file" value="${basedir}/doc/example/book-simple.xml" />
+
+
+  <target name="init" description="Initializes ant build and ISO timestamp">
+    <!-- Create timestamps -->
+    <tstamp>
+      <format property="build.date" pattern="yyyy-MM-dd" />
+    </tstamp>
+    <echo>Build date: ${build.date}</echo>
+    <echoproperties />
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${xmute.tutorial.output.dir}" />
+  </target>
+
+  <target name="run-xmute-tutorial" depends="init"
+    description="Test XRechnung Configuration">
+    <echo>Running XML-Mutate tutorial</echo>
+    <java jar="${lib.dir}/${xmute.jar}" failonerror="yes" fork="yes"
+      dir="${basedir}">
+      <arg value="--schema" />
+      <arg value="${xmute.tutorial.dir}/book.xsd" />
+      <arg value="--schematron" />
+      <arg value="b=${xmute.tutorial.dir}/book.sch" />
+
+      <arg value="--target" />
+      <arg value="${xmute.tutorial.output.dir}" />
+
+      <arg value="${xmute.xml.file}" />
+    </java>
+  </target>
+</project>
