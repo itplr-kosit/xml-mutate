@@ -1,21 +1,20 @@
 package de.kosit.xmlmutate.mutator;
 
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.runner.TemplateRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.ErrorCode;
-import de.kosit.xmlmutate.runner.MutationException;
-import de.kosit.xmlmutate.runner.Services;
-import de.kosit.xmlmutate.runner.TemplateRepository;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Generator for generating mutations for the {@link TransformationMutator}.

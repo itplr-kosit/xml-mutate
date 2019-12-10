@@ -1,14 +1,12 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.w3c.dom.Node;
-
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
+import org.w3c.dom.Node;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Mutator für Codes. Erzeugt eine einfache Textersetzung der Code-Werte. Die eigentliche Konfiguration der
