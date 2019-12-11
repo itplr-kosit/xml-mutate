@@ -84,6 +84,7 @@ public class WhitespaceMutator extends BaseMutator {
     }
 
     private void preCheckProp(final MutationConfig config, final String property) {
+        // length and position parameter can only be declared once and have only one value
         final List<Object> objects = config.resolveList(property);
         if (objects.size() > 1) {
             throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Only 1 " + property.toLowerCase() + " parameter declaration allowed");
@@ -96,10 +97,17 @@ public class WhitespaceMutator extends BaseMutator {
         if (charactersToUse.isEmpty()) {
             return position.getNewTextContent(contentToChange, XmlWhitespaceCharacter.getRandomWhitespaceCharacters(length));
         } else {
-            return position.getNewTextContent(contentToChange, XmlWhitespaceCharacter.getRandomWhitespaceCharacters(length, charactersToUse));
+            return position.getNewTextContent(contentToChange, getRandomWhitespaceCharacters(length, charactersToUse));
         }
     }
 
+    private String getRandomWhitespaceCharacters(final int length, final List<XmlWhitespaceCharacter> restrictions) {
+        final StringBuilder sequence = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sequence.append(restrictions.get(new Random().nextInt(restrictions.size())).getValue());
+        }
+        return sequence.toString();
+    }
 
     @RequiredArgsConstructor
     public enum XmlWhitespaceCharacter {
@@ -126,18 +134,16 @@ public class WhitespaceMutator extends BaseMutator {
             }
         }
 
+        /**
+         * To get a string result with random xml whitespace characters with the given length
+         *
+         * @param length - the desired length of the final string
+         * @return the whitespace characters string
+         */
         public static String getRandomWhitespaceCharacters(final int length) {
             final StringBuilder sequence = new StringBuilder();
             for (int i = 0; i < length; i++) {
                 sequence.append(values()[(new Random().nextInt(values().length))].getValue());
-            }
-            return sequence.toString();
-        }
-
-        public static String getRandomWhitespaceCharacters(final int length, final List<XmlWhitespaceCharacter> restrictions) {
-            final StringBuilder sequence = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                sequence.append(restrictions.get(new Random().nextInt(restrictions.size())).getValue());
             }
             return sequence.toString();
         }
@@ -164,6 +170,13 @@ public class WhitespaceMutator extends BaseMutator {
             }
         }
 
+        /**
+         * To modify the text with the given whitespace characters sequence
+         *
+         * @param contextToChange   the text content to be changed
+         * @param characterSequence the whitespace characters sequence
+         * @return the mutated text content
+         */
         public String getNewTextContent(final String contextToChange, final String characterSequence) {
             switch (this) {
                 case PREFIX:
