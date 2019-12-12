@@ -116,6 +116,10 @@ public class Mutation {
         return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
     }
 
+    public boolean isAtLeastOneUnprocessed() {
+        return !this.result.isSchemaProcessed() || !result.isSchematronProcessed();
+    }
+
     public boolean hasUnexpectedValidation() {
         return !isAllAsExpected();
     }
@@ -127,6 +131,8 @@ public class Mutation {
     public boolean isErroneousOrContainsErrorMessages() {
         return this.state == State.ERROR || this.mutationErrorContainer.hasAnyErrors();
     }
+
+
 
 
     public enum State {

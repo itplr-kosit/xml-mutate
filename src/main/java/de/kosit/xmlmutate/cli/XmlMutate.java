@@ -41,7 +41,7 @@ public class XmlMutate implements Callable<Integer> {
     private Path target;
 
     @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
     @Option(names = { "-s",

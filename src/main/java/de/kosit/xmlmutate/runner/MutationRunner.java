@@ -56,7 +56,7 @@ public class MutationRunner {
 
     public void run() {
         prepare();
-        if (!this.configuration.isIgnoreSchemaInvalidity()) {
+        if (!this.configuration.isIgnoreSchemaInvalidity() && this.configuration.getSchema() != null) {
             checkSchemaValidityOfOriginals(this.configuration.getDocuments());
         }
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
@@ -103,6 +103,7 @@ public class MutationRunner {
         return this.executorService.submit(() -> {
             final Document d = DocumentParser.readDocument(path);
             final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
+
             // If there is only mutation with an error, we dont need to process it
             if (mutations.size() == 1 && mutations.stream().anyMatch(Mutation::isErroneousOrContainsErrorMessages)) {
                 return new ImmutablePair<>(path, mutations);
@@ -163,6 +164,7 @@ public class MutationRunner {
             if (pi.getTarget().equals("xmute")) {
                 final MutationContext context = new MutationContext(pi, documentName);
                 List<Mutation> mutations = this.parser.parse(context);
+                checkSchemaSchematronDeclarations(mutations);
                 // Check if PI id is duplicated
                 if (!mutations.isEmpty()) {
                     final String currentId = mutations.get(0).getConfiguration().getMutationId();
@@ -179,6 +181,22 @@ public class MutationRunner {
             }
         }
         return all;
+    }
+
+    private void checkSchemaSchematronDeclarations(final List<Mutation> mutations) {
+
+        if ((this.configuration.getSchema() == null) && (mutations.stream()
+                .filter(Mutation::isSchemaExpectationSet)
+                .findAny().orElse(null) != null)) {
+            throw new MutationException(ErrorCode.CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION, "schema");
+        }
+
+        if ((this.configuration.getSchematronRules().isEmpty()) && (mutations.stream()
+                .filter(Mutation::isSchematronExpectationSet)
+                .findAny().orElse(null) != null)) {
+            throw new MutationException(ErrorCode.CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION, "schematron");
+        }
+
     }
 
     private boolean checkIfStopProcess(final Mutation mutation) {

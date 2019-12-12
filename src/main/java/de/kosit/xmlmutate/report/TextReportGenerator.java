@@ -605,7 +605,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final Cell overall;
         if (mutation.isAllAsExpected()) {
             overall = new Cell("Y", Code.GREEN);
-        } else if (mutation.isAllUnprocessed()) {
+        } else if (mutation.isAllUnprocessed() || mutation.isAtLeastOneUnprocessed()) {
             overall = new Cell("NA", Code.RED);
         } else {
             overall = new Cell("N", Code.RED);
