@@ -36,14 +36,12 @@ import java.util.List;
 @Slf4j
 public class SchematronCompiler {
 
-    private static final String MAIN_RESOURCES_FOLDER = "src/main/resources";
+    private static final String ISO_SCHEMATRON_FOLDER = "iso-schematron-xslt2";
+    private static final String ISO_SCHEMATRON_INCLUDE = ISO_SCHEMATRON_FOLDER + "/iso_dsdl_include.xsl";
+    private static final String ISO_SCHEMATRON_EXPAND = ISO_SCHEMATRON_FOLDER + "/iso_abstract_expand.xsl";
+    private static final String ISO_SCHEMATRON_COMPILE = ISO_SCHEMATRON_FOLDER + "/iso_svrl_for_xslt2.xsl";
 
-    private static final String ISO_SCHEMATRON_FOLDER = "/iso-schematron-xslt2";
-    private static final String ISO_SCHEMATRON_INCLUDE = Paths.get(MAIN_RESOURCES_FOLDER) + ISO_SCHEMATRON_FOLDER + "/iso_dsdl_include.xsl";
-    private static final String ISO_SCHEMATRON_EXPAND = Paths.get(MAIN_RESOURCES_FOLDER) + ISO_SCHEMATRON_FOLDER + "/iso_abstract_expand.xsl";
-    private static final String ISO_SCHEMATRON_COMPILE = Paths.get(MAIN_RESOURCES_FOLDER) + ISO_SCHEMATRON_FOLDER + "/iso_svrl_for_xslt2.xsl";
-
-    private static final String OUTPUT_FOLDER = Paths.get(MAIN_RESOURCES_FOLDER) + "/xslt";
+    private static final String OUTPUT_FOLDER = "xslt";
 
 
     /**
@@ -124,7 +122,7 @@ public class SchematronCompiler {
     private Source runStage(final XsltCompiler compiler, final Source source, final String path) {
         final XdmDestination destStage = new XdmDestination();
         try {
-            final Xslt30Transformer transformer = compiler.compile(new StreamSource(new File(path))).load30();
+            final Xslt30Transformer transformer = compiler.compile(new StreamSource(this.getClass().getClassLoader().getResourceAsStream(path))).load30();
             transformer.applyTemplates(source, destStage);
         } catch (SaxonApiException e) {
             throw new IllegalArgumentException("Schematron file could not be compiled");
