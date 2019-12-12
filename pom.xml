@@ -3,7 +3,7 @@
     <groupId>de.kosit</groupId>
     <artifactId>xml-mutate</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.5</version>
     <name>xml-mutate</name>
     <description>A declarative XML instance mutator and test tool</description>
     <properties>
