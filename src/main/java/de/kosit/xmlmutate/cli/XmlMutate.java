@@ -41,7 +41,7 @@ public class XmlMutate implements Callable<Integer> {
     private Path target;
 
     @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
     @Option(names = { "-s",
@@ -56,20 +56,17 @@ public class XmlMutate implements Callable<Integer> {
             "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
     private Map<String, Path> transformations = new HashMap<String, Path>();
 
-    @Option(names = { "-ff",
-            "--fail-fast" },  description = "The run failure control mode for fail fast")
+    @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
     private boolean failfast;
 
-    @Option(names = { "-fae",
-            "--fail-at-end" },  description = "The run failure control mode for fail at end")
+    @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
     private boolean failatend;
 
-    @Option(names = { "-fn",
-            "--fail-never" },  description = "The run failure control mode for fail never")
+    @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
     private boolean failnever;
 
     @Option(names = { "-isi",
-            "--ignore-schema-invalidity" },  description = "If set, whenever an original document is not schema valid, it wont stop the programm")
+            "--ignore-schema-invalidity" }, description = "If set, whenever an original document is not schema valid, it wont stop the programm")
     private boolean ignoreSchemaInvalidity;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
@@ -116,10 +113,8 @@ public class XmlMutate implements Callable<Integer> {
         }
         return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
                 .checkSchematron(prepareSchematron()).checkSchema(prepareSchema())
-                .useTransformations(prepareTransformations())
-                .withFailureMode(getFailureMode())
-                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
-                .build();
+                .useTransformations(prepareTransformations()).withFailureMode(getFailureMode())
+                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity).build();
 
     }
 
@@ -132,14 +127,11 @@ public class XmlMutate implements Callable<Integer> {
         final long countActive = modeActivations.values().stream().filter(b -> b).count();
         if (countActive > 1) {
             throw new IllegalArgumentException("Only one failure mode is allowed");
-        } else if (countActive == 0){
+        } else if (countActive == 0) {
             return FailureMode.FAIL_AT_END;
         } else {
-            return  modeActivations.entrySet().stream()
-                    .filter(Map.Entry::getValue)
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList())
-                    .get(0);
+            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey)
+                    .collect(Collectors.toList()).get(0);
         }
 
     }
@@ -164,9 +156,10 @@ public class XmlMutate implements Callable<Integer> {
     private List<Schematron> prepareSchematron() {
         final SchematronCompiler compiler = new SchematronCompiler();
         final List<Schematron> schematronList = new ArrayList<>();
-        for (Map.Entry<String,Path> entry : this.schematrons.entrySet()) {
-            final URI compiledSchematron = compiler.compile(entry.getValue().toUri());
-            schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
+        for (Map.Entry<String, Path> entry : this.schematrons.entrySet()) {
+            final URI compiledSchematron = compiler.compile(entry.getValue());
+            schematronList.add(
+                    new Schematron(entry.getKey(), compiledSchematron, compiler.extractRuleIdList(compiledSchematron)));
         }
         return schematronList;
     }
