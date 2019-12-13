@@ -107,6 +107,14 @@
             <artifactId>assertj-core</artifactId>
             <version>3.11.1</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -188,7 +196,6 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-
                             <mainClass>de.kosit.xmlmutate.cli.XmlMutate</mainClass>
                         </manifest>
                     </archive>
