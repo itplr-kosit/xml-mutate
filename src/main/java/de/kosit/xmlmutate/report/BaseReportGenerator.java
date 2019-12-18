@@ -53,6 +53,6 @@ public abstract class BaseReportGenerator implements ReportGenerator {
      * @return number of mutations with errors
      */
     protected int countSuccessful(final List<Mutation> mutations) {
-        return toIntExact(mutations.stream().filter(Mutation::isAllAsExpected).count());
+        return toIntExact(mutations.stream().filter(x -> x.isAllAsExpected() || x.isOneAsExpectedAndOneUnprocessed()).count());
     }
 }
