@@ -4,7 +4,8 @@ import de.init.kosit.commons.ObjectFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.saxon.lib.NamespaceConstant;
 import net.sf.saxon.s9api.*;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -14,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
@@ -24,9 +26,9 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import java.io.*;
 import java.net.URI;
-import java.nio.file.Files;
+
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,13 +43,13 @@ import java.util.List;
 @Slf4j
 public class SchematronCompiler {
 
-    private static final String ISO_SCHEMATRON_FOLDER = "/iso-schematron-xslt2";
-    private static final String ISO_SCHEMATRON_INCLUDE = ISO_SCHEMATRON_FOLDER + "/iso_dsdl_include.xsl";
+    private static final String ISO_SCHEMATRON_FOLDER =  "/iso-schematron-xslt2";
+    private static final String ISO_SCHEMATRON_INCLUDE = ISO_SCHEMATRON_FOLDER +  "/iso_dsdl_include.xsl";
     private static final String ISO_SCHEMATRON_EXPAND = ISO_SCHEMATRON_FOLDER + "/iso_abstract_expand.xsl";
     private static final String ISO_SCHEMATRON_COMPILE = ISO_SCHEMATRON_FOLDER + "/iso_svrl_for_xslt2.xsl";
     private static final String ISO_SCHEMATRON_SAXON = ISO_SCHEMATRON_FOLDER + "/iso_schematron_skeleton_for_saxon.xsl";
 
-    private static final String OUTPUT_FOLDER = "xslt";
+    private static final String OUTPUT_FOLDER =  File.separator + "xslt";
 
     /**
      * Method that extract the ids of the schematron rules (of the compiled
@@ -100,15 +102,10 @@ public class SchematronCompiler {
      */
     public URI compile(final Path target, final URI schematronFile) {
 
-        final String schematronPath = schematronFile.getPath();
-
         // Prüfung ob sch file
-        final String fileExtension = schematronPath.substring(schematronPath.lastIndexOf('.') + 1);
-        if (!fileExtension.equalsIgnoreCase("sch")) {
+        if (!FilenameUtils.getExtension(schematronFile.getPath()).equalsIgnoreCase("sch")) {
             return schematronFile;
         }
-
-        copyISOFilesToTargetFolder(target);
 
         log.debug("Schematron input needs to be compiled...");
         log.debug("Loading XSLT script from {}", schematronFile.getPath());
@@ -121,16 +118,16 @@ public class SchematronCompiler {
         final Source sourceStage1 = new StreamSource(new File(schematronFile));
 
         // Stage 1: preprocess because of sch with separate parts
-        final Source sourceStage2 = runStage(1, compiler, sourceStage1, target, ISO_SCHEMATRON_INCLUDE);
+        final Source sourceStage2 = runStage(1, compiler, sourceStage1, ISO_SCHEMATRON_INCLUDE);
 
         // Stage 2: preprocess because of sch with abstract patterns
-        final Source sourceStage3 = runStage(2, compiler, sourceStage2, target, ISO_SCHEMATRON_EXPAND);
+        final Source sourceStage3 = runStage(2, compiler, sourceStage2, ISO_SCHEMATRON_EXPAND);
 
         // Stage 3: compile sch to xsl/xslt
-        final Source generatedXsltSource = runStage(3, compiler, sourceStage3,target,  ISO_SCHEMATRON_COMPILE);
+        final Source generatedXsltSource = runStage(3, compiler, sourceStage3, ISO_SCHEMATRON_COMPILE);
 
         // Generate file output
-        final File outputFile = createFileOutput(generatedXsltSource, schematronPath);
+        final File outputFile = createFileOutput(generatedXsltSource, FilenameUtils.getBaseName(schematronFile.getPath()), target);
 
         log.debug("Schematron compilation completed");
         log.debug("XSLT location: {}", outputFile.getPath());
@@ -138,54 +135,34 @@ public class SchematronCompiler {
         return outputFile.toURI();
     }
 
-    private void copyISOFilesToTargetFolder(final Path target) {
-        createISOFolder(target);
-        copyFileInJarToFileExplorer(ISO_SCHEMATRON_INCLUDE, target);
-        copyFileInJarToFileExplorer(ISO_SCHEMATRON_EXPAND, target);
-        copyFileInJarToFileExplorer(ISO_SCHEMATRON_COMPILE, target);
-        copyFileInJarToFileExplorer(ISO_SCHEMATRON_SAXON, target);
-    }
-
-    private void createISOFolder(final Path target) {
-        try {
-            final String path = target.toString() + "/iso-schematron-xslt2";
-            Files.createDirectories(Paths.get(path));
-        } catch (IOException e) {
-            log.error("Error while creating directory");
-            log.error(e.getLocalizedMessage());
-        }
-    }
-
-    private void copyFileInJarToFileExplorer(final String source, final Path target) {
-        final File destination = new File(target.toString() + source);
-        final InputStream inputStream = getClass().getResourceAsStream(source);
-        try (OutputStream outputStream = new FileOutputStream(destination)) {
-            IOUtils.copy(inputStream, outputStream);
-        } catch (IOException e) {
-            log.error("Error while copying file " + source +" to file explorer");
-            log.error(e.getLocalizedMessage());
-        }
-    }
-
-    private Source runStage(final int runnr, final XsltCompiler compiler, final Source source, final Path target, final String path) {
+    private Source runStage(final int runnr, final XsltCompiler compiler, final Source source, final String path) {
         final XdmDestination destStage = new XdmDestination();
         try {
+            if (runnr == 3) {
+                compiler.setURIResolver(new URIResolver() {
+                    @Override
+                    public Source resolve(String href, String base) {
+                        return new StreamSource(this.getClass().getResourceAsStream(ISO_SCHEMATRON_SAXON));
+                    }
+                });
+            }
+            log.info("Path of file to read: " + path);
             final Xslt30Transformer transformer = compiler
-                    .compile(new StreamSource(target.toString()+ path)).load30();
+                    .compile(new StreamSource(this.getClass().getResourceAsStream(path))).load30();
             transformer.applyTemplates(source, destStage);
         } catch (SaxonApiException e) {
             throw new IllegalArgumentException(runnr + ". Run: Schematron file could not be compiled");
         }
+        log.info("Stage " + runnr + " completed successfully");
         return destStage.getXdmNode().asSource();
     }
 
-    private File createFileOutput(final Source generatedXsltSource, final String schematronPath) {
-        // Get name for compiled schematron from sch-file?
-        final String fileName = schematronPath.substring(schematronPath.lastIndexOf('/') + 1,
-                schematronPath.lastIndexOf('.')) + ".xsl";
+    private File createFileOutput(final Source generatedXsltSource, final String fileNameBase, final Path target) {
+        // Get name for compiled schematron from sch-file
+        final String fileName = fileNameBase + ".xsl";
         // Transform to file/URI
         final Transformer transformer = ObjectFactory.createTransformer(true);
-        final File compiledFile = new File(String.format("%s/%s", OUTPUT_FOLDER, fileName));
+        final File compiledFile = new File( target.toString() + OUTPUT_FOLDER, fileName);
         try {
             transformer.transform(generatedXsltSource, new StreamResult(compiledFile));
         } catch (TransformerException e) {
