@@ -47,7 +47,8 @@ public class WhitespaceMutator extends BaseMutator {
         if (StringUtils.isBlank(target.getTextContent())) {
             throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Element content is empty");
         }
-        target.setTextContent(createMutatedContent(context.getTarget().getTextContent(), config));
+        final String content = createMutatedContent(context.getTarget().getTextContent(), config);
+        target.setTextContent(content);
     }
 
     private String createMutatedContent(final String contentToChange, final MutationConfig config) {
@@ -131,9 +132,10 @@ public class WhitespaceMutator extends BaseMutator {
 
     @RequiredArgsConstructor
     public enum XmlWhitespaceCharacter {
-        CR("\r"),
+        // Also CR is \n, since the Transformer in the serialization is transforming \r to the HEX value &#2D
+        CR("\n"),
         LF("\n"),
-        CRLF(CR.value + LF.value),
+        CRLF("\n"),
         TAB("\t"),
         SPACE(" ");
 
