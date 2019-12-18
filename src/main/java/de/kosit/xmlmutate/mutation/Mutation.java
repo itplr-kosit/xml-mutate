@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutator.Mutator;
 import de.kosit.xmlmutate.runner.MutationException;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
@@ -107,6 +110,7 @@ public class Mutation {
         return result.isExpectationCompliant();
     }
 
+
     /**
      * Prüft ob eine Mutation Schema- und Schematron-validiert wurde
      *
@@ -116,8 +120,12 @@ public class Mutation {
         return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
     }
 
+    public boolean isAtLeastOneUnprocessed() {
+        return !this.result.isSchemaProcessed() || !result.isSchematronProcessed();
+    }
+
     public boolean hasUnexpectedValidation() {
-        return !isAllAsExpected();
+        return !isAllAsExpected() && !isOneAsExpectedAndOneUnprocessed();
     }
 
     public boolean isErroneous() {
@@ -126,6 +134,11 @@ public class Mutation {
 
     public boolean isErroneousOrContainsErrorMessages() {
         return this.state == State.ERROR || this.mutationErrorContainer.hasAnyErrors();
+    }
+
+    public boolean isOneAsExpectedAndOneUnprocessed() {
+        return (this.result.isSchemaValidationAsExpected() && !this.result.isSchematronProcessed())
+                || (this.result.allSchematronRulesAsExpected() && !this.result.isSchemaProcessed());
     }
 
 
