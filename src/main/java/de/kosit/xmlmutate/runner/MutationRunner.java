@@ -9,6 +9,7 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationParser;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Document;
@@ -162,6 +163,7 @@ public class MutationRunner {
         while (piWalker.nextNode() != null && !stopParsing) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
+                pi.setData(StringUtils.normalizeSpace(pi.getData()));
                 final MutationContext context = new MutationContext(pi, documentName);
                 List<Mutation> mutations = this.parser.parse(context);
                 checkSchemaSchematronDeclarations(mutations);
