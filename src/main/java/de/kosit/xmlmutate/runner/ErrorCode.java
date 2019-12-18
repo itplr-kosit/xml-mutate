@@ -35,7 +35,9 @@ public enum ErrorCode implements NamedError {
 
     SCHEMATRON_EVALUATION_ERROR("Schematron evaluation error: {0}"),
 
-    ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid");
+    ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid"),
+
+    CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION("No {0} given at CLI but expectation declared in a xmute pi");
 
 
     @Getter

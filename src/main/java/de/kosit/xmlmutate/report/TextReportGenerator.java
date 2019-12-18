@@ -603,10 +603,10 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private Cell createOverallResult(final Mutation mutation) {
         final Cell overall;
-        if (mutation.isAllAsExpected()) {
+        if (mutation.isAllAsExpected() || mutation.isOneAsExpectedAndOneUnprocessed()) {
             overall = new Cell("Y", Code.GREEN);
         } else if (mutation.isAllUnprocessed()) {
-            overall = new Cell("NA", Code.RED);
+            overall = new Cell("NA", Code.CYAN);
         } else {
             overall = new Cell("N", Code.RED);
         }
@@ -616,7 +616,7 @@ public class TextReportGenerator extends BaseReportGenerator {
     private Cell createSchematronValidationCell(final boolean isProcessed, final boolean isValid) {
 
         if (!isProcessed) {
-            return new Cell("NA", Code.RED);
+            return new Cell("NA", Code.CYAN);
         }
 
         if (isValid) {
@@ -630,7 +630,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final List<Cell> cells = new ArrayList<>();
 
         if (!isProcessed || !isSchematronExpectationSet) {
-            cells.add(new Cell("NA", Code.RED));
+            cells.add(new Cell("NA", Code.CYAN));
             return cells;
         }
 
@@ -644,7 +644,7 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private Cell createSchemaValidationCell(final boolean isProcessed, final boolean isValid) {
         if (!isProcessed) {
-            return new Cell("NA", Code.RED);
+            return new Cell("NA", Code.CYAN);
         }
 
         return new Cell(isValid ? "Y" : "N", isValid ? Code.GREEN : Code.RED);
@@ -652,7 +652,7 @@ public class TextReportGenerator extends BaseReportGenerator {
 
     private Cell createSchemaExpectationCell(final boolean isProcessed, final boolean isSchemaExpectationSet, final boolean asExpected) {
         if (!isProcessed || !isSchemaExpectationSet) {
-            return new Cell("NA", Code.RED);
+            return new Cell("NA", Code.CYAN);
         }
         return new Cell(asExpected ? "Y" : "N", asExpected ? Code.GREEN : Code.RED);
     }

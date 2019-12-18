@@ -165,7 +165,7 @@ public class XmlMutate implements Callable<Integer> {
         final SchematronCompiler compiler = new SchematronCompiler();
         final List<Schematron> schematronList = new ArrayList<>();
         for (Map.Entry<String,Path> entry : this.schematrons.entrySet()) {
-            final URI compiledSchematron = compiler.compile(entry.getValue().toUri());
+            final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
             schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
         }
         return schematronList;

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -184,4 +185,28 @@ public class MutationRunnerTest {
         assertThatCode(runner::run).doesNotThrowAnyException();
     }
 
+
+    @Test
+    @DisplayName("Test without a schema in CLI but with an expectation of schema in a PI")
+    public void testSchemaInPInotInCLI() {
+        final String documentName = "book.xml";
+        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_NEVER);
+        runnerConfig.setSchema(null);
+        final MutationRunner runner = new MutationRunner(runnerConfig, executor);
+        assertThrows(MutationException.class,  () ->
+            runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)), documentName),
+                    "No schema given at CLI but expectation declared in a xmute pi");
+    }
+
+    @Test
+    @DisplayName("Test without a schematron in CLI but with an expectation of schematron in a PI")
+    public void testSchematronInPInotInCLI() {
+        final String documentName = "book.xml";
+        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(PATH_TO_BOOK_FOLDER + documentName, FailureMode.FAIL_NEVER);
+        runnerConfig.setSchematronRules(Collections.emptyList());
+        final MutationRunner runner = new MutationRunner(runnerConfig, executor);
+        assertThrows(MutationException.class,  () ->
+                        runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)), documentName),
+                "No schematron given at CLI but expectation declared in a xmute pi");
+    }
 }
