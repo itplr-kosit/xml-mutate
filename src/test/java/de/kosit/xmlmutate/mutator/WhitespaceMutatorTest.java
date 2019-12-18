@@ -63,7 +63,7 @@ public class WhitespaceMutatorTest {
                         .add("list", "lf,tab"));
         assertThat(whitespacesAreSuffix(context.getTarget().getTextContent())).isTrue();
         assertThat(context.getTarget().getTextContent()).hasSize("someText".length() + 12);
-        assertThat(containsNone(context.getTarget().getTextContent(), Arrays.asList("space", "cr"))).isTrue();
+        assertThat(containsNone(context.getTarget().getTextContent(), Arrays.asList("space"))).isTrue();
     }
 
     @Test
