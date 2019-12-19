@@ -1,8 +1,8 @@
 package de.kosit.xmlmutate.runner;
 
-import static de.kosit.xmlmutate.Assertions.assertThat;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static de.kosit.xmlmutate.TestHelper.createRootContext;
+import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.lang3.RandomStringUtils;

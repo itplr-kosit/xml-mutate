@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
     <xs:element name="book">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="title" type="xs:string"  minOccurs="1" maxOccurs="1"/>
-                <xs:element name="publisher" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="price" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="pages" type="xs:unsignedShort" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="chapters" type="xs:unsignedByte" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="appendices" type="xs:unsignedByte" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1" />
+                <xs:element name="publisher" type="xs:string" minOccurs="0" maxOccurs="1" />
+                <xs:element name="price" type="xs:decimal" minOccurs="0" maxOccurs="1" />
+                <xs:element name="pages" type="xs:unsignedShort" minOccurs="1" maxOccurs="1" />
+                <xs:element name="chapters" type="xs:unsignedByte" minOccurs="0" maxOccurs="1" />
+                <xs:element name="appendices" type="xs:unsignedByte" minOccurs="0" maxOccurs="1" />
                 <xs:element name="authors" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:sequence>
@@ -37,6 +37,7 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="content" type="xs:anyType" minOccurs="0" />
             </xs:sequence>
             <xs:attribute name="isbn" type="xs:string" use="required" />
         </xs:complexType>

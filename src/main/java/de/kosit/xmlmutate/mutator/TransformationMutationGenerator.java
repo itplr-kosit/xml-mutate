@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.mutator;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
         final String name = config.getStringProperty(PROP_NAME);
         final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
         if (isEmpty(name) || !this.repository.exists(name)) {
-            throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, "Template {0} not found", name);
+            throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, MessageFormat.format("Template \"{0}\" not found", name));
         }
 
         config.add(TransformationMutator.TEMPLATE_PARAM, this.repository.getTemplate(name));

@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,7 +21,6 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
@@ -47,8 +47,7 @@ public class MutationRunner {
 
     private final TemplateRepository templateRepository;
 
-    @Getter
-    private boolean errorPresent;
+
 
     public MutationRunner(final RunnerConfig configuration, final ExecutorService executorService) {
         this.configuration = configuration;
@@ -57,15 +56,15 @@ public class MutationRunner {
         this.templateRepository = Services.getTemplateRepository();
     }
 
-    public void run() {
+    public RunnerResult run() {
         prepare();
         if (!this.configuration.isIgnoreSchemaInvalidity() && this.configuration.getSchema() != null) {
             checkSchemaValidityOfOriginals(this.configuration.getDocuments());
         }
         final List<Pair<Path, List<Mutation>>> results = this.configuration.getDocuments().stream().map(this::process)
                 .map(MutationRunner::awaitTermination).collect(Collectors.toList());
-        checkIfErrorStatePresent(results);
         this.configuration.getReportGenerator().generate(results, this.configuration.getFailureMode());
+        return new RunnerResult(results);
     }
 
     private void checkSchemaValidityOfOriginals(final List<Path> documents) {
@@ -73,7 +72,8 @@ public class MutationRunner {
         for (final Path documentPath : documents) {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false).parse(documentPath.toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(), document);
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(),
+                        document);
                 if (result.isInvalid()) {
                     throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
                 }
@@ -83,14 +83,13 @@ public class MutationRunner {
         }
     }
 
-    private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
-        results.forEach(o -> this.errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR));
-    }
+
 
     private void prepare() {
         // register templates
-        this.configuration.getTemplates()
-                .forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
+        if (CollectionUtils.isNotEmpty(this.configuration.getTemplates())) {
+            this.configuration.getTemplates().forEach(t -> this.templateRepository.registerTemplate(t.getName(), t.getPath()));
+        }
     }
 
     private static Pair<Path, List<Mutation>> awaitTermination(final Future<Pair<Path, List<Mutation>>> pairFuture) {
@@ -147,7 +146,8 @@ public class MutationRunner {
                 log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                 a.run(mutation);
             } catch (final Exception e) {
-                final MutationException mutationException = new MutationException(ErrorCode.ACTION_RUNNER_ERROR, a.getClass().getName(), mutation.getIdentifier());
+                final MutationException mutationException = new MutationException(ErrorCode.ACTION_RUNNER_ERROR, a.getClass().getName(),
+                        mutation.getIdentifier());
                 log.error(mutationException.getMessage(), e);
                 mutation.getMutationErrorContainer().addGlobalErrorMessage(e.getLocalizedMessage() == null ? mutationException : e);
                 mutation.setState(State.ERROR);
@@ -158,8 +158,8 @@ public class MutationRunner {
 
     List<Mutation> parseMutations(final Document origin, final Path documentPath) {
         final List<Mutation> all = new ArrayList<>();
-        final TreeWalker piWalker = ((DocumentTraversal) origin)
-                .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
+        final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null,
+                true);
         final List<String> alreadyDeclaredIds = new ArrayList<>();
         boolean stopParsing = false;
         while (piWalker.nextNode() != null && !stopParsing) {
@@ -175,7 +175,8 @@ public class MutationRunner {
                     if (currentId != null && !alreadyDeclaredIds.contains(currentId)) {
                         alreadyDeclaredIds.add(currentId);
                     } else if (currentId != null) {
-                        mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
+                        mutations.forEach(e -> e.getMutationErrorContainer()
+                                .addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
                     }
                 }
                 // If Mode FAIL_FAST, stop process with first error mutation
@@ -189,23 +190,20 @@ public class MutationRunner {
 
     private void checkSchemaSchematronDeclarations(final List<Mutation> mutations) {
 
-        if ((this.configuration.getSchema() == null) && (mutations.stream()
-                .filter(Mutation::isSchemaExpectationSet)
-                .findAny().orElse(null) != null)) {
+        if ((this.configuration.getSchema() == null)
+                && (mutations.stream().filter(Mutation::isSchemaExpectationSet).findAny().orElse(null) != null)) {
             throw new MutationException(ErrorCode.CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION, "schema");
         }
 
-        if ((this.configuration.getSchematronRules().isEmpty()) && (mutations.stream()
-                .filter(Mutation::isSchematronExpectationSet)
-                .findAny().orElse(null) != null)) {
+        if ((this.configuration.getSchematronRules().isEmpty())
+                && (mutations.stream().filter(Mutation::isSchematronExpectationSet).findAny().orElse(null) != null)) {
             throw new MutationException(ErrorCode.CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION, "schematron");
         }
 
     }
 
     private boolean checkIfStopProcess(final Mutation mutation) {
-        return this.configuration.getFailureMode() == FailureMode.FAIL_FAST
-                && mutation.isErroneousOrContainsErrorMessages();
+        return this.configuration.getFailureMode() == FailureMode.FAIL_FAST && mutation.isErroneousOrContainsErrorMessages();
     }
 
 }

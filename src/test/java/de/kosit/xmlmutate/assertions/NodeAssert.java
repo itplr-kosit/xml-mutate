@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate;
+package de.kosit.xmlmutate.assertions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -182,4 +182,5 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         }
         return this;
     }
+
 }
