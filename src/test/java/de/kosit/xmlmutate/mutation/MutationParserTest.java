@@ -1,19 +1,20 @@
 package de.kosit.xmlmutate.mutation;
 
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
  * Testet die grundsätzlichen Parser-Funktionen.
@@ -61,7 +62,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
-        List<SchematronRuleExpectation> e = mutations.get(0).getConfiguration().getSchematronExpectations();
+        final List<SchematronRuleExpectation> e = mutations.get(0).getConfiguration().getSchematronExpectations();
         assertEquals(16, e.size());
 
         assertEquals("BR-52", e.get(0).getRuleName());
@@ -137,7 +138,9 @@ public class MutationParserTest {
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(),"No mutation can be found for test. Is PI last element?"))).isTrue();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(
+                e -> StringUtils.containsIgnoreCase(e.getMessage(), "No mutation can be found for dummy.xml. Is PI last element?")))
+                        .isTrue();
     }
 
     @Test

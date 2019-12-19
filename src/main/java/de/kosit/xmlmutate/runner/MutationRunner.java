@@ -1,14 +1,15 @@
 package de.kosit.xmlmutate.runner;
 
-import de.init.kosit.commons.ObjectFactory;
-import de.init.kosit.commons.Result;
-import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,15 +20,16 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import de.init.kosit.commons.ObjectFactory;
+import de.init.kosit.commons.Result;
+import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
  * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
@@ -75,14 +77,14 @@ public class MutationRunner {
                 if (result.isInvalid()) {
                     throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
                 }
-            } catch (IOException | SAXException e) {
+            } catch (final IOException | SAXException e) {
                 throw new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM);
             }
         }
     }
 
     private void checkIfErrorStatePresent(final List<Pair<Path, List<Mutation>>> results) {
-        results.forEach(o -> errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR));
+        results.forEach(o -> this.errorPresent = o.getValue().stream().anyMatch(n -> n.getState() == State.ERROR));
     }
 
     private void prepare() {
@@ -103,7 +105,7 @@ public class MutationRunner {
     Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
             final Document d = DocumentParser.readDocument(path);
-            final List<Mutation> mutations = parseMutations(d, path.getFileName().toString());
+            final List<Mutation> mutations = parseMutations(d, path);
 
             // If there is only mutation with an error, we dont need to process it
             if (mutations.size() == 1 && mutations.stream().anyMatch(Mutation::isErroneousOrContainsErrorMessages)) {
@@ -154,7 +156,7 @@ public class MutationRunner {
         });
     }
 
-    List<Mutation> parseMutations(final Document origin, final String documentName) {
+    List<Mutation> parseMutations(final Document origin, final Path documentPath) {
         final List<Mutation> all = new ArrayList<>();
         final TreeWalker piWalker = ((DocumentTraversal) origin)
                 .createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
@@ -164,8 +166,8 @@ public class MutationRunner {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 pi.setData(StringUtils.normalizeSpace(pi.getData()));
-                final MutationContext context = new MutationContext(pi, documentName);
-                List<Mutation> mutations = this.parser.parse(context);
+                final MutationContext context = new MutationContext(pi, documentPath);
+                final List<Mutation> mutations = this.parser.parse(context);
                 checkSchemaSchematronDeclarations(mutations);
                 // Check if PI id is duplicated
                 if (!mutations.isEmpty()) {

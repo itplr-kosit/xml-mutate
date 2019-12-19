@@ -1,6 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import java.nio.file.Path;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -15,8 +15,7 @@ import lombok.Setter;
 import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
- * Context of the Mutation including all data necessary to determine where in
- * the document the mutation takes place.
+ * Context of the Mutation including all data necessary to determine where in the document the mutation takes place.
  *
  * @author Andreas Penski
  */
@@ -24,7 +23,7 @@ import de.kosit.xmlmutate.runner.DocumentParser;
 @Setter
 public class MutationContext {
 
-    private final String documentName;
+    private final Path documentPath;
 
     private final ProcessingInstruction pi;
 
@@ -35,16 +34,25 @@ public class MutationContext {
     /**
      * Constructor.
      *
-     * @param pi   the {@link ProcessingInstruction} linked to this context,
-     * @param name name of the mutation
+     * @param pi the {@link ProcessingInstruction} linked to this context,
+     * @param path name of the mutation
      */
-    public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final String name) {
-        if (isBlank(name)) {
-            throw new IllegalArgumentException("PI and name must be set");
+    public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Valid path must be specified");
         }
         this.pi = pi;
-        this.documentName = name;
+        this.documentPath = path;
         this.originalFragment = createFragment();
+    }
+
+    /**
+     * Returns the name of the document.
+     * 
+     * @return the document name
+     */
+    public String getDocumentName() {
+        return this.documentPath.getFileName().toString();
     }
 
     /**
@@ -53,16 +61,16 @@ public class MutationContext {
      * @param element the DOM node which is target of the mutation
      */
     /*
-     * Dies ist z.B. dann nötig, wenn das eigentlich Zielelement aus dem Dokument
-     * entfernt wird oder sich die Struktur anderweitig ändert.
+     * Dies ist z.B. dann nötig, wenn das eigentlich Zielelement aus dem Dokument entfernt wird oder sich die Struktur
+     * anderweitig ändert.
      */
     public void setSpecificTarget(final Node element) {
         this.specificTarget = element;
     }
 
     /**
-     * Calculate the line number of the MutationContext. Depending on the
-     * {@link Document} parsing, the line number might not be availabe.
+     * Calculate the line number of the MutationContext. Depending on the {@link Document} parsing, the line number might
+     * not be availabe.
      *
      * @see DocumentParser
      * @return line number or -1 if not available
@@ -87,8 +95,7 @@ public class MutationContext {
     }
 
     /**
-     * Gets the target Element. Default is the next sibling {@link Element}
-     * following this {@link ProcessingInstruction}.
+     * Gets the target Element. Default is the next sibling {@link Element} following this {@link ProcessingInstruction}.
      *
      * @return Zielknoten
      */
@@ -129,8 +136,7 @@ public class MutationContext {
     }
 
     /**
-     * Get parent Element. If the {@link ProcessingInstruction} is preceeding the
-     * Root Element, the parent will be null.
+     * Get parent Element. If the {@link ProcessingInstruction} is preceeding the Root Element, the parent will be null.
      *
      * @return parent Element
      */
@@ -142,9 +148,9 @@ public class MutationContext {
     /**
      * Creates a SHALLOW copy of this MutationContext
      *
-     * @return eine Kopie
+     * @return a clone of this
      */
     public MutationContext cloneContext() {
-        return new MutationContext(getPi(), getDocumentName());
+        return new MutationContext(getPi(), getDocumentPath());
     }
 }

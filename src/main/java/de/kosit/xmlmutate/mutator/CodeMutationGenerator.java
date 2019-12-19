@@ -5,6 +5,8 @@ import static org.apache.commons.lang3.StringUtils.trim;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,9 +67,8 @@ public class CodeMutationGenerator implements MutationGenerator {
             return resolveCodes(uri, "code");
         }
 
-        public static List<Code> resolveCodes(final URI uri, final String key) {
-            if (uri != null) {
-                final URI source = uri.getScheme() == null ? Paths.get(uri.toString()).toUri() : uri;
+        public static List<Code> resolveCodes(final URI source, final String key) {
+            if (source != null) {
 
                 final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                 try {
@@ -115,12 +116,28 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateGenericodeCodes(final MutationConfig config, final MutationContext context) {
-        final URI uri = URI.create(config.getStringProperty(PROP_GENERICODE));
+        final URI uri = resolveCodelistURI(context, config.getStringProperty(PROP_GENERICODE));
 
         final String codeKey = config.getStringProperty(PROP_CODE_KEY);
         return CodeFactory.resolveCodes(uri, defaultIfBlank(codeKey, "code")).stream()
                 .map(c -> createMutation(config, context, c.getCode())).collect(Collectors.toList());
 
+    }
+
+    private URI resolveCodelistURI(final MutationContext context, final String stringProperty) {
+        URI result = URI.create(stringProperty);
+        if (result.getScheme() == null) {
+            final Path relative2Document = context.getDocumentPath().resolve("../" + stringProperty).toAbsolutePath();
+            final Path relative2Cwd = Paths.get(stringProperty).toAbsolutePath();
+            if (Files.exists(relative2Document)) {
+                result = relative2Document.toUri();
+            } else if (Files.exists(relative2Cwd)) {
+                result = relative2Cwd.toUri();
+            } else {
+                throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, String.format("Codeliste %s not found", stringProperty));
+            }
+        }
+        return result;
     }
 
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
@@ -132,8 +149,8 @@ public class CodeMutationGenerator implements MutationGenerator {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
-        return new Mutation(context.cloneContext(),
-                Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned, mutator);
+        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned,
+                mutator);
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
@@ -71,11 +72,22 @@ public class CodeMutationGeneratorGenericodeTest {
     }
 
     @Test
-    public void testLoadRelative() {
+    public void testLoadRelativeToDocument() {
+        final MutationConfig config = createConfig();
+        config.add("genericode", "genericode/example2.xml");
+        config.add("codeKey", "Schlüssel");
+        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
+        assertThat(mutations).hasSize(4);
+    }
+
+    @Test
+    public void testLoadRelativeToCurrentWorkingDirectory() {
         final MutationConfig config = createConfig();
         config.add("genericode", "src/test/resources/genericode/example2.xml");
         config.add("codeKey", "Schlüssel");
-        final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
+        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
         assertThat(mutations).hasSize(4);
     }
 

@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
 import java.util.function.BiConsumer;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -167,15 +167,10 @@ public class MutationContextTest {
     @Test
     public void testNullInitialisation() {
         assertThrows(NullPointerException.class, () -> {
-            new MutationContext(null, RandomStringUtils.randomAlphanumeric(5));
+            new MutationContext(null, Paths.get("dummy.xml"));
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
-            new MutationContext(doc.createProcessingInstruction("test", "test"), "");
-        });
-
-        assertThrows(NullPointerException.class, () -> {
             final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
             new MutationContext(doc.createProcessingInstruction("test", "test"), null);
         });
@@ -191,7 +186,7 @@ public class MutationContextTest {
         final Element root = doc.createElement("root");
         doc.appendChild(root);
         consumer.accept(root, pi);
-        return new MutationContext(pi, RandomStringUtils.randomAlphanumeric(5));
+        return new MutationContext(pi, Paths.get("dummy.xml"));
     }
 
     private static String serialize(final Document doc) throws Exception {
