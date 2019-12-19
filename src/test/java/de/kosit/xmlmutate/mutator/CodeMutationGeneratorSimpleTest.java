@@ -41,6 +41,15 @@ public class CodeMutationGeneratorSimpleTest {
     }
 
     @Test
+    public void testWithWhitespace() {
+        final MutationConfig config = createConfig().add("values", "  test\t , \t test2 \n");
+        final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
+        assertThat(mutations).hasSize(2);
+        assertThat(mutations.get(0).getConfiguration().getProperties()).containsEntry(CodeMutator.INTERNAL_PROP_VALUE, "test");
+        assertThat(mutations.get(1).getConfiguration().getProperties()).containsEntry(CodeMutator.INTERNAL_PROP_VALUE, "test2");
+    }
+
+    @Test
     public void testEmptyConfig() {
         final MutationConfig config = createConfig().add("values", "");
         assertThrows(MutationException.class, () -> {

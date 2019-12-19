@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
 
 import java.io.IOException;
 import java.net.URI;
@@ -127,12 +128,12 @@ public class CodeMutationGenerator implements MutationGenerator {
                 .filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
     }
 
-    private Mutation createMutation(final MutationConfig config, final MutationContext context, final String s) {
+    private Mutation createMutation(final MutationConfig config, final MutationContext context, final String code) {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
-        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
+        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
         return new Mutation(context.cloneContext(),
-                Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()), cloned, mutator);
+                Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned, mutator);
     }
 
     @Override
