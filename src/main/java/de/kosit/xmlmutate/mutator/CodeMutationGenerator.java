@@ -127,7 +127,7 @@ public class CodeMutationGenerator implements MutationGenerator {
     private URI resolveCodelistURI(final MutationContext context, final String stringProperty) {
         URI result = URI.create(stringProperty);
         if (result.getScheme() == null) {
-            final Path relative2Document = context.getDocumentPath().resolve("../" + stringProperty).toAbsolutePath();
+            final Path relative2Document = context.getDocumentPath().resolve("../" + stringProperty).toAbsolutePath().normalize();
             final Path relative2Cwd = Paths.get(stringProperty).toAbsolutePath();
             if (Files.exists(relative2Document)) {
                 result = relative2Document.toUri();
