@@ -18,23 +18,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WhitespaceMutator extends BaseMutator {
 
-    private static final String MUTATOR_NAME = "whitespace";
+    static final String NAME = "whitespace";
 
-    private static final String PROP_LIST = "list";
-
-    private static final String PROP_POSITION = "position";
-
-    private static final String PROP_LENGTH = "length";
-
-    private static final String SEPARATOR = ",";
-
-    private static final int DEFAULT_LENGTH = 5;
-
-    private static final Position DEFAULT_POSITION = Position.REPLACE;
+    static final String INTERNAL_PROP_VALUE = WhitespaceMutator.class.getSimpleName() + ".whitespace";
 
     @Override
     public List<String> getNames() {
-        return Collections.singletonList(MUTATOR_NAME);
+        return Collections.singletonList(NAME);
     }
 
     @Override
@@ -47,91 +37,12 @@ public class WhitespaceMutator extends BaseMutator {
         if (StringUtils.isBlank(target.getTextContent())) {
             throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Element content is empty");
         }
-        final String content = createMutatedContent(context.getTarget().getTextContent(), config);
-        target.setTextContent(content);
+        target.setTextContent(config.getProperties().get(INTERNAL_PROP_VALUE).toString());
     }
 
-    private String createMutatedContent(final String contentToChange, final MutationConfig config) {
-        final Position position = determinePosition(config);
-        final int length = determineLength(config);
-        final List<XmlWhitespaceCharacter> charactersToUse = determineCharacters(config);
-        final String whiteSpaceSequence = createWhitespaceSequence(length, charactersToUse);
-        return getNewTextContent(position, contentToChange, whiteSpaceSequence);
-    }
-
-
-    private Position determinePosition(MutationConfig config) {
-        Position position = DEFAULT_POSITION;
-        if (config.getProperties().get(PROP_POSITION) != null) {
-            preCheckProp(config, PROP_POSITION);
-            position = Position.fromString(config.resolveList(PROP_POSITION).get(0).toString().toUpperCase());
-        }
-        return position;
-    }
-
-    private int determineLength(MutationConfig config) {
-        int length = DEFAULT_LENGTH;
-        if (config.getProperties().get(PROP_LENGTH) != null) {
-            preCheckProp(config, PROP_LENGTH);
-            final String number = config.resolveList(PROP_LENGTH).get(0).toString();
-            try {
-                length = Integer.parseInt(number);
-            } catch (final NumberFormatException e) {
-                throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Length parameter value is not an integer");
-            }
-        }
-        return length;
-    }
-
-    private List<XmlWhitespaceCharacter> determineCharacters(MutationConfig config) {
-        final List<XmlWhitespaceCharacter> charactersToUse = new ArrayList<>();
-        if (config.getProperties().get(PROP_LIST) != null) {
-            charactersToUse.addAll(config.resolveList(PROP_LIST).stream().flatMap(e -> Arrays.stream(e.toString().split(SEPARATOR)))
-                    .filter(StringUtils::isNotEmpty)
-                    .map(String::trim)
-                    .map(t -> XmlWhitespaceCharacter.fromString(t.toUpperCase())).collect(Collectors.toList()));
-        }
-        if (charactersToUse.isEmpty()) {
-            charactersToUse.addAll(Arrays.asList(XmlWhitespaceCharacter.values()));
-        }
-        return charactersToUse;
-    }
-
-    private void preCheckProp(final MutationConfig config, final String property) {
-        // length and position parameter can only be declared once and have only one value
-        final List<Object> objects = config.resolveList(property);
-        if (objects.size() > 1) {
-            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Only 1 " + property.toLowerCase() + " parameter declaration allowed");
-        } else if (objects.toString().split(SEPARATOR).length > 1) {
-            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Only 1 " + property.toLowerCase() + " parameter value allowed");
-        }
-    }
-
-    private String getNewTextContent(final Position position, final String contentToChange, final String whiteSpaceSequence) {
-        switch (position) {
-            case PREFIX:
-                // Size is total length of final string
-                return StringUtils.leftPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
-            case SUFFIX:
-                return StringUtils.rightPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
-            case REPLACE:
-                return whiteSpaceSequence;
-            default:
-                throw new IllegalArgumentException("Whitespace mutator variation unknown");
-        }
-    }
-
-
-    private String createWhitespaceSequence(final int length, final List<XmlWhitespaceCharacter> charactersToUse) {
-        final StringBuilder sequence = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            sequence.append(charactersToUse.get(new Random().nextInt(charactersToUse.size())).getValue());
-        }
-        return sequence.toString();
-    }
 
     @RequiredArgsConstructor
-    public enum XmlWhitespaceCharacter {
+    enum XmlWhitespaceCharacter {
         // Also CR is \n, since the Transformer in the serialization is transforming \r to the HEX value &#2D
         CR("\n"),
         LF("\n"),
@@ -148,7 +59,7 @@ public class WhitespaceMutator extends BaseMutator {
          * @param text - the string name of the enum
          * @return the enum
          */
-        public static XmlWhitespaceCharacter fromString(final String text) {
+        static XmlWhitespaceCharacter fromString(final String text) {
             try {
                 return XmlWhitespaceCharacter.valueOf(text);
             } catch (final IllegalArgumentException e) {
@@ -157,11 +68,11 @@ public class WhitespaceMutator extends BaseMutator {
         }
     }
 
-
-    public enum Position {
+    enum Position {
         PREFIX,
         SUFFIX,
-        REPLACE;
+        REPLACE,
+        MIX;
 
         /**
          * To get the specific enum variation from a string
@@ -169,7 +80,7 @@ public class WhitespaceMutator extends BaseMutator {
          * @param text - the string name of the enum
          * @return the enum
          */
-        public static Position fromString(final String text) {
+        static Position fromString(final String text) {
             try {
                 return Position.valueOf(text);
             } catch (final IllegalArgumentException e) {
@@ -177,6 +88,47 @@ public class WhitespaceMutator extends BaseMutator {
             }
         }
 
+        /**
+         * To get the functional enum of Position
+         *
+         * @return the prefix, suffix and replace enum
+         */
+        static List<Position> getAllPositionsButMix() {
+            return Arrays.asList(PREFIX, SUFFIX, REPLACE);
+        }
+
+        /**
+         * Creating new text content adding (or replacing) with xml whitespace characters. Each mutation with have a different whitespace sequence
+         *
+         * @param contentToChange - the old text content
+         * @param charactersToUse - the list of xml whitespace characters that should be used
+         * @param length          - the number of xml whitespace characters to use
+         * @return the new text content
+         */
+        String getNewTextContent(final String contentToChange, final List<XmlWhitespaceCharacter> charactersToUse, final int length) {
+            final String whiteSpaceSequence = createWhitespaceSequence(length, charactersToUse);
+            switch (this) {
+                case PREFIX:
+                    // Size is total length of final string
+                    return StringUtils.leftPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
+                case SUFFIX:
+                    return StringUtils.rightPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
+                case REPLACE:
+                    return whiteSpaceSequence;
+                default:
+                    throw new IllegalArgumentException("Whitespace mutator variation unknown");
+            }
+        }
+
     }
+
+    static String createWhitespaceSequence(final int length, final List<XmlWhitespaceCharacter> charactersToUse) {
+        final StringBuilder sequence = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sequence.append(charactersToUse.get(new Random().nextInt(charactersToUse.size())).getValue());
+        }
+        return sequence.toString();
+    }
+
 
 }
