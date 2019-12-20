@@ -4,8 +4,6 @@ import static de.kosit.xmlmutate.TestResource.asPath;
 import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.concurrent.Executors;
-
 import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.TestResource.TransformResource;
@@ -43,8 +41,5 @@ public class TransformationMutatorCompleteTest extends CompleteRun {
         assertThrows(IllegalArgumentException.class, () -> run(config));
     }
 
-    private RunnerResult run(final RunnerConfig config) {
-        return new MutationRunner(config, Executors.newSingleThreadExecutor()).run();
-    }
 
 }

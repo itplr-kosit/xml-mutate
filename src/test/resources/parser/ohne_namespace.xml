@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<simple-document>
+    <ohne-namespace>
+        <?xmute mutator="empty" schema-invalid ?>
+        <muss-geleert-werden>muss weg</muss-geleert-werden>
+    </ohne-namespace>
+</simple-document>

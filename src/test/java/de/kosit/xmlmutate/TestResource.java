@@ -27,7 +27,7 @@ public class TestResource {
 
         public static final URI SIMPLE = ROOT.resolve("book.xml");
 
-        public static final URI NO_SCHEMATRON = ROOT.resolve("book_no_schematron.xml");
+        public static final URI NO_SCHEMATRON = ROOT.resolve("book_without_schematron.xml");
 
         public static final URI WITH_XSLT_TRANSFORM = ROOT.resolve("with_xslt_transform.xml");
 
