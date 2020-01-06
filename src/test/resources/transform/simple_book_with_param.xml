@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<book isbn="1-861002-85-8">
+    <title>Professional Java XML Programming</title>
+    <pages>772</pages>
+    <authors>
+        <author>
+            <name>Alexander Nakhimovsky</name>
+            <country>USA</country>
+        </author>
+    </authors>
+    <content>
+        <?xmute mutator="xslt" schema-valid name="simple" param-someParameter="should_be_transferred" ?>
+        <someNodeNotImportant>
+
+        </someNodeNotImportant>
+    </content>
+</book>

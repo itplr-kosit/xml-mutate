@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.assertions;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.runner.RunnerResult;
@@ -21,6 +22,17 @@ public class Assertions {
      */
     public static NodeAssert assertThat(final Node actual) {
         return new NodeAssert(actual);
+    }
+
+    /**
+     * Assertion für {@link Node}, inklusive {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} und
+     * {@link org.w3c.dom.Document}.
+     *
+     * @param actual der Knoten der getestet werden soll
+     * @return {@link NodeAssert}
+     */
+    public static NodeListAssert assertThat(final NodeList actual) {
+        return new NodeListAssert(actual);
     }
 
     /**

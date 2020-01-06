@@ -45,6 +45,8 @@ public class TestResource {
         public static final URI INVALD_TRANSFORM = ROOT.resolve("invalid.xsl");
 
         public static final URI BOOK_XML = ROOT.resolve("simple_book.xml");
+
+        public static final URI BOOK_XML_WITH_PARAM = ROOT.resolve("simple_book_with_param.xml");
     }
 
     public static final URI TEST_ROOT = Paths.get("src/test/resources").toUri();

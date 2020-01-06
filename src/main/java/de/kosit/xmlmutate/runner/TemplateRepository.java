@@ -91,6 +91,13 @@ public class TemplateRepository {
     }
 
     /**
+     * Removes previously registered templates. Mainly for testing purposes.
+     */
+    public void clear() {
+        this.templates.clear();
+    }
+
+    /**
      * Register a new template and try to compile it for further usage.
      *
      * @param name the name of the template

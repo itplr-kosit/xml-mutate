@@ -183,4 +183,11 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         return this;
     }
 
+    public NodeAssert hasChildren() {
+        isNotNull();
+        if (this.actual.getChildNodes().getLength() == 0) {
+            failWithMessage("Node should have children, but does not.");
+        }
+        return this;
+    }
 }

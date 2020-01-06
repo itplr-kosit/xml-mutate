@@ -5,6 +5,8 @@ import static de.kosit.xmlmutate.TestResource.asPath;
 import java.net.URI;
 import java.util.concurrent.Executors;
 
+import org.junit.jupiter.api.BeforeEach;
+
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.TestResource.BookResources;
 
@@ -14,6 +16,11 @@ import de.kosit.xmlmutate.TestResource.BookResources;
  * @author Andreas Penski
  */
 public abstract class CompleteRun {
+
+    @BeforeEach
+    public void cleanup() {
+        Services.getTemplateRepository().clear();
+    }
 
     protected RunnerResult run(final RunnerConfig config) {
         return new MutationRunner(config, Executors.newSingleThreadExecutor()).run();
