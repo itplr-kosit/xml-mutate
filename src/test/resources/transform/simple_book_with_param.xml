@@ -9,7 +9,7 @@
         </author>
     </authors>
     <content>
-        <?xmute mutator="xslt" schema-valid name="simple" param-someParameter="should_be_transferred" ?>
+        <?xmute mutator="xslt" schema-valid template="simple" param-someParameter="should_be_transferred" ?>
         <someNodeNotImportant>
 
         </someNodeNotImportant>

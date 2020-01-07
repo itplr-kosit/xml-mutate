@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Templates;
@@ -18,7 +21,11 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.collections4.map.HashedMap;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import de.kosit.xmlmutate.mutation.NamedTemplate;
 
 /**
  * Repository for caching an XSLT Template for reuse.
@@ -28,9 +35,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TemplateRepository {
 
+    @RequiredArgsConstructor
+    @Getter
+    private class TemplateAndPath {
+
+        private final Templates template;
+
+        private final URI path;
+    }
+
     private final TransformerFactory factory;
 
-    private final Map<String, Templates> templates = new HashedMap<>();
+    private final Map<String, TemplateAndPath> templates = new HashedMap<>();
 
     /**
      * Constructor.
@@ -51,7 +67,7 @@ public class TemplateRepository {
      * @return true if existing
      */
     public boolean exists(final String name) {
-        return getTemplate(name) != null;
+        return this.templates.get(name) != null;
     }
 
     /**
@@ -61,7 +77,7 @@ public class TemplateRepository {
      * @return the compiled template or null if it is not existing
      */
     public Templates getTemplate(final String name) {
-        return this.templates.get(name);
+        return exists(name) ? this.templates.get(name).getTemplate() : null;
     }
 
     /**
@@ -75,8 +91,8 @@ public class TemplateRepository {
         try ( final InputStream in = uri.openStream() ) {
             final Templates t = this.factory.newTemplates(new StreamSource(in));
 
-            this.templates.put(name, t);
-        } catch (final IOException | TransformerConfigurationException e) {
+            this.templates.put(name, new TemplateAndPath(t, uri.toURI()));
+        } catch (final IOException | TransformerConfigurationException | URISyntaxException e) {
             throw new IllegalArgumentException(String.format("Can not compile xslt template %s from %s", name, uri.toString()));
         }
     }
@@ -122,4 +138,33 @@ public class TemplateRepository {
         registerTemplate(name, path.toUri());
     }
 
+    /**
+     * Checks for existing template.
+     * 
+     * @param name the name/uri of the template
+     * @return true when existing.
+     */
+    public boolean contains(final String name) {
+        return exists(name);
+    }
+
+    /**
+     * Checks for not existing template.
+     * 
+     * @param name the name/uri of the template
+     * @return true when NOT existing.
+     */
+    public boolean doesNotContain(final String name) {
+        return !contains(name);
+    }
+
+    /**
+     * Returns a list of registered and compiled Templates (just information, not the {@link Templates} themselves)
+     * 
+     * @return List of templates.
+     */
+    public List<NamedTemplate> getTemplates() {
+        return this.templates.entrySet().stream().map(e -> new NamedTemplate(e.getKey(), e.getValue().getPath()))
+                .collect(Collectors.toList());
+    }
 }

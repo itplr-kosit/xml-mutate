@@ -160,7 +160,7 @@ public class XmlMutate implements Callable<Integer> {
     private List<NamedTemplate> prepareTransformations() {
         return this.transformations.entrySet().stream().map(e -> {
             if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
-                return new NamedTemplate(e.getKey(), e.getValue());
+                return new NamedTemplate(e.getKey(), e.getValue().toUri());
             }
             throw new IllegalArgumentException(
                     String.format("Provided template '%s' does not exist or is not readable", e.getValue()));

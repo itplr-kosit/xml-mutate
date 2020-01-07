@@ -135,6 +135,6 @@ public class RunnerConfig {
         if (this.templates == null) {
             this.templates = new ArrayList<>();
         }
-        this.templates.add(new NamedTemplate(name, transform));
+        this.templates.add(new NamedTemplate(name, transform.toUri()));
     }
 }

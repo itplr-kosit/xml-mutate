@@ -43,6 +43,10 @@ import de.kosit.xmlmutate.TestResource.TransformResource;
  */
 public class TransformationMutatorCompleteTest extends CompleteRun {
 
+    /**
+     * An implementation for traversing nodes using xpath and other access functionality mainly for testing documents
+     * 
+     */
     @RequiredArgsConstructor
     @Getter
     private static class NodeWithContext {

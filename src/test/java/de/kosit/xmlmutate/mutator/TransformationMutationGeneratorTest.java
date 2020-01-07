@@ -7,14 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.kosit.xmlmutate.TestResource.TransformResource;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.TemplateRepository;
 
@@ -41,7 +44,7 @@ public class TransformationMutationGeneratorTest {
 
     @Test
     public void testSimpleGenerate() {
-        final MutationConfig config = createConfig().add("name", SIMPLE_NAME);
+        final MutationConfig config = createConfig().add("template", SIMPLE_NAME);
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
         assertThat(mutations).hasSize(1);
@@ -54,7 +57,7 @@ public class TransformationMutationGeneratorTest {
 
     @Test
     public void testParameters() {
-        final MutationConfig config = createConfig().add("name", SIMPLE_NAME).add("param-test", "value").add("param-test2", "value");
+        final MutationConfig config = createConfig().add("template", SIMPLE_NAME).add("param-test", "value").add("param-test2", "value");
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
         assertThat(mutations).hasSize(1);
@@ -63,6 +66,26 @@ public class TransformationMutationGeneratorTest {
         final Map<String, String> parameters = actual.getConfiguration().getProperty(TransformationMutator.PARAMETER_PARAM);
         assertThat(parameters).isNotNull();
         assertThat(parameters).hasSize(2);
+    }
+
+    @Test
+    public void testRelativeToDocumentTest() {
+        final MutationConfig config = createConfig().add("template", "simple.xsl");
+        final MutationContext context = createContext(d -> {
+        }, Paths.get(TransformResource.BOOK_XML));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
+        assertThat(mutations).hasSize(1);
+        assertThat(this.repository.getTemplates()).hasSize(1);
+    }
+
+    @Test
+    public void testRelativeToCwdTest() {
+        final MutationConfig config = createConfig().add("template", "src/test/resources/transform/simple.xsl");
+        final MutationContext context = createContext(d -> {
+        }, Paths.get(TransformResource.BOOK_XML));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
+        assertThat(mutations).hasSize(1);
+        assertThat(this.repository.getTemplates()).hasSize(1);
     }
 
     @Test
