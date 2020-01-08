@@ -4,6 +4,21 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.ErrorCode;
+import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.Services;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 import lombok.Getter;
@@ -24,11 +39,21 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.trim;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 /**
@@ -56,9 +81,8 @@ public class CodeMutationGenerator implements MutationGenerator {
             return resolveCodes(uri, "code");
         }
 
-        public static List<Code> resolveCodes(final URI uri, final String key) {
-            if (uri != null) {
-                final URI source = uri.getScheme() == null ? Paths.get(uri.toString()).toUri() : uri;
+        public static List<Code> resolveCodes(final URI source, final String key) {
+            if (source != null) {
 
                 final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                 try {
@@ -88,7 +112,9 @@ public class CodeMutationGenerator implements MutationGenerator {
 
     private static final String PROP_GENERICODE = "genericode";
 
-    private static final String SEPERATOR = ",";
+    private static final String DEFAULT_SEPARATOR = ",";
+
+    private static final String SEPARATOR = "separator";
 
     @Override
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
@@ -106,7 +132,7 @@ public class CodeMutationGenerator implements MutationGenerator {
     }
 
     private Collection<Mutation> generateGenericodeCodes(final MutationConfig config, final MutationContext context) {
-        final URI uri = URI.create(config.getStringProperty(PROP_GENERICODE));
+        final URI uri = resolveCodelistURI(context, config.getStringProperty(PROP_GENERICODE));
 
         final String codeKey = config.getStringProperty(PROP_CODE_KEY);
         return CodeFactory.resolveCodes(uri, defaultIfBlank(codeKey, "code")).stream()
@@ -114,17 +140,34 @@ public class CodeMutationGenerator implements MutationGenerator {
 
     }
 
+    private URI resolveCodelistURI(final MutationContext context, final String stringProperty) {
+        URI result = URI.create(stringProperty);
+        if (result.getScheme() == null) {
+            final Path relative2Document = context.getDocumentPath().resolve("../" + stringProperty).toAbsolutePath().normalize();
+            final Path relative2Cwd = Paths.get(stringProperty).toAbsolutePath();
+            if (Files.exists(relative2Document)) {
+                result = relative2Document.toUri();
+            } else if (Files.exists(relative2Cwd)) {
+                result = relative2Cwd.toUri();
+            } else {
+                throw new MutationException(ErrorCode.CONFIGURATION_ERRROR, String.format("Codeliste %s not found", stringProperty));
+            }
+        }
+        return result;
+    }
+
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
-        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(SEPERATOR))
+        final String separator = config.getProperties().get(SEPARATOR) != null ? config.getProperties().get(SEPARATOR).toString() : DEFAULT_SEPARATOR;
+        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(separator))
                 .filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
     }
 
-    private Mutation createMutation(final MutationConfig config, final MutationContext context, final String s) {
+    private Mutation createMutation(final MutationConfig config, final MutationContext context, final String code) {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
-        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, s);
-        return new Mutation(context.cloneContext(),
-                Services.getNameGenerator().generateName(context.getDocumentName(), s.trim()), cloned, mutator);
+        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
+        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned,
+                mutator);
     }
 
     @Override

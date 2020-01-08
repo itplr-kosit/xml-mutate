@@ -1,8 +1,8 @@
 package de.kosit.xmlmutate.mutator;
 
-import static de.kosit.xmlmutate.Assertions.assertThat;
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

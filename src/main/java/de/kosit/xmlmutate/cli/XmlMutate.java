@@ -1,29 +1,42 @@
 package de.kosit.xmlmutate.cli;
 
-import de.kosit.xmlmutate.mutation.NamedTemplate;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.*;
-import de.kosit.xmlmutate.schematron.SchematronCompiler;
-import lombok.extern.slf4j.Slf4j;
-import org.fusesource.jansi.AnsiConsole;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParseResult;
-
-import javax.xml.validation.Schema;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.xml.validation.Schema;
+
+import org.fusesource.jansi.AnsiConsole;
+
+import lombok.extern.slf4j.Slf4j;
+
+import de.kosit.xmlmutate.mutation.NamedTemplate;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.RunnerResult;
+import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.schematron.SchematronCompiler;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParseResult;
 
 /**
  * Base class for command line interface.
@@ -41,12 +54,12 @@ public class XmlMutate implements Callable<Integer> {
     private Path target;
 
     @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation", required = true)
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
     @Option(names = { "-s",
             "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
-    private Map<String, Path> schematrons = new HashMap<String, Path>();
+    private final Map<String, Path> schematrons = new HashMap<String, Path>();
 
     @Option(names = { "-m",
             "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
@@ -54,7 +67,7 @@ public class XmlMutate implements Callable<Integer> {
 
     @Option(names = { "-t",
             "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
-    private Map<String, Path> transformations = new HashMap<String, Path>();
+    private final Map<String, Path> transformations = new HashMap<String, Path>();
 
     @Option(names = { "-ff",
             "--fail-fast" },  description = "The run failure control mode for fail fast")
@@ -100,9 +113,9 @@ public class XmlMutate implements Callable<Integer> {
     public Integer call() throws Exception {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
-        runner.run();
+        final RunnerResult result = runner.run();
         executor.shutdown();
-        return runner.isErrorPresent() ? 1 : 0;
+        return result.isErrorPresent() ? 1 : 0;
     }
 
     /**
@@ -147,7 +160,7 @@ public class XmlMutate implements Callable<Integer> {
     private List<NamedTemplate> prepareTransformations() {
         return this.transformations.entrySet().stream().map(e -> {
             if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
-                return new NamedTemplate(e.getKey(), e.getValue());
+                return new NamedTemplate(e.getKey(), e.getValue().toUri());
             }
             throw new IllegalArgumentException(
                     String.format("Provided template '%s' does not exist or is not readable", e.getValue()));
@@ -164,8 +177,8 @@ public class XmlMutate implements Callable<Integer> {
     private List<Schematron> prepareSchematron() {
         final SchematronCompiler compiler = new SchematronCompiler();
         final List<Schematron> schematronList = new ArrayList<>();
-        for (Map.Entry<String,Path> entry : this.schematrons.entrySet()) {
-            final URI compiledSchematron = compiler.compile(entry.getValue().toUri());
+        for (final Map.Entry<String, Path> entry : this.schematrons.entrySet()) {
+            final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
             schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
         }
         return schematronList;

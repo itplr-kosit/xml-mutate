@@ -11,6 +11,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Document;
+
 import com.google.common.base.Charsets;
 
 import lombok.RequiredArgsConstructor;
@@ -30,12 +32,16 @@ public class SerializeAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
-        try {
             final Path target = this.targetFolder.resolve(mutation.getResultDocument());
-            Files.createDirectories(target.getParent());
+        serialize(mutation.getContext().getDocument(), target);
+    }
+
+    public static void serialize(final Document document, final Path target) {
+        try {
+            Files.createDirectories(target.toAbsolutePath().getParent());
             final OutputStream out = Files.newOutputStream(target);
             final Transformer transformer = ObjectFactory.createTransformer(true);
-            transformer.transform(new DOMSource(mutation.getContext().getDocument()),
+            transformer.transform(new DOMSource(document),
                     new StreamResult(new OutputStreamWriter(out, Charsets.UTF_8)));
             out.close();
         } catch (final TransformerException | IOException e) {

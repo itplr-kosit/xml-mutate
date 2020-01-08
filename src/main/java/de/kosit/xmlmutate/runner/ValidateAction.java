@@ -1,5 +1,24 @@
 package de.kosit.xmlmutate.runner;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.validation.Schema;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.oclc.purl.dsdl.svrl.FailedAssert;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
@@ -9,22 +28,6 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.validation.Schema;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Validator validating against XSD and Schematron.
@@ -48,7 +51,7 @@ public class ValidateAction implements RunAction {
         this.log.info("validating {}", mutation.getIdentifier());
         schemaValidation(mutation);
         schematronValidation(mutation);
-        if(!mutation.getState().equals(State.ERROR)) {
+        if (!mutation.getState().equals(State.ERROR)) {
             mutation.setState(State.VALIDATED);
         }
     }
@@ -58,8 +61,8 @@ public class ValidateAction implements RunAction {
         long failedAssertCount = 0;
         boolean unknownRulenameExist = false;
         boolean failedRulesAreListed = false;
-        final List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations()
-                .stream().map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
+        final List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream()
+                .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
 
         for (final Schematron schematron : getSchematronFiles()) {
 
@@ -69,13 +72,14 @@ public class ValidateAction implements RunAction {
                         .anyMatch(n -> !schematron.hasRule(n.getRuleName()));
             }
 
-            this.log.debug("Using schematron={}",schematron.getName());
+            this.log.debug("Using schematron={}", schematron.getName());
 
             try {
-                final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
-                this.log.debug("result={}",out.getText());
+                final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(),
+                        mutation.getContext().getDocument());
+                this.log.debug("result={}", out.getText());
                 failedAssertCount += out.getFailedAsserts().size();
-                this.log.debug("failed asserts={}",failedAssertCount);
+                this.log.debug("failed asserts={}", failedAssertCount);
                 mutation.getResult().addSchematronResult(schematron, out);
 
                 // Check if failed rules were also declared
@@ -83,12 +87,13 @@ public class ValidateAction implements RunAction {
                     failedRulesAreListed = checkPresenceOfFailedRules(out, ruleNamesDeclared);
                 }
                 // Set validation state
-                final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ?
-                        ValidationState.INVALID : ValidationState.VALID;
+                final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID
+                        : ValidationState.VALID;
                 mutation.getResult().setSchematronValidationState(schematronValidationState);
             } catch (final CommonException e) {
-                this.log.debug("Schematron validation runtime error={}",e.getMessage());
-                mutation.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.SCHEMATRON_EVALUATION_ERROR, e.getMessage()));
+                this.log.debug("Schematron validation runtime error={}", e.getMessage());
+                mutation.getMutationErrorContainer()
+                        .addGlobalErrorMessage(new MutationException(ErrorCode.SCHEMATRON_EVALUATION_ERROR, e.getMessage()));
                 // Set validation state
                 mutation.getResult().setSchematronValidationState(ValidationState.UNPROCESSED);
                 mutation.setState(State.ERROR);
@@ -99,8 +104,7 @@ public class ValidateAction implements RunAction {
     }
 
     private boolean checkPresenceOfFailedRules(final SchematronOutput out, final List<String> ruleNamesDeclared) {
-        final List<String> ruleNamesFailed = out.getFailedAsserts()
-                .stream().map(FailedAssert::getId).collect(Collectors.toList());
+        final List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
         return CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed);
     }
 
@@ -109,16 +113,19 @@ public class ValidateAction implements RunAction {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false)
                         .parse(this.targetFolder.resolve(mutation.getResultDocument()).toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService()
-                        .validate(this.schema, document);
+                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema, document);
                 mutation.addSchemaErrorMessages(result.getErrors());
-                log.debug("Schema valid={}", result.isValid());
+                if (result.isInvalid()) {
+                    mutation.setState(State.ERROR);
+                    log.debug("Schema valid={}", result.isValid());
+                }
                 final ValidationState schemaValidationState = result.isValid() ? ValidationState.VALID : ValidationState.INVALID;
                 mutation.getResult().setSchemaValidationState(schemaValidationState);
-                if(mutation.getConfiguration().getSchemaValidationExpectation() != null) {
-                    mutation.getResult().setSchemaValidationAsExpected(mutation.getConfiguration().getSchemaValidationExpectation().meetsValidationState(schemaValidationState));
+                if (mutation.getConfiguration().getSchemaValidationExpectation() != null) {
+                    mutation.getResult().setSchemaValidationAsExpected(
+                            mutation.getConfiguration().getSchemaValidationExpectation().meetsValidationState(schemaValidationState));
                 }
-            } catch (final SAXException  e) {
+            } catch (final SAXException e) {
                 mutation.setState(State.ERROR);
                 mutation.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.INVALID_MUTATION_PRODUCED));
             } catch (final IOException e) {

@@ -1,6 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.nio.file.Path;
+import java.net.URI;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +16,5 @@ public class NamedTemplate {
 
     private final String name;
 
-    private final Path path;
+    private final URI path;
 }

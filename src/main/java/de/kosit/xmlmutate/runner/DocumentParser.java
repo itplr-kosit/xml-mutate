@@ -7,6 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +27,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
@@ -35,6 +42,51 @@ import de.init.kosit.commons.ObjectFactory;
  */
 @Slf4j
 public class DocumentParser {
+
+    private static class NamespaceMapping {
+
+        @AllArgsConstructor
+        @Getter
+        @RequiredArgsConstructor
+        private static class NS {
+
+            private final String namespace;
+
+            private final String prefix;
+
+            @Setter
+            private boolean declared;
+        }
+
+        private final Map<String, NS> namespaces = new HashMap<>();
+
+        public void register(final String prefix, final String uri) {
+            this.namespaces.put(uri, new NS(uri, prefix));
+        }
+
+        public boolean isAvailable(final String namespace) {
+            return this.namespaces.containsKey(namespace);
+        }
+
+        public boolean isDeclared(final String namespace) {
+            return isAvailable(namespace) && this.namespaces.get(namespace).isDeclared();
+        }
+
+        public void remove(final String prefix) {
+        }
+
+        public void setDeclared(final String uri) {
+            if (isAvailable(uri) && !isDeclared(uri)) {
+                this.namespaces.get(uri).setDeclared(true);
+            } else {
+                // throw new IllegalStateException("Can not be set declared");
+            }
+        }
+
+        public List<NS> getUndeclared() {
+            return this.namespaces.values().stream().filter(ns -> !ns.isDeclared()).collect(Collectors.toList());
+        }
+    }
 
     /**
      * Handler, der die Zeilennummer für die weitere Verarbeitung ermittelt.
@@ -48,6 +100,8 @@ public class DocumentParser {
 
         final StringBuilder textBuffer = new StringBuilder();
 
+        private final NamespaceMapping namespaces = new NamespaceMapping();
+
         private Locator locator;
 
         @Override
@@ -57,7 +111,22 @@ public class DocumentParser {
 
         @Override
         public void comment(final char[] ch, final int start, final int length) {
-            append(this.doc.createComment(new String(ch)));
+            append(this.doc.createComment(new String(ch, start, length)));
+        }
+
+        @Override
+        public void startPrefixMapping(final String prefix, final String uri) throws SAXException {
+            this.namespaces.register(prefix, uri);
+        }
+
+        @Override
+        public void endPrefixMapping(final String prefix) throws SAXException {
+            final Element current = this.elementStack.peek() != null ? this.elementStack.peek() : this.doc.getDocumentElement();
+            this.namespaces.getUndeclared().forEach(ns -> {
+                current.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + ns.getPrefix(), ns.getNamespace());
+                ns.setDeclared(true);
+            });
+            this.namespaces.remove(prefix);
         }
 
         @Override
@@ -79,9 +148,10 @@ public class DocumentParser {
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             addTextIfNeeded();
-            final Element el = this.doc.createElement(qName);
+            final Element el;
+            el = this.doc.createElementNS(uri, qName);
             for (int i = 0; i < attributes.getLength(); i++) {
-                el.setAttribute(attributes.getQName(i), attributes.getValue(i));
+                el.setAttributeNS(attributes.getURI(i), attributes.getQName(i), attributes.getValue(i));
             }
             el.setUserData(LINE_NUMBER_KEY_NAME, String.valueOf(this.locator.getLineNumber()), null);
             this.elementStack.push(el);
@@ -145,9 +215,9 @@ public class DocumentParser {
         final PositionalHandler handler = new PositionalHandler(d);
         final XMLReader xmlReader = saxParser.getXMLReader();
         xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
-        // saxParser.parse(input, handler);
-        // return d;
-        return builder.parse(input);
+        saxParser.parse(input, handler);
+        return d;
+
     }
 
     public static Document readDocument(final String xml) {

@@ -1,24 +1,23 @@
 package de.kosit.xmlmutate.mutation;
 
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 
 public class MutationErrorContainer {
 
     // Map because each schematron rule name will have a respective error message
-    private Map<String, Exception> schematronErrorMessages = new HashMap<>();
+    private final Map<String, Exception> schematronErrorMessages = new HashMap<>();
 
-    private List<Exception> schemaErrorMessages = new ArrayList<>();
+    private final List<Exception> schemaErrorMessages = new ArrayList<>();
 
     // Getter needed for tests
     @Getter
-    private List<Exception> globalErrorMessages = new ArrayList<>();
+    private final List<Exception> globalErrorMessages = new ArrayList<>();
 
 
     public void addSchematronErrorMessage(final String ruleName, final Exception exception) {
@@ -50,12 +49,24 @@ public class MutationErrorContainer {
     }
 
     /**
+     * To create a common error message list for the report generator in the order needed
+     *
+     */
+    public List<String> getAllErrorMessages() {
+        final List<String> allErrorsList = new ArrayList<>();
+        allErrorsList.addAll(this.schematronErrorMessages.values().stream().map(Exception::getMessage).collect(Collectors.toList()));
+        allErrorsList.addAll(this.globalErrorMessages.stream().map(Throwable::getMessage).collect(Collectors.toList()));
+        allErrorsList.addAll(this.schemaErrorMessages.stream().map(Throwable::getMessage).collect(Collectors.toList()));
+        return allErrorsList;
+    }
+
+    /**
      * To know if the mutation has any kind of error messages
      *
      * @return true or false
      */
     public boolean hasAnyErrors() {
-        return !globalErrorMessages.isEmpty() || !schemaErrorMessages.isEmpty() || !schematronErrorMessages.isEmpty();
+        return !this.globalErrorMessages.isEmpty() || !this.schemaErrorMessages.isEmpty() || !this.schematronErrorMessages.isEmpty();
     }
 
 }

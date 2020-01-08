@@ -1,4 +1,4 @@
-package de.kosit.xmlmutate;
+package de.kosit.xmlmutate.assertions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -179,6 +179,14 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         isNotNull();
         if (!this.actual.getTextContent().contains(text)) {
             failWithMessage("Node should contain text '%s', but does not.", text);
+        }
+        return this;
+    }
+
+    public NodeAssert hasChildren() {
+        isNotNull();
+        if (this.actual.getChildNodes().getLength() == 0) {
+            failWithMessage("Node should have children, but does not.");
         }
         return this;
     }
