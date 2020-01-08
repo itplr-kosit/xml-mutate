@@ -129,10 +129,7 @@ public class WhitespaceMutationGenerator implements MutationGenerator {
 
     @RequiredArgsConstructor
     enum XmlWhitespaceCharacter {
-        // Also CR is \n, since the Transformer in the serialization is transforming \r to the HEX value &#2D
-        CR("\n"),
-        LF("\n"),
-        CRLF("\n"),
+        NEWLINE("\n"),
         TAB("\t"),
         SPACE(" ");
 

@@ -31,7 +31,7 @@ public class WhitespaceMutationGeneratorTest {
 
     private static final String SPACE = " ";
     private static final String TAB = "\t";
-    private static final String LINEBREAK = "\n";
+    private static final String NEWLINE = "\n";
 
     private final WhitespaceMutationGenerator generator = new WhitespaceMutationGenerator();
 
@@ -124,19 +124,19 @@ public class WhitespaceMutationGeneratorTest {
     @Test
     @DisplayName("Test for the whitespace mutator with list parameter provided")
     public void testWhitespaceRepeatedListDeclaration() {
-        final MutationConfig config = createConfig().add("list", "space").add("list", "tab");
+        final MutationConfig config = createConfig().add("list", "newline").add("list", "tab");
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext(target -> target.setTextContent(TESTCONTENT)));
         assertThat(mutations).hasSize(3);
         assertThat(mutations.stream().filter(Objects::isNull).count()).isZero();
         assertThat(mutations.stream().filter(m -> m.getConfiguration().getProperties().get(INTERNAL_PROP_VALUE) != null).count()).isNotZero();
         assertThat(mutationsContainExactly(mutations, WhitespaceMutator.Position.MIX)).isTrue();
-        assertThat(mutations.stream().filter(m -> mutatedContentContainsOnly(m.getConfiguration().getProperties().get(INTERNAL_PROP_VALUE).toString(), SPACE, TAB)).count()).isEqualTo(3);
+        assertThat(mutations.stream().filter(m -> mutatedContentContainsOnly(m.getConfiguration().getProperties().get(INTERNAL_PROP_VALUE).toString(), NEWLINE, TAB)).count()).isEqualTo(3);
     }
 
     private boolean mutatedContentContainsOnly(final String textContent, final String ... characters) {
         final String addedWhitespaces = textContent.replace(TESTCONTENT, "");
         final List<String> onlyCharacters = Arrays.asList(characters);
-        final List<String> allCharacters = Arrays.asList(SPACE, TAB, LINEBREAK);
+        final List<String> allCharacters = Arrays.asList(SPACE, TAB, NEWLINE);
         final List<String> forbiddenCharacters = new ArrayList<>(allCharacters);
         forbiddenCharacters.removeAll(onlyCharacters);
         return forbiddenCharacters.stream().noneMatch(addedWhitespaces::contains);
