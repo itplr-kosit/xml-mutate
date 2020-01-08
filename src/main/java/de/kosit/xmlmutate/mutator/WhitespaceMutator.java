@@ -3,14 +3,13 @@ package de.kosit.xmlmutate.mutator;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Victor del Campo
@@ -41,38 +40,33 @@ public class WhitespaceMutator extends BaseMutator {
     }
 
 
-    @RequiredArgsConstructor
-    enum XmlWhitespaceCharacter {
-        // Also CR is \n, since the Transformer in the serialization is transforming \r to the HEX value &#2D
-        CR("\n"),
-        LF("\n"),
-        CRLF("\n"),
-        TAB("\t"),
-        SPACE(" ");
-
-        @Getter
-        private final String value;
-
-        /**
-         * To get the specific enum variation from a string
-         *
-         * @param text - the string name of the enum
-         * @return the enum
-         */
-        static XmlWhitespaceCharacter fromString(final String text) {
-            try {
-                return XmlWhitespaceCharacter.valueOf(text);
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Whitespace mutator list character unknown: " + text.toLowerCase());
-            }
-        }
-    }
-
     enum Position {
-        PREFIX,
-        SUFFIX,
-        REPLACE,
-        MIX;
+
+        PREFIX {
+            // Size is total length of final string
+            @Override
+            public String randomAddCharacters(final String contentToChange, final String whiteSpaceSequence) {
+                return StringUtils.leftPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
+            }
+        },
+        SUFFIX {
+            @Override
+            public String randomAddCharacters(final String contentToChange, final String whiteSpaceSequence) {
+                return StringUtils.rightPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
+            }
+        },
+        REPLACE {
+            @Override
+            public String randomAddCharacters(final String contentToChange, final String whiteSpaceSequence) {
+                return whiteSpaceSequence;
+            }
+        },
+        MIX {
+            @Override
+            public String randomAddCharacters(final String contentToChange, final String whiteSpaceSequence) {
+                return null;
+            }
+        };
 
         /**
          * To get the specific enum variation from a string
@@ -97,37 +91,10 @@ public class WhitespaceMutator extends BaseMutator {
             return Arrays.asList(PREFIX, SUFFIX, REPLACE);
         }
 
-        /**
-         * Creating new text content adding (or replacing) with xml whitespace characters. Each mutation with have a different whitespace sequence
-         *
-         * @param contentToChange - the old text content
-         * @param charactersToUse - the list of xml whitespace characters that should be used
-         * @param length          - the number of xml whitespace characters to use
-         * @return the new text content
-         */
-        String getNewTextContent(final String contentToChange, final List<XmlWhitespaceCharacter> charactersToUse, final int length) {
-            final String whiteSpaceSequence = createWhitespaceSequence(length, charactersToUse);
-            switch (this) {
-                case PREFIX:
-                    // Size is total length of final string
-                    return StringUtils.leftPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
-                case SUFFIX:
-                    return StringUtils.rightPad(contentToChange, contentToChange.length() + whiteSpaceSequence.length(), whiteSpaceSequence);
-                case REPLACE:
-                    return whiteSpaceSequence;
-                default:
-                    throw new IllegalArgumentException("Whitespace mutator variation unknown");
-            }
-        }
 
-    }
+        public abstract String randomAddCharacters(final String contentToChange, final String whiteSpaceSequence);
 
-    static String createWhitespaceSequence(final int length, final List<XmlWhitespaceCharacter> charactersToUse) {
-        final StringBuilder sequence = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            sequence.append(charactersToUse.get(new Random().nextInt(charactersToUse.size())).getValue());
-        }
-        return sequence.toString();
+
     }
 
 

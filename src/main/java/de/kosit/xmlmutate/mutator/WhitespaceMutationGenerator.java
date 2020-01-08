@@ -6,13 +6,12 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -50,10 +49,11 @@ public class WhitespaceMutationGenerator implements MutationGenerator {
 
         final List<WhitespaceMutator.Position> positions = determinePositions(config);
         final int length = determineLength(config);
-        final List<WhitespaceMutator.XmlWhitespaceCharacter> charactersToUse = determineWhitespaceCharacters(config);
+        final List<XmlWhitespaceCharacter> charactersToUse = determineWhitespaceCharacters(config);
 
-        final List<Mutation> list = positions.stream().map(e ->
-                createMutation(config, context, e, e.getNewTextContent(context.getTarget().getTextContent(), charactersToUse, length)))
+        final String whiteSpaceSequence = createWhitespaceSequence(length, charactersToUse);
+
+        final List<Mutation> list = positions.stream().map(p -> createMutation(config, context, p, whiteSpaceSequence))
                 .collect(Collectors.toList());
 
         if (list.isEmpty()) {
@@ -103,27 +103,65 @@ public class WhitespaceMutationGenerator implements MutationGenerator {
         }
     }
 
-    private List<WhitespaceMutator.XmlWhitespaceCharacter> determineWhitespaceCharacters(MutationConfig config) {
-        final List<WhitespaceMutator.XmlWhitespaceCharacter> charactersToUse = new ArrayList<>();
+    private List<XmlWhitespaceCharacter> determineWhitespaceCharacters(MutationConfig config) {
+        final List<XmlWhitespaceCharacter> charactersToUse = new ArrayList<>();
         if (config.getProperties().get(PROP_LIST) != null) {
             charactersToUse.addAll(config.resolveList(PROP_LIST).stream().flatMap(e -> Arrays.stream(e.toString().split(SEPARATOR)))
                     .filter(StringUtils::isNotEmpty)
                     .map(String::trim)
                     .distinct()
-                    .map(t -> WhitespaceMutator.XmlWhitespaceCharacter.fromString(t.toUpperCase())).collect(Collectors.toList()));
+                    .map(t -> XmlWhitespaceCharacter.fromString(t.toUpperCase())).collect(Collectors.toList()));
         }
         if (charactersToUse.isEmpty()) {
-            charactersToUse.addAll(Arrays.asList(WhitespaceMutator.XmlWhitespaceCharacter.values()));
+            charactersToUse.addAll(Arrays.asList(XmlWhitespaceCharacter.values()));
         }
         return charactersToUse;
     }
 
-    private Mutation createMutation(final MutationConfig config, final MutationContext context, final WhitespaceMutator.Position position, final String s) {
+    private Mutation createMutation(final MutationConfig config, final MutationContext context, final WhitespaceMutator.Position position, final String whitespaceSquence) {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
-        cloned.add(WhitespaceMutator.INTERNAL_PROP_VALUE, s);
+        cloned.add(WhitespaceMutator.INTERNAL_PROP_VALUE, position.randomAddCharacters(context.getTarget().getTextContent(), whitespaceSquence));
         return new Mutation(context.cloneContext(),
                 Services.getNameGenerator().generateName(context.getDocumentName(), position.name()), cloned, mutator);
+    }
+
+
+    @RequiredArgsConstructor
+    enum XmlWhitespaceCharacter {
+        // Also CR is \n, since the Transformer in the serialization is transforming \r to the HEX value &#2D
+        CR("\n"),
+        LF("\n"),
+        CRLF("\n"),
+        TAB("\t"),
+        SPACE(" ");
+
+        @Getter
+        private final String value;
+
+        /**
+         * To get the specific enum variation from a string
+         *
+         * @param text - the string name of the enum
+         * @return the enum
+         */
+        static XmlWhitespaceCharacter fromString(final String text) {
+            try {
+                return XmlWhitespaceCharacter.valueOf(text);
+            } catch (final IllegalArgumentException e) {
+                throw new IllegalArgumentException("Whitespace mutator list character unknown: " + text.toLowerCase());
+            }
+        }
+
+    }
+
+
+    private static String createWhitespaceSequence(final int length, final List<WhitespaceMutationGenerator.XmlWhitespaceCharacter> charactersToUse) {
+        final StringBuilder sequence = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sequence.append(charactersToUse.get(new Random().nextInt(charactersToUse.size())).getValue());
+        }
+        return sequence.toString();
     }
 
 
