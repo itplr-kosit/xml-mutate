@@ -4,21 +4,6 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.ErrorCode;
-import de.kosit.xmlmutate.runner.MutationException;
-import de.kosit.xmlmutate.runner.Services;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 import lombok.Getter;
@@ -45,16 +30,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 /**
  * Generator for Mutation having a defined vlaue from a list of values.
