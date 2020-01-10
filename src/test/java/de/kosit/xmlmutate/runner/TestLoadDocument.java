@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.runner;
 
 import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.TestResource;
@@ -20,6 +21,7 @@ public class TestLoadDocument extends CompleteRun {
     }
 
     @Test
+    @Disabled
     public void testLoadSOhneNamespace() {
         final RunnerConfig config = createConfig(TestResource.TEST_ROOT.resolve("parser/ohne_namespace.xml"));
         config.setIgnoreSchemaInvalidity(true);

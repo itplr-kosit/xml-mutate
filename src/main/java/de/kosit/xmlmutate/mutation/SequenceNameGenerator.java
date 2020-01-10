@@ -21,6 +21,11 @@ public class SequenceNameGenerator implements NameGenerator {
     }
 
     @Override
+    public String generateName(String docName) {
+        return docName + (isNotBlank(docName) ? "-" : "") + nextValue();
+    }
+
+    @Override
     public String generateName() {
         return Integer.toString(nextValue());
     }

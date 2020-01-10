@@ -11,7 +11,9 @@ import de.init.kosit.commons.util.NamedError;
 @RequiredArgsConstructor
 public enum ErrorCode implements NamedError {
 
-    TRANSFORM_ERROR("Error while transforming: {0}");
+    TRANSFORM_ERROR("Error while transforming: {0}"),
+
+    STRUCTURAL_MISMATCH("Structural mismatch: {0}");
 
     @Getter
     private final String template;
