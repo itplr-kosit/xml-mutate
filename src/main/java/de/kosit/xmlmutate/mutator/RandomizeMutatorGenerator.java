@@ -40,8 +40,6 @@ public class RandomizeMutatorGenerator implements MutationGenerator {
     @Override
     public List<Mutation> generateMutations(MutationConfig config, MutationContext context) {
 
-        determineMaxPermutations(config);
-
         log.debug("Parent of context is=" + context.getParentElement());
         final Node targetNode = context.getTarget();
         log.debug("Permuting node {}", targetNode.getNodeName());
@@ -50,9 +48,12 @@ public class RandomizeMutatorGenerator implements MutationGenerator {
         log.debug("Possible permutations {}", possiblePermutations);
         log.debug("Max permutations {}", MAX_PERMUTATIONS);
 
-        // Beginning with 1 since 1st permutation is the one we already have in the original xml document
+        determineMaxPermutations(config, possiblePermutations);
+
+        // Beginning with 1 since 1st (0) permutation is the one we already have in the original xml document
         // If the max possible permutations were set in the param of PI, do not +1
-        return LongStream.range(MAX_PERMUTATIONS == possiblePermutations ? 0 : 1, MAX_PERMUTATIONS == possiblePermutations ? MAX_PERMUTATIONS : MAX_PERMUTATIONS+1)
+        final long finishPermutations = MAX_PERMUTATIONS == possiblePermutations ? MAX_PERMUTATIONS : MAX_PERMUTATIONS + 1;
+        return LongStream.range(1, finishPermutations)
                 .mapToObj(i -> createMutation(config, context, permutation(i, childNodes)))
                 .collect(Collectors.toList());
     }
@@ -74,13 +75,17 @@ public class RandomizeMutatorGenerator implements MutationGenerator {
                 list.add(node);
             }
         }
+        if (list.isEmpty() || list.size() == 1) {
+            throw new MutationException(ErrorCode.STRUCTURAL_MISMATCH, "Target node has only 1 child element or none");
+        }
         return list;
     }
 
-    private static void determineMaxPermutations(final MutationConfig config) {
+    private static void determineMaxPermutations(final MutationConfig config, final long possiblePermutations) {
         if (config.getProperties().get(MAX_PARAM) != null) {
             preCheckMaxParam(config.resolveList(MAX_PARAM));
-            MAX_PERMUTATIONS = Long.parseLong(config.resolveList(MAX_PARAM).get(0).toString());
+            final long maxPermutations = Long.parseLong(config.resolveList(MAX_PARAM).get(0).toString());
+            MAX_PERMUTATIONS = Math.min(maxPermutations, possiblePermutations);
         } else {
             MAX_PERMUTATIONS = DEFAULT_MAX_POSSIBILITIES;
         }

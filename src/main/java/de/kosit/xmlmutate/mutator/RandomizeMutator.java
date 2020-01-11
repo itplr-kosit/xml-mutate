@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,13 +28,11 @@ public class RandomizeMutator extends BaseMutator {
     @Override
     public void mutate(final MutationContext context, final MutationConfig config) {
 
-
         final Node cloneTargetNode = context.getTarget().cloneNode(true);
 
-        // TODO
-        final List<Node> newNodeOrderList = (ArrayList<Node>) config.getProperties().get(INTERNAL_PROP_VALUE);
+        final List<Node> newNodeOrderList = config.resolveList(INTERNAL_PROP_VALUE).stream().map(m -> (Node) m).collect(Collectors.toList());
 
-        log.debug("New order of childs {}", newNodeOrderList.stream().map(Node::getLocalName).collect(Collectors.joining( "," )));
+        log.debug("New order of childs {}", newNodeOrderList.stream().map(Node::getLocalName).collect(Collectors.joining(",")));
 
         final Node newTargetNode = rearrangeNode(cloneTargetNode, newNodeOrderList);
 
