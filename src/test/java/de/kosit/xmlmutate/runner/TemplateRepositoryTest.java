@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 
+import de.kosit.xmlmutate.TestResource;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -15,9 +16,9 @@ import org.junit.jupiter.api.Test;
  */
 public class TemplateRepositoryTest {
 
-    private static final URI SIMPLE_TRANSFORMATION = TEST_ROOT.resolve("transform/simple.xsl");
+    private static final URI SIMPLE_TRANSFORMATION = TestResource.TransformResource.SIMPLE_TRANSFORM;
 
-    private static final URI INVALID_TRANSFORMATION = TEST_ROOT.resolve("transform/invalid.xsl");
+    private static final URI INVALID_TRANSFORMATION = TestResource.TransformResource.INVALD_TRANSFORM;
 
     private static final String NAME = "someName";
 
