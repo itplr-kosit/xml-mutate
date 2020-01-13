@@ -38,7 +38,7 @@ import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Some helper function for testing.
- * 
+ *
  * @author Andreas Penski
  */
 public class TestHelper {
@@ -56,7 +56,7 @@ public class TestHelper {
 
     /**
      * Creates a simple mutation context for testing
-     * 
+     *
      * @return the context
      */
     public static MutationContext createContext(final Path documentPath) {
@@ -74,7 +74,7 @@ public class TestHelper {
 
     /**
      * Create a mutation context with a give document for testing
-     * 
+     *
      * @param doc the document
      * @param documentPath the path
      * @return a dummy context
@@ -142,7 +142,7 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
+     *
      * @return the context
      */
     public static MutationContext createRootContext() {
@@ -151,7 +151,7 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
+     *
      * @param piString the pi string
      * @return the context
      */
@@ -161,7 +161,7 @@ public class TestHelper {
 
     /**
      * Creates a context with PI on root node.
-     * 
+     *
      * @param piString the pi string
      * @param consumer consumer for manipulating the target node
      * @return the context
@@ -178,7 +178,7 @@ public class TestHelper {
 
     /**
      * Create an empty {@link MutationConfig}.
-     * 
+     *
      * @return the config
      */
     public static MutationConfig createConfig() {
@@ -187,7 +187,7 @@ public class TestHelper {
 
     /**
      * Create a {@link MutationConfig} with some initial properties.
-     * 
+     *
      * @return the config
      */
     public static MutationConfig createConfig(final Map<String, Object> properties) {
@@ -214,37 +214,33 @@ public class TestHelper {
         return IntStream.range(0, list.getLength()).mapToObj(list::item).filter(n -> ArrayUtils.contains(types, n.getNodeType()));
     }
 
-    public static RunnerConfig createRunnerConfig(final String documentPath) {
-        return RunnerConfig.Builder.forDocuments(getSingleDocument(documentPath)).checkSchema(createBookSchema())
+    public static RunnerConfig createRunnerConfig(final URI documentPath) {
+        return RunnerConfig.Builder.forDocuments(getSingleDocument(documentPath)).checkSchema(TestResource.BookResources.getSchema())
                 .checkSchematron(getBookSchematronRules()).targetFolder(createTestTargetFolder("doc/test"))
                 .useTransformations(new ArrayList<>()).withFailureMode(FailureMode.FAIL_AT_END).build();
     }
 
-    public static RunnerConfig createRunnerConfig(final String documentPath, final FailureMode failureMode) {
+    public static RunnerConfig createRunnerConfig(final URI documentPath, final FailureMode failureMode) {
         final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
         runnerConfig.setFailureMode(failureMode);
         return runnerConfig;
     }
 
-    public static RunnerConfig createRunnerConfig(final String documentPath, final boolean ignoreSchemainvalidity) {
+    public static RunnerConfig createRunnerConfig(final URI documentPath, final boolean ignoreSchemainvalidity) {
         final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
         runnerConfig.setIgnoreSchemaInvalidity(ignoreSchemainvalidity);
         return runnerConfig;
     }
 
-    private static List<Path> getSingleDocument(final String stringPath) {
+    private static List<Path> getSingleDocument(final URI stringPath) {
         final Path path = Paths.get(stringPath);
         return Collections.singletonList(path);
     }
 
-    private static Schema createBookSchema() {
-        final URI uri = Paths.get("src/test/resources/book/book.xsd").toUri();
-        return Services.getSchemaRepository().createSchema(uri);
-    }
 
     private static List<Schematron> getBookSchematronRules() {
         final List<Schematron> schematronList = new ArrayList<>();
-        final URI uri = Paths.get("src/test/resources/book/book.xsl").toUri();
+        final URI uri = TestResource.BookResources.XSL;
         // Only with BR-DE-1 and BR-DE-2 as known rule names
         final List<String> list = Arrays.asList("Book-1", "Book-2");
         final Schematron schematron = new Schematron("schematron", uri, list);
