@@ -21,7 +21,6 @@ public class TestLoadDocument extends CompleteRun {
     }
 
     @Test
-    @Disabled
     public void testLoadSOhneNamespace() {
         final RunnerConfig config = createConfig(TestResource.TEST_ROOT.resolve("parser/ohne_namespace.xml"));
         config.setIgnoreSchemaInvalidity(true);
