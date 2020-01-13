@@ -190,4 +190,12 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
         }
         return this;
     }
+
+    public NodeAssert hasChildInPosition(final String nodeName, final int position) {
+        isNotNull();
+        if (!this.actual.getChildNodes().item(position).getNodeName().equalsIgnoreCase(nodeName)){
+            failWithMessage("Node '%s' is not in position '%s' of parent node", nodeName, position);
+        }
+        return this;
+    }
 }

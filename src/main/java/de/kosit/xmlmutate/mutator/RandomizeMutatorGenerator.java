@@ -38,7 +38,7 @@ public class RandomizeMutatorGenerator implements MutationGenerator {
     }
 
     @Override
-    public List<Mutation> generateMutations(MutationConfig config, MutationContext context) {
+    public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
 
         log.debug("Parent of context is=" + context.getParentElement());
         final Node targetNode = context.getTarget();
@@ -84,10 +84,10 @@ public class RandomizeMutatorGenerator implements MutationGenerator {
     private static void determineMaxPermutations(final MutationConfig config, final long possiblePermutations) {
         if (config.getProperties().get(MAX_PARAM) != null) {
             preCheckMaxParam(config.resolveList(MAX_PARAM));
-            final long maxPermutations = Long.parseLong(config.resolveList(MAX_PARAM).get(0).toString());
-            MAX_PERMUTATIONS = Math.min(maxPermutations, possiblePermutations);
+            final long maxParamPermutations = Long.parseLong(config.resolveList(MAX_PARAM).get(0).toString());
+            MAX_PERMUTATIONS = Math.min(maxParamPermutations, possiblePermutations);
         } else {
-            MAX_PERMUTATIONS = DEFAULT_MAX_POSSIBILITIES;
+            MAX_PERMUTATIONS = Math.min(DEFAULT_MAX_POSSIBILITIES, possiblePermutations);
         }
     }
 
