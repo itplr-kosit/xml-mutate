@@ -64,7 +64,7 @@ public abstract class BaseMutator implements Mutator {
         } catch (final TransformerException te) {
             System.out.println("nodeToString Transformer Exception");
         }
-        return sw.toString();
+        return sw.toString().replace("<!--", "##").replace("-->", "##");
     }
 
 }
