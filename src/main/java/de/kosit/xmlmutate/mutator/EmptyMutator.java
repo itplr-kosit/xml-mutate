@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EmptyMutator extends BaseMutator {
 
-    private final static String MUTATOR_NAME = "empty";
+    private static final String MUTATOR_NAME = "empty";
 
     @Override
     public List<String> getNames() {
