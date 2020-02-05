@@ -3,7 +3,7 @@ package de.kosit.xmlmutate.mutator;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
- * Hilfsklasse zum Generieren von Texten.
+ * Help class for generating texts
  * 
  * @author Andreas Penski
  */

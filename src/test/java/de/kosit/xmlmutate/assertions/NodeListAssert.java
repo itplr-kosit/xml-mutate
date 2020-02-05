@@ -1,24 +1,20 @@
 package de.kosit.xmlmutate.assertions;
 
 import org.assertj.core.api.AbstractAssert;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 /**
- * Assertion für {@link Node}, inklusive {@link Element}, {@link Attr} und {@link Document}.
+ * Assertion for {@link Node}, including {@link Element}, {@link Attr} and {@link Document}.
  *
  * @author Andreas Penski
  */
-@SuppressWarnings({ "UnusedReturnValue", "unused" })
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class NodeListAssert extends AbstractAssert<NodeListAssert, NodeList> {
 
     /**
      * Constructor.
      *
-     * @param node der Knoten der getestet werden soll
+     * @param node the node that should be tested
      */
     NodeListAssert(final NodeList node) {
         super(node, NodeListAssert.class);

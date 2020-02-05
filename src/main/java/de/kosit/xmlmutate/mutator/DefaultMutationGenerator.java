@@ -1,20 +1,18 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.util.Collections;
-import java.util.List;
-
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.Services;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Default Generator. Greift immer dann, wenn für den Mutator kein besonderer
- * Generator benötigt wird.
+ * Default generator.  It is called when a mutator is not in need of an special generator
  *
  * @author Andreas Penski
  */
@@ -25,7 +23,7 @@ public class DefaultMutationGenerator implements MutationGenerator {
 
     @Override
     public List<Mutation> generateMutations(@NonNull final MutationConfig config,
-            @NonNull final MutationContext context) {
+                                            @NonNull final MutationContext context) {
         // Get first name of name list of mutator
 
         final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());

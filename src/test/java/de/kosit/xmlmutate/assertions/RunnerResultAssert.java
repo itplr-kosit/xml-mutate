@@ -21,7 +21,7 @@ public class RunnerResultAssert extends AbstractAssert<RunnerResultAssert, Runne
     }
 
     /**
-     * Stellt sicher, dass dieser Knoten ein Attribut ist.
+     * Ensures that this node is an attribute
      *
      * @return this
      */

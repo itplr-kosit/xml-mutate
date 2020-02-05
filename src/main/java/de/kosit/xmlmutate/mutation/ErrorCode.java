@@ -22,8 +22,6 @@ public enum ErrorCode implements NamedError {
 
     SCHEMA_ERROR("Schema validation error: {0}");
 
-
-
     @Getter
     private final String template;
 }
