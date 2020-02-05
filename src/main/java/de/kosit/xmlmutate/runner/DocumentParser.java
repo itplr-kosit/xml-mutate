@@ -1,23 +1,11 @@
 package de.kosit.xmlmutate.runner;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
+import de.init.kosit.commons.ObjectFactory;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -27,17 +15,22 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
-import de.init.kosit.commons.ObjectFactory;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * Parsing-Funktionalitäten.
- * 
+ * Parsing functionalities
+ *
  * @author Andreas Penski
  */
 @Slf4j
@@ -89,7 +82,7 @@ public class DocumentParser {
     }
 
     /**
-     * Handler, der die Zeilennummer für die weitere Verarbeitung ermittelt.
+     * Handler that identifies the row number for further processing
      */
     @RequiredArgsConstructor
     private static class PositionalHandler extends DefaultHandler2 {
@@ -180,7 +173,7 @@ public class DocumentParser {
     }
 
     /**
-     * UserData-Key für die Zeilennummer.
+     * UserData-Key for the row number
      */
     public static final String LINE_NUMBER_KEY_NAME = "lineNumber";
 
@@ -189,15 +182,15 @@ public class DocumentParser {
     }
 
     /**
-     * Default-Parsing-Funktionalität via SAX. Dieser Parser ermittelt Zeileninformationen zur weiteren
-     * Verwendung/Lokalisierung innerhalb Durchlaufs.
-     * 
-     * @param path der Pfad des Dokuments.
-     * @return das eingelesene Dokument
+     * Default parsing functionality via SAX. This parser determines the row information for further use/localisation
+     * within the same run
+     *
+     * @param path the document path
+     * @return the document read
      */
     public static Document readDocument(final Path path) {
 
-        try ( final InputStream input = Files.newInputStream(path) ) {
+        try (final InputStream input = Files.newInputStream(path)) {
             return readDocument(input);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", path, e);
@@ -221,7 +214,7 @@ public class DocumentParser {
     }
 
     public static Document readDocument(final String xml) {
-        try ( final InputStream input = new ByteArrayInputStream(xml.getBytes()) ) {
+        try (final InputStream input = new ByteArrayInputStream(xml.getBytes())) {
             return readDocument(input);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", xml, e);
@@ -230,14 +223,14 @@ public class DocumentParser {
     }
 
     /**
-     * Implementierung, welche das Dokument möglichst schnell, ohne weiteren Zeilenbezug o.ä. einliest
-     * 
-     * @param path der Pfad
-     * @return das eingelesene Dokument
+     * Implementation that reads the document as fast as possible without any further row reference
+     *
+     * @param path the path
+     * @return the document read
      */
     public static Document readDocumentPlain(final Path path) {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
-        try ( final InputStream input = Files.newInputStream(path) ) {
+        try (final InputStream input = Files.newInputStream(path)) {
             return builder.parse(input);
         } catch (final SAXException | IOException e) {
             log.error("Error opening document {}", path, e);

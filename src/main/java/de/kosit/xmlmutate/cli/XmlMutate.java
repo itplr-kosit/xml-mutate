@@ -44,7 +44,6 @@ import picocli.CommandLine.ParseResult;
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-
 @Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
 @Slf4j
 public class XmlMutate implements Callable<Integer> {

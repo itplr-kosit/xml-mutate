@@ -97,7 +97,7 @@ public class MutationContext {
     /**
      * Gets the target Element. Default is the next sibling {@link Element} following this {@link ProcessingInstruction}.
      *
-     * @return Zielknoten
+     * @return target node
      */
     public Node getTarget() {
         if (this.specificTarget == null) {

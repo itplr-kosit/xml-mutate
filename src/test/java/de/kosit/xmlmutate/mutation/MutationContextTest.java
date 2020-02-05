@@ -1,17 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Paths;
-import java.util.function.BiConsumer;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.google.common.base.Charsets;
+import de.init.kosit.commons.ObjectFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -19,12 +9,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
-import com.google.common.base.Charsets;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
+import java.util.function.BiConsumer;
 
-import de.init.kosit.commons.ObjectFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Testet die Parser-Funktionalitäten
+ * It tests the parser functionalities
  * 
  * @author Andreas Penski
  */

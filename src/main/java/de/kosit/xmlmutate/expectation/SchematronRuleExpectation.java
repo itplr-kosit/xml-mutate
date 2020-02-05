@@ -6,7 +6,6 @@ package de.kosit.xmlmutate.expectation;
  * @author Renzo Kottmann
  * @author Andreas Penski
  */
-
 public class SchematronRuleExpectation {
 
     /**
