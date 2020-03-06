@@ -189,11 +189,11 @@ public class MutationContextTest {
     }
 
     private static String serialize(final Document doc) throws Exception {
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final Transformer transformer = ObjectFactory.createTransformer(true);
-        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, StandardCharsets.UTF_8)));
-        out.close();
-        return new String(out.toByteArray());
+        try(final ByteArrayOutputStream out = new ByteArrayOutputStream())
+        {
+          final Transformer transformer = ObjectFactory.createTransformer(true);
+          transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, StandardCharsets.UTF_8)));
+          return new String(out.toByteArray());
+        }
     }
-
 }
