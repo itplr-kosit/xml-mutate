@@ -1,17 +1,18 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.MutationException;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.runner.MutationException;
 
 /**
  * It tests the code mutator with values.

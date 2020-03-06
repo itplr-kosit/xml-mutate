@@ -4,7 +4,6 @@ import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,20 +15,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 
-import de.kosit.xmlmutate.TestResource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.runner.ValidateAction;
 
 /**

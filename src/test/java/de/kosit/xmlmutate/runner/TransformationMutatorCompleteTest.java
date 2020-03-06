@@ -29,12 +29,11 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.TestResource.TransformResource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Tests various inputs for {@link de.kosit.xmlmutate.mutator.TransformationMutator}.

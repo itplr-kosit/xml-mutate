@@ -1,18 +1,19 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-
-import java.util.List;
-
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static de.kosit.xmlmutate.mutator.AlternativeMutator.ALT_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationContext;
 
 /**
  * Tests the generation of mutations for the {@link AlternativeMutator}.

@@ -1,11 +1,15 @@
 package de.kosit.xmlmutate.assertions;
 
-import org.assertj.core.api.AbstractAssert;
-import org.w3c.dom.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import org.assertj.core.api.AbstractAssert;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * Assertion for {@link Node}, including {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} and

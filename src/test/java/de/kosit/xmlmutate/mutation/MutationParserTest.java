@@ -1,19 +1,20 @@
 package de.kosit.xmlmutate.mutation;
 
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
  * It tests the basic parser functions

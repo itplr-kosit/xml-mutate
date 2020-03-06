@@ -1,13 +1,13 @@
 package de.kosit.xmlmutate.runner;
 
-import static de.kosit.xmlmutate.TestHelper.TEST_ROOT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 
-import de.kosit.xmlmutate.TestResource;
 import org.junit.jupiter.api.Test;
+
+import de.kosit.xmlmutate.TestResource;
 
 /**
  * Tests {@link TemplateRepository}.

@@ -13,6 +13,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -38,7 +39,7 @@ public class SerializeAction implements RunAction {
             final OutputStream out = Files.newOutputStream(target);
             final Transformer transformer = ObjectFactory.createTransformer(true);
             transformer.transform(new DOMSource(document),
-                    new StreamResult(new OutputStreamWriter(out, Charsets.UTF_8)));
+                    new StreamResult(new OutputStreamWriter(out, StandardCharsets.UTF_8)));
             out.close();
         } catch (final TransformerException | IOException e) {
             throw new IllegalStateException(e);

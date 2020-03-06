@@ -1,10 +1,11 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.runner.Services;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import de.kosit.xmlmutate.runner.Services;
 
 /**
  * It tests the registry

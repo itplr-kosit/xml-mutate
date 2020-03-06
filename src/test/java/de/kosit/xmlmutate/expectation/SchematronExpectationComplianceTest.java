@@ -1,15 +1,16 @@
 package de.kosit.xmlmutate.expectation;
 
-import de.kosit.xmlmutate.mutation.MutationResult;
-import de.kosit.xmlmutate.mutation.MutationResult.ExpectationCompliance;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import de.kosit.xmlmutate.mutation.MutationResult;
+import de.kosit.xmlmutate.mutation.MutationResult.ExpectationCompliance;
 
 /**
  * @author Andreas Penski

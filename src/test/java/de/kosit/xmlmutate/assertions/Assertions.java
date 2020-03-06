@@ -1,9 +1,10 @@
 package de.kosit.xmlmutate.assertions;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.runner.RunnerResult;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.runner.RunnerResult;
 
 /**
  * Useful extensions of the AssertJ assertions.

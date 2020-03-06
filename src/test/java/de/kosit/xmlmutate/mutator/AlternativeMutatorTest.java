@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.w3c.dom.Comment;
+import org.w3c.dom.Node;
 
 import de.kosit.xmlmutate.TestHelper;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import org.w3c.dom.Node;
 
 /**
  * Tests for {@liink AlternativeMutator}.

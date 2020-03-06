@@ -19,7 +19,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Document;
@@ -34,7 +33,6 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.FailureMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Some helper function for testing.

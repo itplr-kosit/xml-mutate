@@ -1,16 +1,17 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.runner.MutationException;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.runner.MutationException;
 
 /**
  * It tests the value list version of {@link CodeMutationGenerator}.

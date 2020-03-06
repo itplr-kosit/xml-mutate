@@ -20,8 +20,6 @@ import javax.xml.validation.Schema;
 
 import org.fusesource.jansi.AnsiConsole;
 
-import lombok.extern.slf4j.Slf4j;
-
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.FailureMode;
@@ -31,7 +29,7 @@ import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
-
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -58,7 +56,7 @@ public class XmlMutate implements Callable<Integer> {
 
     @Option(names = { "-s",
             "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
-    private final Map<String, Path> schematrons = new HashMap<String, Path>();
+    private final Map<String, Path> schematrons = new HashMap<>();
 
     @Option(names = { "-m",
             "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
@@ -66,7 +64,7 @@ public class XmlMutate implements Callable<Integer> {
 
     @Option(names = { "-t",
             "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
-    private final Map<String, Path> transformations = new HashMap<String, Path>();
+    private final Map<String, Path> transformations = new HashMap<>();
 
     @Option(names = { "-ff",
             "--fail-fast" },  description = "The run failure control mode for fail fast")

@@ -1,7 +1,11 @@
 package de.kosit.xmlmutate.assertions;
 
 import org.assertj.core.api.AbstractAssert;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Assertion for {@link Node}, including {@link Element}, {@link Attr} and {@link Document}.
