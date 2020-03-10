@@ -16,7 +16,7 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Testet den Empty Mutator
+ * It tests the empty mutator
  * 
  * @author Andreas Penski
  */

@@ -2,6 +2,18 @@ package de.kosit.xmlmutate.mutator;
 
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.runner.ErrorCode;
+import de.kosit.xmlmutate.runner.MutationException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import java.util.Arrays;
+import java.util.List;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,9 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Dieser Mutator entfernt das Ziel-Element aus dem Dokument bzw. ersetz es durch einen Kommentar. Weiterhin kann der
- * Mutator auch Attribute entfernen.
- * 
+ * This mutator deletes the target element from the document and replaces it with a comment.
+ * This mutator can also delete atrtibutes.
+ *
  * @author Andreas Penski
  */
 @Slf4j

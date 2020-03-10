@@ -1,5 +1,14 @@
 package de.kosit.xmlmutate.runner;
 
+import de.kosit.xmlmutate.mutation.NamedTemplate;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.report.ReportGenerator;
+import de.kosit.xmlmutate.report.TextReportGenerator;
+import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.validation.Schema;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -8,19 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.xml.validation.Schema;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import de.kosit.xmlmutate.mutation.NamedTemplate;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.report.ReportGenerator;
-import de.kosit.xmlmutate.report.TextReportGenerator;
-import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
-
 /**
- *
  * Contains whole configuration for a {@link MutationRunner} including all Actions.
  *
  * @author Andreas Penski
@@ -109,7 +106,7 @@ public class RunnerConfig {
     }
 
     /**
-     * Zielverzeichnis für Ausgaben.
+     * Target directory for outputs
      */
     private Path targetFolder;
 

@@ -8,9 +8,8 @@ import lombok.Setter;
 import java.util.*;
 
 /**
- * Konfigurationsoptionen für eine bestimmte Mutation. Diese werden durch die im
- * XML-Dokument hinterlegte {@link org.w3c.dom.ProcessingInstruction}
- * Information bestimmt.
+ * Configuration options for an specific mutation. These are delivered through the information defined
+ * in the XML document {@link org.w3c.dom.ProcessingInstruction}
  *
  * @author Andreas Penski
  */
@@ -31,13 +30,11 @@ public class MutationConfig {
     private List<String> tagNames = new ArrayList<>();
 
     /**
-     * Fügt einen weiteren Parameter hinzu.
+     * Adds a new parameter
      *
-     * @param keyword
-     *                    der Parameter
-     * @param value
-     *                    der Wert des Parameters
-     * @return die Konfiguration zum verketten von Aktionen
+     * @param keyword the parameter
+     * @param value   the parameter value
+     * @return  the configuration for chaining actions
      */
     public MutationConfig add(final String keyword, final Object value) {
         final Object existing = this.properties.get(keyword);
@@ -89,7 +86,7 @@ public class MutationConfig {
 
     /**
      * Returns a string-representation of a defined property.
-     * 
+     *
      * @param propKey the key of the property
      * @return String representation or null
      */

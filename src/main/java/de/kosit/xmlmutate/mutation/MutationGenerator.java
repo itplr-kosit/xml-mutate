@@ -1,43 +1,42 @@
 package de.kosit.xmlmutate.mutation;
 
-import java.util.List;
-
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.Mutator;
 
+import java.util.List;
+
 /**
- * Generiert eine oder mehrere Mutationen aus der Konfiguration. Generator und Mutator bilden grundsätzlich eine Einheit
- * und es sollte zu jedem Mutator ein passender Generator existieren. Für einfache Mutatoren steht ein
- * {@link DefaultMutationGenerator} bereit.
- * 
- * Vor der Verarbeitung durch den Mutator, erzeugt der Generator passende Mutationen, welche mehrere Varianten der
- * Konfiguration für den Mutator vorbereitet.
+ * Generates one or mroe mutations out of a configuration. Generator and mutator form basically a single unit
+ * and therefore every mutator should have its corresponding generator. A {@link DefaultMutationGenerator} is
+ * available for simple mutators
+ * <p>
+ * Before the mutator do its processing, the generator generates suitable mutations, which prepares several variations
+ * from the mutator configuration
  *
- * 
  * @author Andreas Penski
  */
 public interface MutationGenerator {
 
     /**
-     * Der präferierte Name des Generatores
+     * The preferred generator name
      *
-     * @return der Name des Generators (identisch mit passenden {@link Mutator#getPreferredName()})
+     * @return the generator name (identical to corresponding {@link Mutator#getPreferredName()})
      */
     String getPreferredName();
 
     /**
-     * Generiert eine oder mehrere Mutationen.
-     * 
-     * @param config die Konfiguration aus der {@link org.w3c.dom.ProcessingInstruction}
-     * @param context der {@link MutationContext} innerhalb des Dokuments
-     * @return Liste mit zu verarbeitenden Mutationen
+     * Generates one or more mutations
+     *
+     * @param config  the configuration from {@link org.w3c.dom.ProcessingInstruction}
+     * @param context the {@link MutationContext} within a document
+     * @return list with the mutations to be processed
      */
     List<Mutation> generateMutations(MutationConfig config, MutationContext context);
 
     /**
-     * Die Namen des Generatores bzw. die Zuordnung zu einem konkrente
-     * 
-     * @return die Namen des Generators (identisch mit passenden {@link Mutator#getNames()})
+     * The generator names or the assignation to a concrete one
+     *
+     * @return the generator names (identical to corresponding {@link Mutator#getNames()})
      */
     List<String> getNames();
 

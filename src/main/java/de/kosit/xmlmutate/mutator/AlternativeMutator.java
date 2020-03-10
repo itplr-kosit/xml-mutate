@@ -1,6 +1,12 @@
 package de.kosit.xmlmutate.mutator;
 
-import static org.apache.commons.lang3.StringUtils.isNumeric;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.DocumentParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,18 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.DocumentParser;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * This mutator operates on a set of comments, which are used as alternatives to the target element.
- * 
+ *
  * @author Andreas Penski
  */
 public class AlternativeMutator extends BaseMutator implements MutationGenerator {

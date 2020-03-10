@@ -1,23 +1,22 @@
 package de.kosit.xmlmutate.assertions;
 
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.runner.RunnerResult;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.runner.RunnerResult;
-
 /**
- * Nützliche Erweiterungen der AssertJ assertions.
+ * Useful extensions of the AssertJ assertions.
  *
  * @author Andreas Penski
  */
 public class Assertions {
 
     /**
-     * Assertion für {@link Node}, inklusive {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} und
+     * Assertion for {@link Node}, including {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} and
      * {@link org.w3c.dom.Document}.
      *
-     * @param actual der Knoten der getestet werden soll
+     * @param actual der node that should be tested
      * @return {@link NodeAssert}
      */
     public static NodeAssert assertThat(final Node actual) {
@@ -25,10 +24,10 @@ public class Assertions {
     }
 
     /**
-     * Assertion für {@link Node}, inklusive {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} und
+     * Assertion for {@link Node}, including {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} and
      * {@link org.w3c.dom.Document}.
      *
-     * @param actual der Knoten der getestet werden soll
+     * @param actual der node that should be tested
      * @return {@link NodeAssert}
      */
     public static NodeListAssert assertThat(final NodeList actual) {

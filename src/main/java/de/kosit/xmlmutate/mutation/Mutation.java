@@ -13,13 +13,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
- * möglichen Informationen rund um die Verarbeitung, inkl. Testergebnisse.
+ * Collectible object for a mutation within a test file. It collects all possible
+ * informations about the processing including the test results
  *
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-
 @Getter
 public class Mutation {
 
@@ -111,19 +110,6 @@ public class Mutation {
     }
 
 
-    /**
-     * Prüft ob eine Mutation Schema- und Schematron-validiert wurde
-     *
-     * @return ob eine Mutation Schema- und Schematron-validiert wurde
-     */
-    public boolean isAllUnprocessed() {
-        return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
-    }
-
-    public boolean isAtLeastOneUnprocessed() {
-        return !this.result.isSchemaProcessed() || !result.isSchematronProcessed();
-    }
-
     public boolean hasUnexpectedValidation() {
         return !isAllAsExpected() && !isOneAsExpectedAndOneUnprocessed();
     }
@@ -141,6 +127,14 @@ public class Mutation {
                 || (this.result.allSchematronRulesAsExpected() && !this.result.isSchemaProcessed());
     }
 
+    /**
+     * Check if a mutation was neither schema nor schematron validated
+     *
+     * @return true or false
+      */
+    public boolean isAllUnprocessed() {
+        return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
+    }
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED

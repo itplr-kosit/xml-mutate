@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
- * Testet das {@link MutationConfig}-Objekt.
+ * It tests the {@link MutationConfig} object.
  *
  * @author Andreas Penski
  */

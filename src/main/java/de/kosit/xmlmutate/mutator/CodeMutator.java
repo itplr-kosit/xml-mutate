@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Mutator für Codes. Erzeugt eine einfache Textersetzung der Code-Werte. Die eigentliche Konfiguration der
- * {@link de.kosit.xmlmutate.mutation.Mutation} erfolgt über den {@link CodeMutationGenerator}.
- * 
+ * Mutator for codes. It produces a simple text replacement of the code values. The actual configuration of
+ * {@link de.kosit.xmlmutate.mutation.Mutation} is carried out through the {@link CodeMutationGenerator}.
+ *
  * @author Andreas Penski
  */
 public class CodeMutator extends BaseMutator {
