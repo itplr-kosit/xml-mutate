@@ -2,7 +2,6 @@ package de.kosit.xmlmutate.mutator;
 
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,18 +12,7 @@ import org.w3c.dom.Node;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.MutationException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Node;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Mutator for emptying an element. If the element to be emptied contains any subelements, they will be removed.
