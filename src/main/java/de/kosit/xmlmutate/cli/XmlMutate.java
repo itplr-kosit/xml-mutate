@@ -44,45 +44,44 @@ import picocli.CommandLine.ParseResult;
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
+         separator = " ")
 @Slf4j
 public class XmlMutate implements Callable<Integer> {
 
-    @Option(names = { "-o",
-            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+    @Option(names = { "-o", "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
+    @Option(names = { "-x", "--schema", "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
-    @Option(names = { "-s",
-            "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
+    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
     private final Map<String, Path> schematrons = new HashMap<String, Path>();
 
-    @Option(names = { "-m",
-            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
-    @Option(names = { "-t",
-            "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
+    @Option(names = { "-t", "--transformations" }, paramLabel = "MAP",
+            description = "Named transformations used for the Transformation-Mutator")
     private final Map<String, Path> transformations = new HashMap<String, Path>();
 
-    @Option(names = { "-ff",
-            "--fail-fast" },  description = "The run failure control mode for fail fast")
+    @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
     private boolean failfast;
 
-    @Option(names = { "-fae",
-            "--fail-at-end" },  description = "The run failure control mode for fail at end")
+    @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
     private boolean failatend;
 
-    @Option(names = { "-fn",
-            "--fail-never" },  description = "The run failure control mode for fail never")
+    @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
     private boolean failnever;
 
-    @Option(names = { "-isi",
-            "--ignore-schema-invalidity" },  description = "If set, whenever an original document is not schema valid, it wont stop the programm")
+    @Option(names = { "-isi", "--ignore-schema-invalidity" },
+            description = "If set, whenever an original document is not schema valid, it wont stop the programm")
     private boolean ignoreSchemaInvalidity;
+
+    @Option(names = { "--saveParsing" },
+            description = "Enables the save parsing mode, which does not providing line number information, but is more robust",
+            defaultValue = "false")
+    private boolean saveParsingMode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
@@ -126,12 +125,9 @@ public class XmlMutate implements Callable<Integer> {
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target)
-                .checkSchematron(prepareSchematron()).checkSchema(prepareSchema())
-                .useTransformations(prepareTransformations())
-                .withFailureMode(getFailureMode())
-                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
-                .build();
+        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron())
+                .checkSchema(prepareSchema()).useTransformations(prepareTransformations()).withFailureMode(getFailureMode())
+                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity).saveParsing(this.saveParsingMode).build();
 
     }
 
@@ -144,13 +140,10 @@ public class XmlMutate implements Callable<Integer> {
         final long countActive = modeActivations.values().stream().filter(b -> b).count();
         if (countActive > 1) {
             throw new IllegalArgumentException("Only one failure mode is allowed");
-        } else if (countActive == 0){
+        } else if (countActive == 0) {
             return FailureMode.FAIL_AT_END;
         } else {
-            return  modeActivations.entrySet().stream()
-                    .filter(Map.Entry::getValue)
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList())
+            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList())
                     .get(0);
         }
 
@@ -161,8 +154,7 @@ public class XmlMutate implements Callable<Integer> {
             if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
                 return new NamedTemplate(e.getKey(), e.getValue().toUri());
             }
-            throw new IllegalArgumentException(
-                    String.format("Provided template '%s' does not exist or is not readable", e.getValue()));
+            throw new IllegalArgumentException(String.format("Provided template '%s' does not exist or is not readable", e.getValue()));
         }).collect(Collectors.toList());
     }
 
@@ -184,23 +176,21 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable)
-                .collect(Collectors.toList());
+        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).collect(Collectors.toList());
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
             throw new IllegalArgumentException(
                     MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
 
-        return available.stream().flatMap(this::expandDirectories)
-                .filter(e -> e.getFileName().toString().endsWith(".xml")).collect(Collectors.toList());
+        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml"))
+                .collect(Collectors.toList());
     }
 
     private Stream<Path> expandDirectories(final Path path) {
         try {
             if (!Files.exists(path)) {
-                throw new IllegalArgumentException(
-                        "Document or directory does not exist: " + path.toAbsolutePath().toString());
+                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath().toString());
             }
             if (Files.isDirectory(path)) {
                 return Files.walk(path);
