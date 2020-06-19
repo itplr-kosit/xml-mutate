@@ -1,11 +1,23 @@
 package de.kosit.xmlmutate.runner;
 
-import de.init.kosit.commons.ObjectFactory;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,18 +27,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+import de.init.kosit.commons.ObjectFactory;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 
 /**
  * Parsing functionalities
@@ -71,8 +81,6 @@ public class DocumentParser {
         public void setDeclared(final String uri) {
             if (isAvailable(uri) && !isDeclared(uri)) {
                 this.namespaces.get(uri).setDeclared(true);
-            } else {
-                // throw new IllegalStateException("Can not be set declared");
             }
         }
 
@@ -117,7 +125,12 @@ public class DocumentParser {
             final Element current = this.elementStack.peek() != null ? this.elementStack.peek()
                     : this.doc.getDocumentElement();
             this.namespaces.getUndeclared().forEach(ns -> {
-                current.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + ns.getPrefix(), ns.getNamespace());
+                final StringBuilder qName = new StringBuilder("xmlns");
+                if (isNotBlank(ns.getPrefix())) {
+                    qName.append(":");
+                    qName.append(ns.getPrefix());
+                }
+                current.setAttributeNS("http://www.w3.org/2000/xmlns/", qName.toString(), ns.getNamespace());
                 ns.setDeclared(true);
             });
             this.namespaces.remove(prefix);
@@ -163,6 +176,19 @@ public class DocumentParser {
             this.textBuffer.append(ch, start, length);
         }
 
+        @Override
+        public void startCDATA() throws SAXException {
+            addTextIfNeeded();
+        }
+
+        @Override
+        public void endCDATA() throws SAXException {
+            final CDATASection cdata = this.doc.createCDATASection(this.textBuffer.toString());
+            cdata.setNodeValue(this.textBuffer.toString());
+            append(cdata);
+            this.textBuffer.delete(0, this.textBuffer.length());
+        }
+
         // Outputs text accumulated under the current node
         private void addTextIfNeeded() {
             if (this.textBuffer.length() > 0) {
@@ -185,20 +211,29 @@ public class DocumentParser {
 
     /**
      * Default parsing functionality via SAX. This parser determines the row
-     * information for further use/localisation within the same run
+     * information for further use/localisation within
+     * the same run
      *
      * @param path the document path
      * @return the document read
      */
+
     public static Document readDocument(final Path path) {
+        return readDocument(path, false);
+    }
 
-        // try (final InputStream input = Files.newInputStream(path)) {
-        return readDocumentPlain(path);
-        // } catch (final SAXException | IOException | ParserConfigurationException e) {
-        // log.error("Error opening document {}", path, e);
-        // throw new IllegalArgumentException("Can not open Document " + path, e);
-        // }
+    public static Document readDocument(final Path path, final boolean saveMode) {
+        try ( final InputStream input = Files.newInputStream(path) ) {
+            return readDocument(input, saveMode);
+        } catch (final SAXException | IOException | ParserConfigurationException e) {
+            log.error("Error opening document {}", path, e);
+            throw new IllegalArgumentException("Can not open Document " + path, e);
+        }
+    }
 
+    private static Document readDocument(final InputStream input, final boolean saveMode)
+            throws IOException, SAXException, ParserConfigurationException {
+        return saveMode ? readDocumentPlain(input) : readDocument(input);
     }
 
     private static Document readDocument(final InputStream input)
@@ -217,9 +252,9 @@ public class DocumentParser {
 
     }
 
-    public static Document readDocument(final String xml) {
-        try (final InputStream input = new ByteArrayInputStream(xml.getBytes())) {
-            return readDocument(input);
+    public static Document readDocument(final String xml, final boolean saveMode) {
+        try ( final InputStream input = new ByteArrayInputStream(xml.getBytes()) ) {
+            return readDocument(input, saveMode);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", xml, e);
             throw new IllegalArgumentException("Can not open Document from " + xml, e);
@@ -230,16 +265,12 @@ public class DocumentParser {
      * Implementation that reads the document as fast as possible without any
      * further row reference
      *
-     * @param path the path
+     * @param input the path
      * @return the document read
      */
-    public static Document readDocumentPlain(final Path path) {
+    private static Document readDocumentPlain(final InputStream input) throws IOException, SAXException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
-        try (final InputStream input = Files.newInputStream(path)) {
-            return builder.parse(input);
-        } catch (final SAXException | IOException e) {
-            log.error("Error opening document {}", path, e);
-            throw new IllegalArgumentException("Can not open Document " + path, e);
-        }
+        return builder.parse(input);
+
     }
 }

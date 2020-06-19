@@ -1,13 +1,15 @@
 package de.kosit.xmlmutate.runner;
 
-import de.init.kosit.commons.ObjectFactory;
-import de.init.kosit.commons.Result;
-import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationParser;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -19,15 +21,15 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+
+import de.init.kosit.commons.ObjectFactory;
+import de.init.kosit.commons.Result;
+import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
  * Runner that undertakes the actual processing of the document
@@ -73,7 +75,8 @@ public class MutationRunner {
                 final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(),
                         document);
                 if (result.isInvalid()) {
-                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
+                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString(),
+                            result.getErrorDescription());
                 }
             } catch (final IOException | SAXException e) {
                 throw new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM);
@@ -101,7 +104,7 @@ public class MutationRunner {
 
     Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
-            final Document d = DocumentParser.readDocument(path);
+            final Document d = DocumentParser.readDocument(path, this.configuration.isSaveParsing());
             final List<Mutation> mutations = parseMutations(d, path);
 
             // If there is only mutation with an error, we dont need to process it
