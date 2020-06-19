@@ -1,7 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,6 +34,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 
 /**
  * Parsing functionalities
@@ -122,7 +122,8 @@ public class DocumentParser {
 
         @Override
         public void endPrefixMapping(final String prefix) throws SAXException {
-            final Element current = this.elementStack.peek() != null ? this.elementStack.peek() : this.doc.getDocumentElement();
+            final Element current = this.elementStack.peek() != null ? this.elementStack.peek()
+                    : this.doc.getDocumentElement();
             this.namespaces.getUndeclared().forEach(ns -> {
                 final StringBuilder qName = new StringBuilder("xmlns");
                 if (isNotBlank(ns.getPrefix())) {
@@ -152,7 +153,8 @@ public class DocumentParser {
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
+        public void startElement(final String uri, final String localName, final String qName,
+                final Attributes attributes) {
             addTextIfNeeded();
             final Element el;
             el = this.doc.createElementNS(uri, qName);
@@ -208,7 +210,8 @@ public class DocumentParser {
     }
 
     /**
-     * Default parsing functionality via SAX. This parser determines the row information for further use/localisation within
+     * Default parsing functionality via SAX. This parser determines the row
+     * information for further use/localisation within
      * the same run
      *
      * @param path the document path
@@ -233,7 +236,8 @@ public class DocumentParser {
         return saveMode ? readDocumentPlain(input) : readDocument(input);
     }
 
-    private static Document readDocument(final InputStream input) throws ParserConfigurationException, SAXException, IOException {
+    private static Document readDocument(final InputStream input)
+            throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
         final Document d = builder.newDocument();
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -258,7 +262,8 @@ public class DocumentParser {
     }
 
     /**
-     * Implementation that reads the document as fast as possible without any further row reference
+     * Implementation that reads the document as fast as possible without any
+     * further row reference
      *
      * @param input the path
      * @return the document read

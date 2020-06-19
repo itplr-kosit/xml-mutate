@@ -1,12 +1,6 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.DocumentParser;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +8,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.apache.commons.lang3.StringUtils.isNumeric;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
  * This mutator operates on a set of comments, which are used as alternatives to the target element.
@@ -57,7 +58,7 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
             throw new IllegalArgumentException("No comment for index " + index);
         }
         final Node commentToUncomment = comments.get(index);
-        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
+        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>", true);
         stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
             final Node newNode = context.getDocument().importNode(node, true);
             context.getTarget().insertBefore(newNode, commentToUncomment);
