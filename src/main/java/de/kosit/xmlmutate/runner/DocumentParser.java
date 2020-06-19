@@ -114,7 +114,8 @@ public class DocumentParser {
 
         @Override
         public void endPrefixMapping(final String prefix) throws SAXException {
-            final Element current = this.elementStack.peek() != null ? this.elementStack.peek() : this.doc.getDocumentElement();
+            final Element current = this.elementStack.peek() != null ? this.elementStack.peek()
+                    : this.doc.getDocumentElement();
             this.namespaces.getUndeclared().forEach(ns -> {
                 current.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + ns.getPrefix(), ns.getNamespace());
                 ns.setDeclared(true);
@@ -139,7 +140,8 @@ public class DocumentParser {
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
+        public void startElement(final String uri, final String localName, final String qName,
+                final Attributes attributes) {
             addTextIfNeeded();
             final Element el;
             el = this.doc.createElementNS(uri, qName);
@@ -182,23 +184,25 @@ public class DocumentParser {
     }
 
     /**
-     * Default parsing functionality via SAX. This parser determines the row information for further use/localisation
-     * within the same run
+     * Default parsing functionality via SAX. This parser determines the row
+     * information for further use/localisation within the same run
      *
      * @param path the document path
      * @return the document read
      */
     public static Document readDocument(final Path path) {
 
-        try (final InputStream input = Files.newInputStream(path)) {
-            return readDocument(input);
-        } catch (final SAXException | IOException | ParserConfigurationException e) {
-            log.error("Error opening document {}", path, e);
-            throw new IllegalArgumentException("Can not open Document " + path, e);
-        }
+        // try (final InputStream input = Files.newInputStream(path)) {
+        return readDocumentPlain(path);
+        // } catch (final SAXException | IOException | ParserConfigurationException e) {
+        // log.error("Error opening document {}", path, e);
+        // throw new IllegalArgumentException("Can not open Document " + path, e);
+        // }
+
     }
 
-    private static Document readDocument(final InputStream input) throws ParserConfigurationException, SAXException, IOException {
+    private static Document readDocument(final InputStream input)
+            throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
         final Document d = builder.newDocument();
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -223,7 +227,8 @@ public class DocumentParser {
     }
 
     /**
-     * Implementation that reads the document as fast as possible without any further row reference
+     * Implementation that reads the document as fast as possible without any
+     * further row reference
      *
      * @param path the path
      * @return the document read
