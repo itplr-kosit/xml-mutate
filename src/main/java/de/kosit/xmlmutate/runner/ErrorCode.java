@@ -17,10 +17,6 @@ public enum ErrorCode implements NamedError {
 
     WRONG_PARENT("There is structural error. Parents are not the same, but this is expected"),
 
-    STRUCTURAL_MISMATCH("Structural mismatch: {0}"),
-
-    CONFIGURATION_ERRROR("Configuration error: {0}"),
-
     INVALID_MUTATION_PRODUCED("Invalid xml mutation produced"),
 
     MUTATION_XML_FILE_READ_PROBLEM("Error while while trying to read the xml mutation file"),

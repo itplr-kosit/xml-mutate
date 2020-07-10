@@ -2,7 +2,6 @@ package de.kosit.xmlmutate.mutator;
 
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.ErrorCode;
 import de.kosit.xmlmutate.runner.MutationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
