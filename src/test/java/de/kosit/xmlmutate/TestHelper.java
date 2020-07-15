@@ -21,6 +21,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
+import de.kosit.xmlmutate.runner.SavingMode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -137,7 +138,7 @@ public class TestHelper {
         final Element target = doc.createElement("target");
         root.appendChild(target);
         consumer.accept(target);
-        return new MutationContext(pi, documentPath);
+        return new MutationContext(pi, documentPath, SavingMode.SINGLE);
     }
 
     /**

@@ -144,7 +144,7 @@ public class CodeMutationGenerator implements MutationGenerator {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
-        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned,
+        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), mutator.getPreferredName(), trim(code)), cloned,
                 mutator);
     }
 

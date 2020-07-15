@@ -123,7 +123,7 @@ public class WhitespaceMutationGenerator implements MutationGenerator {
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(WhitespaceMutator.INTERNAL_PROP_VALUE, position.randomAddCharacters(context.getTarget().getTextContent(), whitespaceSquence));
         return new Mutation(context.cloneContext(),
-                Services.getNameGenerator().generateName(context.getDocumentName(), position.name()), cloned, mutator);
+                Services.getNameGenerator().generateName(context.getDocumentName(), mutator.getPreferredName(), position.name().toLowerCase()), cloned, mutator);
     }
 
 

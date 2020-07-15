@@ -84,6 +84,11 @@ public class RunnerConfig {
             return this;
         }
 
+        public Builder withSavingMode(final SavingMode savingMode) {
+            this.config.setSavingMode(savingMode);
+            return this;
+        }
+
         public Builder withIgnoreSchemaInvalidity(final boolean ignoreSchemaInvalidity) {
             this.config.setIgnoreSchemaInvalidity(ignoreSchemaInvalidity);
             return this;
@@ -132,6 +137,8 @@ public class RunnerConfig {
     private ExecutorService executorService;
 
     private FailureMode failureMode;
+
+    private SavingMode savingMode = SavingMode.SINGLE;
 
     private boolean saveParsing;
 

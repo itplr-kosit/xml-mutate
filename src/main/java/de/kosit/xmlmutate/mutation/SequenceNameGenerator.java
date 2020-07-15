@@ -1,7 +1,5 @@
 package de.kosit.xmlmutate.mutation;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,12 +14,17 @@ public class SequenceNameGenerator implements NameGenerator {
     }
 
     @Override
-    public String generateName(final String docName, final String postfix) {
-        return docName + (isNotBlank(docName) ? "-" : "") + nextValue() + (isNotBlank(postfix) ? "-" : "") + postfix;
+    public String generateName(final String inputFileName, final String mutatorName, final String postfix) {
+        return inputFileName.replace(".xml", "") + "-" + nextValue() + "-" + mutatorName + "-" + postfix;
     }
 
     @Override
     public String generateName() {
         return Integer.toString(nextValue());
+    }
+
+    @Override
+    public String generateName(final String inputFileName, final String mutatorName) {
+        return  inputFileName.replace(".xml", "") + "-" + nextValue() + "-" + mutatorName;
     }
 }
