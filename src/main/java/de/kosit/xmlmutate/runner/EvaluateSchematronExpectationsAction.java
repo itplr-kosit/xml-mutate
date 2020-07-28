@@ -33,6 +33,10 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
                 final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
 
+                if (!valid) {
+                    mutation.setState(State.ERROR);
+                }
+
                 mutation.getResult().getSchematronExpectationMatches().put(e, valid);
 
                 if (unknownRuleName) {
@@ -45,7 +49,12 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                         "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
                         e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
             });
-            mutation.setState(State.CHECKED);
+
+            if (mutation.getResult().getSchematronExpectationMatches().values().stream().anyMatch(n -> !n)) {
+                mutation.setState(State.ERROR);
+            } else {
+                mutation.setState(State.CHECKED);
+            }
         }
     }
 

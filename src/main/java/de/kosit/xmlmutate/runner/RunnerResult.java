@@ -30,7 +30,7 @@ public class RunnerResult {
      */
     public boolean isErrorPresent() {
         return CollectionUtils.isNotEmpty(this.result)
-                && this.result.stream().flatMap(e -> e.getValue().stream()).anyMatch(n -> n.getState() == State.ERROR);
+                && this.result.stream().flatMap(e -> e.getValue().stream()).anyMatch(Mutation::isErroneousOrContainsErrorMessages);
     }
 
     public boolean isSuccessful() {
