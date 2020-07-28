@@ -16,7 +16,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class Schematron {
 
-    /** Default-Name auf der CMD-Line kein eigener Name angegeben wurde */
+    /**
+     * Default-Name auf der CMD-Line kein eigener Name angegeben wurde
+     */
     public static final String DEFAULT_NAME = "SCHEMATRON";
 
     /**
@@ -36,6 +38,7 @@ public class Schematron {
 
     /**
      * Check if a given rule id is declared in this schematron file
+     *
      * @param id
      * @return
      */

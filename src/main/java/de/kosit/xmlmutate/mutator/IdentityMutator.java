@@ -10,6 +10,8 @@ import java.util.List;
 /**
  * Simple mutator which does not make any changes to the documents.
  * Purpose is to check schematron assertions of the given document.
+ *
+ * @author Andreas Penski
  */
 @Slf4j
 public class IdentityMutator implements Mutator {

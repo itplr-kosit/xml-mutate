@@ -1,13 +1,18 @@
 package de.kosit.xmlmutate.mutation;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-
+/**
+ * A container for all error produced during a mutation
+ *
+ * @author Victor del Campo
+ */
 public class MutationErrorContainer {
 
     // Map because each schematron rule name will have a respective error message
@@ -20,15 +25,31 @@ public class MutationErrorContainer {
     private final List<Exception> globalErrorMessages = new ArrayList<>();
 
 
+    /**
+     * Adds an exception related to a schematron rule
+     *
+     * @param ruleName  the schematron rule name
+     * @param exception the exception
+     */
     public void addSchematronErrorMessage(final String ruleName, final Exception exception) {
         this.schematronErrorMessages.put(ruleName, exception);
     }
 
-    public void addSchemaErrorMessage(final Exception exception) {
+    /**
+     * Adds an exception related to the schema validation
+     *
+     * @param exception - the exception
+     */
+    void addSchemaErrorMessage(final Exception exception) {
 
         this.schemaErrorMessages.add(exception);
     }
 
+    /**
+     * Adds an exception not related to a schematron rule nor to the schema validation
+     *
+     * @param exception the exception
+     */
     public void addGlobalErrorMessage(final Exception exception) {
         this.globalErrorMessages.add(exception);
     }
@@ -50,7 +71,6 @@ public class MutationErrorContainer {
 
     /**
      * To create a common error message list for the report generator in the order needed
-     *
      */
     public List<String> getAllErrorMessages() {
         final List<String> allErrorsList = new ArrayList<>();

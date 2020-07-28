@@ -1,38 +1,34 @@
 package de.kosit.xmlmutate.assertions;
 
+import org.assertj.core.api.AbstractAssert;
+import org.w3c.dom.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.assertj.core.api.AbstractAssert;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
 /**
- * Assertion für {@link Node}, inklusive {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} und
+ * Assertion for {@link Node}, including {@link org.w3c.dom.Element}, {@link org.w3c.dom.Attr} and
  * {@link org.w3c.dom.Document}.
  *
  * @author Andreas Penski
  */
-@SuppressWarnings({ "UnusedReturnValue", "unused" })
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
 
     /**
      * Constructor.
      *
-     * @param node der Knoten der getestet werden soll
+     * @param node der node that should be tested
      */
     NodeAssert(final Node node) {
         super(node, NodeAssert.class);
     }
 
     /**
-     * Sichert, dass das Document einen definierten Namespace deklariert hat.
+     * Ensures that the document has a defined namespace declared
      *
-     * @param namespace der gesuchte Namespace
+     * @param namespace the searched namespace
      * @return this
      */
     public NodeAssert hasDeclaredNamespace(final String namespace) {
@@ -59,7 +55,7 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
     }
 
     /**
-     * Stellt sicher, dass dieser Knoten ein Attribut ist.
+     * Ensures that this node is an attribute
      *
      * @return this
      */
@@ -71,7 +67,7 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
     }
 
     /**
-     * Stellt sicher, dass dieser Knoten ein {@link Element} ist.
+     * Ensures that this node is an {@link Element}
      *
      * @return this
      */
@@ -83,7 +79,7 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
     }
 
     /**
-     * Stellt sicher, dass dieser Knoten ein {@link Document} ist.
+     * Ensures that this node is a {@link Document}
      *
      * @return this
      */
@@ -99,7 +95,7 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
     }
 
     /**
-     * Stellt sicher, dass dieser Knoten das Wurzel-Element ist.
+     * Ensures that this node is a root element
      *
      * @return this
      */
@@ -121,9 +117,9 @@ public class NodeAssert extends AbstractAssert<NodeAssert, Node> {
     }
 
     /**
-     * Sichert, dass dieser {@link Node} zu einem {@link Document} gehört, der einen definierten Root-Knoten hat.
+     * Ensures that this {@link Node} belongs to a {@link Document}, which has a defined root node
      *
-     * @param name der Names des Root-Knotens
+     * @param name the name of the root node
      * @return this
      */
     public NodeAssert hasRootNode(final String name) {

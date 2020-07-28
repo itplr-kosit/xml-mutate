@@ -1,22 +1,23 @@
 package de.kosit.xmlmutate.mutator;
 
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import org.reflections.Reflections;
-
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.reflections.Reflections;
+
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+
 /**
- * Registry für Mutator-Instanzen.
+ * Registry for {@link Mutator} instance.
  *
  * @author Andreas Penski
  */
 public class MutatorRegistry {
 
     /**
-     * Interner Struktur für Lazy-Initialisierung eines Singleton.
+     * Internal structure to lazy-initialize the singleton.
      */
     private static class RegistryHolder {
 
@@ -49,9 +50,7 @@ public class MutatorRegistry {
             try {
                 if (!Modifier.isAbstract(c.getModifiers())) {
                     final Mutator mutator = c.getDeclaredConstructor().newInstance();
-                    mutator.getNames().forEach(o -> {
-                        map.put(o, mutator);
-                    });
+                    mutator.getNames().forEach(o -> map.put(o, mutator));
                 }
             } catch (final ReflectiveOperationException e) {
                 throw new IllegalStateException("Can not initialize mutators", e);
@@ -66,9 +65,7 @@ public class MutatorRegistry {
         mutatorClasses.forEach(c -> {
             try {
                 final MutationGenerator mutator = c.getDeclaredConstructor().newInstance();
-                mutator.getNames().forEach(o -> {
-                    map.put(o, mutator);
-                });
+                mutator.getNames().forEach(o -> map.put(o, mutator));
             } catch (final ReflectiveOperationException e) {
                 throw new IllegalStateException("Can not initialize mutators", e);
             }
@@ -77,20 +74,20 @@ public class MutatorRegistry {
     }
 
     /**
-     * Gibt einen Mutator mit dem angegebenen Namen zurück.
+     * Returns a {@link Mutator} instance identified by name.
      *
-     * @param name der Name des Mutators
-     * @return der Mutator oder null wenn kein Mutator mit dem angegebenen Namen existiert
+     * @param name the name of the mutator
+     * @return the mutator or null if no such mutator exists
      */
     public Mutator getMutator(final String name) {
         return this.mutators.get(name);
     }
 
     /**
-     * Gibt einen MutatorGenerator mit dem angegebenen Namen zurück.
+     * Returns a {@link MutationGenerator} instance identified by name.
      *
-     * @param name der Name des Generators
-     * @return der Generator oder null wenn kein Generator mit dem angegebenen Namen existiert
+     * @param name the name of the generator
+     * @return the mutator or null if no such mutator exists
      */
     public MutationGenerator getGenerator(final String name) {
         final MutationGenerator mutationGenerator = this.generators.get(name);
@@ -99,7 +96,7 @@ public class MutatorRegistry {
     }
 
     /**
-     * Zugriff auf die singuläre Instanz.
+     * Singleton-Access.
      *
      * @return die Registry
      */
