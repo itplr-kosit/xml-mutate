@@ -7,7 +7,4 @@ public interface NameGenerator {
 
     String generateName(String inputFileName, String mutatorName, String postfix);
 
-    String generateName();
-
-    String generateName(String inputFileName, String mutatorName);
 }
