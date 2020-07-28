@@ -1,8 +1,8 @@
 package de.kosit.xmlmutate.mutator;
 
-import static de.kosit.xmlmutate.Assertions.assertThat;
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,7 +41,7 @@ public class TransformationMutatorTest {
         });
         final MutationConfig config = createConfig().add(TransformationMutator.TEMPLATE_PARAM, loadTemplate());
         this.mutator.mutate(context, config);
-        assertThat(context.getTarget()).hasNodeName("test");
+        assertThat(context.getTarget()).hasNodeName("transformed");
         assertThat(context.getTarget().getTextContent()).isNotEqualTo(rand);
         assertThat(context.getTarget()).containsText(rand);
     }
@@ -54,11 +54,11 @@ public class TransformationMutatorTest {
         });
         final Map<String, String> parameters = new HashedMap<>();
         final String randParamValue = randomAlphanumeric(6);
-        parameters.put("simple-param", randParamValue);
+        parameters.put("someParameter", randParamValue);
         final MutationConfig config = createConfig().add(TransformationMutator.TEMPLATE_PARAM, loadTemplate())
                 .add(TransformationMutator.PARAMETER_PARAM, parameters);
         this.mutator.mutate(context, config);
-        assertThat(context.getTarget()).hasNodeName("test");
+        assertThat(context.getTarget()).hasNodeName("transformed");
         assertThat(context.getTarget().getTextContent()).isNotEqualTo(rand);
         assertThat(context.getTarget()).containsText(rand);
         assertThat(context.getTarget()).containsText(randParamValue);
@@ -76,7 +76,7 @@ public class TransformationMutatorTest {
         final MutationConfig config = createConfig().add(TransformationMutator.TEMPLATE_PARAM, loadTemplate())
                 .add(TransformationMutator.PARAMETER_PARAM, parameters);
         this.mutator.mutate(context, config);
-        assertThat(context.getTarget()).hasNodeName("test");
+        assertThat(context.getTarget()).hasNodeName("transformed");
         assertThat(context.getTarget().getTextContent()).isNotEqualTo(rand);
         assertThat(context.getTarget()).containsText(rand);
     }

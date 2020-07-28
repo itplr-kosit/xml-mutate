@@ -1,23 +1,25 @@
 package de.kosit.xmlmutate.runner;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.xml.validation.Schema;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.report.ReportGenerator;
 import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.validation.Schema;
-import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- *
  * Contains whole configuration for a {@link MutationRunner} including all Actions.
  *
  * @author Andreas Penski
@@ -36,6 +38,10 @@ public class RunnerConfig {
             final Builder b = new Builder();
             b.config.setDocuments(docs);
             return b;
+        }
+
+        public static Builder forDocuments(final Path doc) {
+            return forDocuments(Collections.singletonList(doc));
         }
 
         public Builder mode(final RunMode mode) {
@@ -83,6 +89,11 @@ public class RunnerConfig {
             return this;
         }
 
+        public Builder saveParsing(boolean saveParsingMode) {
+            this.config.setSaveParsing(saveParsingMode);
+            return this;
+        }
+
         public RunnerConfig build() {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
@@ -102,7 +113,7 @@ public class RunnerConfig {
     }
 
     /**
-     * Zielverzeichnis für Ausgaben.
+     * Target directory for outputs
      */
     private Path targetFolder;
 
@@ -122,6 +133,14 @@ public class RunnerConfig {
 
     private FailureMode failureMode;
 
+    private boolean saveParsing;
+
     private boolean ignoreSchemaInvalidity;
 
+    public void addTemplate(final String name, final Path transform) {
+        if (this.templates == null) {
+            this.templates = new ArrayList<>();
+        }
+        this.templates.add(new NamedTemplate(name, transform.toUri()));
+    }
 }

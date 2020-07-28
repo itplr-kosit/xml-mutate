@@ -1,26 +1,19 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import lombok.extern.slf4j.Slf4j;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
+import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Mutator which executes an XSLT-Script to mutate the origin document
@@ -34,11 +27,13 @@ public class TransformationMutator extends BaseMutator {
 
     static final String PARAMETER_PARAM = TransformationMutator.class.getSimpleName() + ".Parameters";
 
-    static final String TEMPLATE_NAME_PARAM = "template";
+    private static final String TEMPLATE_NAME_PARAM = "template";
+
+    private final static String MUTATOR_NAME = "xslt";
 
     @Override
     public List<String> getNames() {
-        return Arrays.asList("xslt");
+        return Collections.singletonList(MUTATOR_NAME);
     }
 
     @Override

@@ -1,22 +1,24 @@
 package de.kosit.xmlmutate.mutation;
 
-import de.init.kosit.commons.SyntaxError;
-import de.kosit.xmlmutate.mutator.Mutator;
-import de.kosit.xmlmutate.runner.MutationException;
-import lombok.Getter;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
+import org.apache.commons.lang3.RegExUtils;
+
+import lombok.Getter;
+
+import de.init.kosit.commons.SyntaxError;
+import de.kosit.xmlmutate.mutator.Mutator;
+import de.kosit.xmlmutate.runner.MutationException;
+
 /**
- * Sammelobjekt für eine Mutation innerhalb einer Test-Datei. Sammelt alle
- * möglichen Informationen rund um die Verarbeitung, inkl. Testergebnisse.
+ * Collectible object for a mutation within a test file. It collects all possible
+ * informations about the processing including the test results
  *
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-
 @Getter
 public class Mutation {
 
@@ -67,11 +69,13 @@ public class Mutation {
 
     public void addSchemaErrorMessages(final Collection<SyntaxError> syntaxErrors) {
         this.result.getSchemaValidationErrors().addAll(syntaxErrors);
-        syntaxErrors.forEach(e -> this.mutationErrorContainer.addSchemaErrorMessage(new MutationException(ErrorCode.SCHEMA_ERROR, e.getMessage())));
+        syntaxErrors.forEach(
+                e -> this.mutationErrorContainer.addSchemaErrorMessage(new MutationException(ErrorCode.SCHEMA_ERROR, e.getMessage())));
     }
 
     public Path getResultDocument() {
-        return Paths.get(getContext().getDocumentName()).resolve(this.identifier + ".xml");
+        return Paths.get(getContext().getDocumentName()).resolve(
+                RegExUtils.replacePattern(this.identifier, "[^a-zA-Z0-9\\\\.\\-_]", "_") + ".xml");
     }
 
     public boolean isSchemaValid() {
@@ -91,7 +95,9 @@ public class Mutation {
     }
 
     public boolean isSchemaValidationAsExpected() {
-        return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation().meetsValidationState(this.result.getSchemaValidationState());
+        return configuration.getSchemaValidationExpectation() != null && configuration.getSchemaValidationExpectation()
+                                                                                      .meetsValidationState(
+                                                                                              this.result.getSchemaValidationState());
     }
 
     public boolean isSchemaExpectationSet() {
@@ -107,17 +113,9 @@ public class Mutation {
         return result.isExpectationCompliant();
     }
 
-    /**
-     * Prüft ob eine Mutation Schema- und Schematron-validiert wurde
-     *
-     * @return ob eine Mutation Schema- und Schematron-validiert wurde
-     */
-    public boolean isAllUnprocessed() {
-        return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
-    }
 
     public boolean hasUnexpectedValidation() {
-        return !isAllAsExpected();
+        return !isAllAsExpected() && !isOneAsExpectedAndOneUnprocessed();
     }
 
     public boolean isErroneous() {
@@ -128,6 +126,19 @@ public class Mutation {
         return this.state == State.ERROR || this.mutationErrorContainer.hasAnyErrors();
     }
 
+    public boolean isOneAsExpectedAndOneUnprocessed() {
+        return (this.result.isSchemaValidationAsExpected() && !this.result.isSchematronProcessed())
+                       || (this.result.allSchematronRulesAsExpected() && !this.result.isSchemaProcessed());
+    }
+
+    /**
+     * Check if a mutation was neither schema nor schematron validated
+     *
+     * @return true or false
+     */
+    public boolean isAllUnprocessed() {
+        return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
+    }
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED

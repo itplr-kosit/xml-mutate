@@ -7,20 +7,20 @@
 
     <xsl:output method="xml" indent="yes" />
 
-    <xsl:param name="simple-param" required="no" />
+    <xsl:param name="someParameter" required="no" />
 
     <xsl:template match="/*">
-        <test>
-            <text>
-                This is from Transformation.
-                This is from original:
-                <xsl:value-of select="text()" />
-                param-Value:
-                <xsl:value-of select="$simple-param" />
-            </text>
+        <transformed>
+            <text>This is transformed.</text>
             <orig>
-                <xsl:copy-of select="current()" />
+                <xsl:value-of select="text()" />
             </orig>
-        </test>
+            <param>
+                <xsl:value-of select="$someParameter" />
+            </param>
+            <doc>
+                <xsl:copy-of select="current()" />
+            </doc>
+        </transformed>
     </xsl:template>
 </xsl:stylesheet>

@@ -7,7 +7,7 @@
 
     <xsl:output method="xml" indent="yes" />
 
-    <xsl:param name="simple-param" required="yes" />
+    <xsl:param name="someParameter" required="yes" />
 
     <xsl:template match="/*">
         <test>
@@ -16,7 +16,7 @@
                 This is from original:
                 <xsl:value-of select="text()" />
                 param-Value:
-                <xsl:value-of select="$simple-param" />
+                <xsl:value-of select="$someParameter" />
             </text>
             <orig>
                 <xsl:copy-of select="current()" />

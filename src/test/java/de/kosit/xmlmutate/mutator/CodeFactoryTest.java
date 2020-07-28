@@ -16,7 +16,7 @@ import de.kosit.xmlmutate.mutator.CodeMutationGenerator.CodeFactory;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Testet die Genericode-Parsing-Funktionalitäten.
+ * It tests the generic-code parsing functionalities
  *
  * @author Andreas Penski
  */

@@ -13,10 +13,11 @@ import org.junit.jupiter.api.Test;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Testet die Werte-Liste-Variante des {@link CodeMutationGenerator}s.
+ * Tests the genericode based codelists with {@link CodeMutationGenerator}s.
  * 
  * @author Andreas Penski
  */
@@ -58,8 +59,36 @@ public class CodeMutationGeneratorGenericodeTest {
         config.add("codeKey", "code");
         assertThrows(MutationException.class, () -> {
             this.generator.generateMutations(config, createContext());
-
         });
+    }
+
+    @Test
+    public void testLoadRemoteCodeliste() {
+        final MutationConfig config = createConfig();
+        config.add("genericode", "https://www.xrepository.de/api/xrepository/urn:de:xauslaender:codelist:geschlecht_2/genericode");
+        config.add("codeKey", "Schlüssel");
+        final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
+        assertThat(mutations).hasSize(4);
+    }
+
+    @Test
+    public void testLoadRelativeToDocument() {
+        final MutationConfig config = createConfig();
+        config.add("genericode", "genericode/example2.xml");
+        config.add("codeKey", "Schlüssel");
+        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
+        assertThat(mutations).hasSize(4);
+    }
+
+    @Test
+    public void testLoadRelativeToCurrentWorkingDirectory() {
+        final MutationConfig config = createConfig();
+        config.add("genericode", "src/test/resources/genericode/example2.xml");
+        config.add("codeKey", "Schlüssel");
+        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final List<Mutation> mutations = this.generator.generateMutations(config, context);
+        assertThat(mutations).hasSize(4);
     }
 
 }

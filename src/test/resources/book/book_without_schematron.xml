@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<book isbn="1-861002-85-8">
+    <title>Professional Java XML Programming</title>
+    <?xmute mutator="remove" schema-valid ?>
+    <publisher>Wrox Press</publisher>
+    <price>35.99</price>
+    <pages>772</pages>
+    <chapters>13</chapters>
+    <appendices>13</appendices>
+    <authors>
+        <author>
+            <name>Alexander Nakhimovsky</name>
+            <country>USA</country>
+        </author>
+        <author>
+            <name>Tom Myers</name>
+            <country>Canada</country>
+        </author>
+    </authors>
+    <reviews>
+        <review>
+            <eval>4</eval>
+            <comment>Comprehensive coverage of latest XML and Java news</comment>
+        </review>
+        <review>
+            <eval>5</eval>
+            <comment>Good introduction to Java and XML</comment>
+        </review>
+    </reviews>
+</book>

@@ -1,19 +1,14 @@
 package de.kosit.xmlmutate.runner;
 
-import java.util.stream.IntStream;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationContext;
+import org.w3c.dom.*;
+
+import java.util.stream.IntStream;
 
 /**
- * Diese Aktion stellt den ursprünglichen Zustand des {@link Document}s nach der Mutation wieder her.
- * 
+ * This action recovers the original state of {@link Document} after the mutation
+ *
  * @author Andreas Penski
  */
 class ResetAction implements RunAction {

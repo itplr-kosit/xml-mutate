@@ -27,9 +27,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Parser für die Evaluierung von
- * {@link org.w3c.dom.ProcessingInstruction}-Werte der XMUTE-PIs. Der Parser
- * basiert auf einer ANTLR4-Grammatik.
+ * Parser for the evaluation of
+ * {@link org.w3c.dom.ProcessingInstruction} values of the XMUTE-PIs.
+ * The parser is based on a ANTLR4 grammar.
  *
  * @author Andreas Penski
  */
@@ -54,7 +54,7 @@ public class MutationParser {
     }
 
     /**
-     * Integration mit dem ANTLR4-Parser
+     * Integration with the ANTLR4 parser
      */
     @RequiredArgsConstructor
     public class MutationParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
@@ -177,10 +177,10 @@ public class MutationParser {
     }
 
     /**
-     * Parsed den gegebenen Kontext
+     * Parses the given context
      *
-     * @param context der Kontext im Dokument; entspricht einer PI
-     * @return Liste mit den generierten Mutationen
+     * @param context the document context; corresponds to a PI
+     * @return the list with the generated mutations
      */
     public List<Mutation> parse(final MutationContext context) {
         final MutationParserListener listener = new MutationParserListener(context);

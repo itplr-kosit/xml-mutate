@@ -1,10 +1,10 @@
 package de.kosit.xmlmutate.runner;
 
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * Prüft die definierten Assertions bei den Schematron-Regeln gegebenüber dem
- * validierten Zustand.
+ * Check the assertions defined within the schematron rules againgst the validated state
  *
  * @author Andreas Penski
  */
@@ -30,7 +29,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
         if (!mutation.getResult().getSchematronResult().isEmpty()) {
             mutation.getConfiguration().getSchematronExpectations().forEach(e -> {
 
-                final boolean unknownRuleName = this.checkeUnkknownRuleNames (e, mutation.getResult().getSchematronResult());
+                final boolean unknownRuleName = this.checkeUnkknownRuleNames(e, mutation.getResult().getSchematronResult());
 
                 final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
 
@@ -51,8 +50,8 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
     }
 
     private boolean checkeUnkknownRuleNames(SchematronRuleExpectation e, Map<Schematron, SchematronOutput> schematronResult) {
-        if(!schematronResult.isEmpty())  {
-            final List<String> existingRuleNames  = schematronResult.keySet().stream()
+        if (!schematronResult.isEmpty()) {
+            final List<String> existingRuleNames = schematronResult.keySet().stream()
                     .map(Schematron::getRulesIds)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());

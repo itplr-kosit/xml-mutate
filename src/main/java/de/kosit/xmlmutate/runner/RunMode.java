@@ -2,7 +2,7 @@ package de.kosit.xmlmutate.runner;
 
 public enum RunMode {
     /**
-     * Führe die Mutation aus.
+     * Runs the mutation
      */
     MUTATE, VALIDATE, CHECK, ALL
 }

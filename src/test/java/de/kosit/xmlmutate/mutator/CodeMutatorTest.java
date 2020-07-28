@@ -1,22 +1,21 @@
 package de.kosit.xmlmutate.mutator;
 
-import static de.kosit.xmlmutate.Assertions.assertThat;
-import static de.kosit.xmlmutate.TestHelper.createConfig;
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.runner.MutationException;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.MutationException;
+import static de.kosit.xmlmutate.TestHelper.createConfig;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Testet den CodeMutator mit Werten.
- * 
+ * It tests the code mutator with values.
+ *
  * @author Andreas Penski
  */
 public class CodeMutatorTest {

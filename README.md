@@ -2,13 +2,16 @@
 
 A declarative **XML** instance **Muta**te and **Te**st tool.
 
+Note: GitHub is just a mirror repository. Contact https://twitter.com/renzokott 
+
+
 ## Build
 
 You need Maven > 3.x and JDK > 1.8
 
 Get source code:
 ```
-git clone https://gitlab.com/itplr-kosit/xml-mutate.git .
+git clone https://github.com/itplr-kosit/xml-mutate .
 ```
 
 Build jar:
@@ -113,7 +116,3 @@ As Expected? false
 
 For details see content of [doc/example directory](doc/example).
 
-
-## Specification
-
-See [Specification Document](doc/spec.md) for more details on planning and status.

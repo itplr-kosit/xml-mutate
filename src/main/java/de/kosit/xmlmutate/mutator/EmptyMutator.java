@@ -1,32 +1,30 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.runner.MutationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.ErrorCode;
-import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Mutator, der ein Element leert. Enthält es Unterelemente, werden diese entfernt. Enthält es Text, werden diese
- * entfernt.
- * 
+ * Mutator for emptying an element. If the element to be emptied contains any subelements, they will be removed.
+ * If it contains text it will be removed.
+ *
  * @author Renzo Kottmann
  * @author Andreas Penski
  */
 @Slf4j
 public class EmptyMutator extends BaseMutator {
 
-    private final static String MUTATOR_NAME = "empty";
+    private static final String MUTATOR_NAME = "empty";
 
     @Override
     public List<String> getNames() {
