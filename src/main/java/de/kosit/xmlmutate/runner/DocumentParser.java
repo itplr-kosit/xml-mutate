@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,9 +35,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import de.init.kosit.commons.ObjectFactory;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
+
 /**
- * Parsing-Funktionalitäten.
- * 
+ * Parsing functionalities
+ *
  * @author Andreas Penski
  */
 @Slf4j
@@ -78,8 +81,6 @@ public class DocumentParser {
         public void setDeclared(final String uri) {
             if (isAvailable(uri) && !isDeclared(uri)) {
                 this.namespaces.get(uri).setDeclared(true);
-            } else {
-                // throw new IllegalStateException("Can not be set declared");
             }
         }
 
@@ -89,7 +90,7 @@ public class DocumentParser {
     }
 
     /**
-     * Handler, der die Zeilennummer für die weitere Verarbeitung ermittelt.
+     * Handler that identifies the row number for further processing
      */
     @RequiredArgsConstructor
     private static class PositionalHandler extends DefaultHandler2 {
@@ -121,9 +122,15 @@ public class DocumentParser {
 
         @Override
         public void endPrefixMapping(final String prefix) throws SAXException {
-            final Element current = this.elementStack.peek() != null ? this.elementStack.peek() : this.doc.getDocumentElement();
+            final Element current = this.elementStack.peek() != null ? this.elementStack.peek()
+                    : this.doc.getDocumentElement();
             this.namespaces.getUndeclared().forEach(ns -> {
-                current.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + ns.getPrefix(), ns.getNamespace());
+                final StringBuilder qName = new StringBuilder("xmlns");
+                if (isNotBlank(ns.getPrefix())) {
+                    qName.append(":");
+                    qName.append(ns.getPrefix());
+                }
+                current.setAttributeNS("http://www.w3.org/2000/xmlns/", qName.toString(), ns.getNamespace());
                 ns.setDeclared(true);
             });
             this.namespaces.remove(prefix);
@@ -146,7 +153,8 @@ public class DocumentParser {
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
+        public void startElement(final String uri, final String localName, final String qName,
+                final Attributes attributes) {
             addTextIfNeeded();
             final Element el;
             el = this.doc.createElementNS(uri, qName);
@@ -168,6 +176,19 @@ public class DocumentParser {
             this.textBuffer.append(ch, start, length);
         }
 
+        @Override
+        public void startCDATA() throws SAXException {
+            addTextIfNeeded();
+        }
+
+        @Override
+        public void endCDATA() throws SAXException {
+            final CDATASection cdata = this.doc.createCDATASection(this.textBuffer.toString());
+            cdata.setNodeValue(this.textBuffer.toString());
+            append(cdata);
+            this.textBuffer.delete(0, this.textBuffer.length());
+        }
+
         // Outputs text accumulated under the current node
         private void addTextIfNeeded() {
             if (this.textBuffer.length() > 0) {
@@ -180,7 +201,7 @@ public class DocumentParser {
     }
 
     /**
-     * UserData-Key für die Zeilennummer.
+     * UserData-Key for the row number
      */
     public static final String LINE_NUMBER_KEY_NAME = "lineNumber";
 
@@ -189,23 +210,34 @@ public class DocumentParser {
     }
 
     /**
-     * Default-Parsing-Funktionalität via SAX. Dieser Parser ermittelt Zeileninformationen zur weiteren
-     * Verwendung/Lokalisierung innerhalb Durchlaufs.
-     * 
-     * @param path der Pfad des Dokuments.
-     * @return das eingelesene Dokument
+     * Default parsing functionality via SAX. This parser determines the row
+     * information for further use/localisation within
+     * the same run
+     *
+     * @param path the document path
+     * @return the document read
      */
-    public static Document readDocument(final Path path) {
 
+    public static Document readDocument(final Path path) {
+        return readDocument(path, false);
+    }
+
+    public static Document readDocument(final Path path, final boolean saveMode) {
         try ( final InputStream input = Files.newInputStream(path) ) {
-            return readDocument(input);
+            return readDocument(input, saveMode);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", path, e);
             throw new IllegalArgumentException("Can not open Document " + path, e);
         }
     }
 
-    private static Document readDocument(final InputStream input) throws ParserConfigurationException, SAXException, IOException {
+    private static Document readDocument(final InputStream input, final boolean saveMode)
+            throws IOException, SAXException, ParserConfigurationException {
+        return saveMode ? readDocumentPlain(input) : readDocument(input);
+    }
+
+    private static Document readDocument(final InputStream input)
+            throws ParserConfigurationException, SAXException, IOException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
         final Document d = builder.newDocument();
         final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -220,9 +252,9 @@ public class DocumentParser {
 
     }
 
-    public static Document readDocument(final String xml) {
+    public static Document readDocument(final String xml, final boolean saveMode) {
         try ( final InputStream input = new ByteArrayInputStream(xml.getBytes()) ) {
-            return readDocument(input);
+            return readDocument(input, saveMode);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
             log.error("Error opening document {}", xml, e);
             throw new IllegalArgumentException("Can not open Document from " + xml, e);
@@ -230,18 +262,15 @@ public class DocumentParser {
     }
 
     /**
-     * Implementierung, welche das Dokument möglichst schnell, ohne weiteren Zeilenbezug o.ä. einliest
-     * 
-     * @param path der Pfad
-     * @return das eingelesene Dokument
+     * Implementation that reads the document as fast as possible without any
+     * further row reference
+     *
+     * @param input the path
+     * @return the document read
      */
-    public static Document readDocumentPlain(final Path path) {
+    private static Document readDocumentPlain(final InputStream input) throws IOException, SAXException {
         final DocumentBuilder builder = ObjectFactory.createDocumentBuilder(false);
-        try ( final InputStream input = Files.newInputStream(path) ) {
-            return builder.parse(input);
-        } catch (final SAXException | IOException e) {
-            log.error("Error opening document {}", path, e);
-            throw new IllegalArgumentException("Can not open Document " + path, e);
-        }
+        return builder.parse(input);
+
     }
 }

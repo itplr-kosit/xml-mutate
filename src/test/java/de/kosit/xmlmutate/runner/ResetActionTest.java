@@ -1,21 +1,20 @@
 package de.kosit.xmlmutate.runner;
 
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static de.kosit.xmlmutate.TestHelper.createRootContext;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationContext;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.TestHelper.createRootContext;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Testet das Resetten des Dokuments.
- * 
+ * It tests the reset action of a document.
+ *
  * @author Andreas Penski
  */
 public class ResetActionTest {

@@ -1,26 +1,24 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.io.StringWriter;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import de.init.kosit.commons.ObjectFactory;
+import org.apache.commons.lang3.ArrayUtils;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import de.init.kosit.commons.ObjectFactory;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
- * Basisklasse für Mutatoren.
- * 
+ * Basic class for mutators
+ *
  * @author Andreas Penski
  */
 public abstract class BaseMutator implements Mutator {
@@ -46,7 +44,7 @@ public abstract class BaseMutator implements Mutator {
     }
 
     protected static Stream<Node> streamElements(final NodeList list) {
-        return stream(list, new short[] { Node.ELEMENT_NODE });
+        return stream(list, new short[]{Node.ELEMENT_NODE});
     }
 
     protected static Stream<Node> stream(final NodeList list, final short... types) {

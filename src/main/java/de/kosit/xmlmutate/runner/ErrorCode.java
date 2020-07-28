@@ -17,10 +17,6 @@ public enum ErrorCode implements NamedError {
 
     WRONG_PARENT("There is structural error. Parents are not the same, but this is expected"),
 
-    STRUCTURAL_MISMATCH("Structural mismatch: {0}"),
-
-    CONFIGURATION_ERRROR("Configuration error: {0}"),
-
     INVALID_MUTATION_PRODUCED("Invalid xml mutation produced"),
 
     MUTATION_XML_FILE_READ_PROBLEM("Error while while trying to read the xml mutation file"),
@@ -35,7 +31,7 @@ public enum ErrorCode implements NamedError {
 
     SCHEMATRON_EVALUATION_ERROR("Schematron evaluation error: {0}"),
 
-    ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid"),
+    ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid:{1}"),
 
     CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION("No {0} given at CLI but expectation declared in a xmute pi");
 

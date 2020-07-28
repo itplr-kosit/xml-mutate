@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.saxon.lib.NamespaceConstant;
 import net.sf.saxon.s9api.*;
 import org.apache.commons.io.FilenameUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -18,17 +17,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
-
-import java.io.*;
+import javax.xml.xpath.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
-
 import java.nio.file.Path;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,13 +36,13 @@ import java.util.List;
 @Slf4j
 public class SchematronCompiler {
 
-    private static final String ISO_SCHEMATRON_FOLDER =  "/iso-schematron-xslt2";
-    private static final String ISO_SCHEMATRON_INCLUDE = ISO_SCHEMATRON_FOLDER +  "/iso_dsdl_include.xsl";
+    private static final String ISO_SCHEMATRON_FOLDER = "/iso-schematron-xslt2";
+    private static final String ISO_SCHEMATRON_INCLUDE = ISO_SCHEMATRON_FOLDER + "/iso_dsdl_include.xsl";
     private static final String ISO_SCHEMATRON_EXPAND = ISO_SCHEMATRON_FOLDER + "/iso_abstract_expand.xsl";
     private static final String ISO_SCHEMATRON_COMPILE = ISO_SCHEMATRON_FOLDER + "/iso_svrl_for_xslt2.xsl";
     private static final String ISO_SCHEMATRON_SAXON = ISO_SCHEMATRON_FOLDER + "/iso_schematron_skeleton_for_saxon.xsl";
 
-    private static final String OUTPUT_FOLDER =  File.separator + "xslt";
+    private static final String OUTPUT_FOLDER = File.separator + "xslt";
 
     /**
      * Method that extract the ids of the schematron rules (of the compiled
@@ -162,7 +155,7 @@ public class SchematronCompiler {
         final String fileName = fileNameBase + ".xsl";
         // Transform to file/URI
         final Transformer transformer = ObjectFactory.createTransformer(true);
-        final File compiledFile = new File( target.toString() + OUTPUT_FOLDER, fileName);
+        final File compiledFile = new File(target.toString() + OUTPUT_FOLDER, fileName);
         try {
             transformer.transform(generatedXsltSource, new StreamResult(compiledFile));
         } catch (TransformerException e) {

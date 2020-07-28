@@ -20,7 +20,6 @@ import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.MarkMutationAction.RemoveCommentAction;
 
 /**
- *
  * Contains whole configuration for a {@link MutationRunner} including all Actions.
  *
  * @author Andreas Penski
@@ -90,6 +89,11 @@ public class RunnerConfig {
             return this;
         }
 
+        public Builder saveParsing(boolean saveParsingMode) {
+            this.config.setSaveParsing(saveParsingMode);
+            return this;
+        }
+
         public RunnerConfig build() {
             this.config.getActions().add(new MarkMutationAction.InsertCommentAction());
             this.config.getActions().add(new MutateAction());
@@ -109,7 +113,7 @@ public class RunnerConfig {
     }
 
     /**
-     * Zielverzeichnis für Ausgaben.
+     * Target directory for outputs
      */
     private Path targetFolder;
 
@@ -128,6 +132,8 @@ public class RunnerConfig {
     private ExecutorService executorService;
 
     private FailureMode failureMode;
+
+    private boolean saveParsing;
 
     private boolean ignoreSchemaInvalidity;
 

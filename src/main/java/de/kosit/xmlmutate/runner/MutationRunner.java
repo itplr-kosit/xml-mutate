@@ -32,7 +32,7 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationParser;
 
 /**
- * Runner, der die eigentliche Verarbeitung der Dokument übernimmt.
+ * Runner that undertakes the actual processing of the document
  *
  * @author Andreas Penski
  */
@@ -75,7 +75,8 @@ public class MutationRunner {
                 final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(),
                         document);
                 if (result.isInvalid()) {
-                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString());
+                    throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString(),
+                            result.getErrorDescription());
                 }
             } catch (final IOException | SAXException e) {
                 throw new MutationException(ErrorCode.MUTATION_XML_FILE_READ_PROBLEM);
@@ -103,7 +104,7 @@ public class MutationRunner {
 
     Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
-            final Document d = DocumentParser.readDocument(path);
+            final Document d = DocumentParser.readDocument(path, this.configuration.isSaveParsing());
             final List<Mutation> mutations = parseMutations(d, path);
 
             // If there is only mutation with an error, we dont need to process it

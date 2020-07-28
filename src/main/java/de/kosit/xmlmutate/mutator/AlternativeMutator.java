@@ -19,7 +19,7 @@ import de.kosit.xmlmutate.runner.DocumentParser;
 
 /**
  * This mutator operates on a set of comments, which are used as alternatives to the target element.
- * 
+ *
  * @author Andreas Penski
  */
 public class AlternativeMutator extends BaseMutator implements MutationGenerator {
@@ -58,7 +58,7 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
             throw new IllegalArgumentException("No comment for index " + index);
         }
         final Node commentToUncomment = comments.get(index);
-        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>");
+        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>", true);
         stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
             final Node newNode = context.getDocument().importNode(node, true);
             context.getTarget().insertBefore(newNode, commentToUncomment);

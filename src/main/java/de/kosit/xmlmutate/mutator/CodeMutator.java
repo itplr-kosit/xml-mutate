@@ -1,19 +1,17 @@
 package de.kosit.xmlmutate.mutator;
 
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.runner.MutationException;
+import org.w3c.dom.Node;
+
 import java.util.Collections;
 import java.util.List;
 
-import org.w3c.dom.Node;
-
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.ErrorCode;
-import de.kosit.xmlmutate.runner.MutationException;
-
 /**
- * Mutator für Codes. Erzeugt eine einfache Textersetzung der Code-Werte. Die eigentliche Konfiguration der
- * {@link de.kosit.xmlmutate.mutation.Mutation} erfolgt über den {@link CodeMutationGenerator}.
- * 
+ * Mutator for codes. It produces a simple text replacement of the code values. The actual configuration of
+ * {@link de.kosit.xmlmutate.mutation.Mutation} is carried out through the {@link CodeMutationGenerator}.
+ *
  * @author Andreas Penski
  */
 public class CodeMutator extends BaseMutator {

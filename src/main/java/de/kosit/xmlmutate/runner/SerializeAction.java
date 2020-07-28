@@ -1,28 +1,24 @@
 package de.kosit.xmlmutate.runner;
 
+import com.google.common.base.Charsets;
+import de.init.kosit.commons.ObjectFactory;
+import de.kosit.xmlmutate.mutation.Mutation;
+import lombok.RequiredArgsConstructor;
+import org.w3c.dom.Document;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-
-import com.google.common.base.Charsets;
-
-import lombok.RequiredArgsConstructor;
-
-import de.init.kosit.commons.ObjectFactory;
-import de.kosit.xmlmutate.mutation.Mutation;
-
 /**
- * Serialisiert das mutierte {@link org.w3c.dom.Document} in eine Datei.
- * 
+ * Serializes the mutated {@link org.w3c.dom.Document} into a file
+ *
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
@@ -32,7 +28,7 @@ public class SerializeAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
-            final Path target = this.targetFolder.resolve(mutation.getResultDocument());
+        final Path target = this.targetFolder.resolve(mutation.getResultDocument());
         serialize(mutation.getContext().getDocument(), target);
     }
 
