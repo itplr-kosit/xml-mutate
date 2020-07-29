@@ -139,10 +139,10 @@ public class MutationRunner {
     private void process(final Mutation mutation) {
         log.info("Running mutation {}", mutation.getIdentifier());
         this.configuration.getActions().forEach(a -> {
-            if (mutation.isErroneous() && !(a instanceof ResetAction) && !(a instanceof MarkMutationAction.RemoveCommentAction)) {
+            if (mutation.isErroneous() && mutation.isSchemaValid()
+                    && !(a instanceof ResetAction) && !(a instanceof MarkMutationAction.RemoveCommentAction)) {
                 return;
             }
-
             try {
                 log.debug("Running {} for {}", a.getClass().getSimpleName(), mutation.getIdentifier());
                 a.run(mutation);
