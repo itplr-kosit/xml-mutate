@@ -16,16 +16,16 @@
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cac:PartyName>
-                <?xmute mutator="text" max-length="400" ?>
+
                 <cbc:Name>[Seller trading name]</cbc:Name>
             </cac:PartyName>
             <cac:PostalAddress>
                 <cbc:StreetName>[Seller address line 1]</cbc:StreetName>
-                <?xmute mutator="remove" xpath="." schema-valid schematron-invalid = "bt-br-03" ?>
+<!--                <?xmute mutator="remove" xpath="." schema-valid schematron-invalid = "bt-br-03" ?>-->
                 <cbc:CityName>bremen</cbc:CityName>
                 <cbc:PostalZone>12345</cbc:PostalZone>
                 <cac:Country>
-                    <?xmute mutator="remove" xpath="." schema-valid schematron-invalid = "bt-br-03" ?>
+<!--                    <?xmute mutator="remove" xpath="." schema-valid schematron-invalid = "bt-br-03" ?>-->
                     <cbc:IdentificationCode>DE</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
@@ -40,6 +40,7 @@
                 <cbc:CompanyID>[HRA-Eintrag]</cbc:CompanyID>
                 <cbc:CompanyLegalForm>123/456/7890, HRA-Eintrag in […]</cbc:CompanyLegalForm>
             </cac:PartyLegalEntity>
+            <?xmute mutator="remove"  schema-valid schematron-valid = "schematron:BR-DE-2" ?>
             <cac:Contact>
                 <cbc:Name>nicht vorhanden</cbc:Name>
                 <cbc:Telephone>+49 1234-5678</cbc:Telephone>
@@ -106,9 +107,9 @@
         <cac:OrderLineReference>
             <cbc:LineID>6171175.1</cbc:LineID>
         </cac:OrderLineReference>
-        <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
+<!--        <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>-->
         <cac:Item>
-            <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
+<!--            <?xmute mutator="empty" xpath="." schema-valid schematron-invalid="bt-br-03" ?>-->
             <cbc:Description>Zeitschrift Inland</cbc:Description>
             <cbc:Name>Zeitschrift [...]</cbc:Name>
             <cac:SellersItemIdentification>
@@ -143,7 +144,7 @@
                 </cac:TaxScheme>
             </cac:ClassifiedTaxCategory>
         </cac:Item>
-        <?xmute mutator="remove" xpath="." schema-valid schematron-invalid="bt-br-03" ?>
+<!--        <?xmute mutator="remove" xpath="." schema-valid schematron-invalid="bt-br-03" ?>-->
         <cac:Price>
             <cbc:PriceAmount currencyID="EUR">26.07</cbc:PriceAmount>
         </cac:Price>

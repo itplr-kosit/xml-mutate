@@ -50,7 +50,7 @@ public class SchematronValidationTest {
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        final SchematronRuleExpectation ruleExpectation = new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL);
+        final SchematronRuleExpectation ruleExpectation = new SchematronRuleExpectation("schematron", "Book-2", ExpectedResult.FAIL);
         config.addExpectation(ruleExpectation);
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
@@ -68,7 +68,7 @@ public class SchematronValidationTest {
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-2", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -86,7 +86,7 @@ public class SchematronValidationTest {
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-2", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -104,7 +104,7 @@ public class SchematronValidationTest {
 
         final MutationConfig config = new MutationConfig();
         // DECLARATION (known/unknown) AND EXPECTATION
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-2", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-2", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -120,12 +120,13 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-1", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
 
         assertThat(mutation.getResult().getSchematronValidationState()).isEqualTo(MutationResult.ValidationState.VALID);
+
 
     }
 
@@ -136,7 +137,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-1", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -152,7 +153,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-1", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -168,7 +169,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-1", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-1", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -184,7 +185,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-145", ExpectedResult.FAIL));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-145", ExpectedResult.FAIL));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -200,7 +201,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.addExpectation(new SchematronRuleExpectation("test", "Book-145", ExpectedResult.PASS));
+        config.addExpectation(new SchematronRuleExpectation("schematron", "Book-145", ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -215,7 +216,7 @@ public class SchematronValidationTest {
         final Schema schema = TestResource.BookResources.getSchema();
 
         // Only extracted rule names BR-DE-1 and BR-DE-2 for this specific testing
-        final Schematron schematron = new Schematron("schematron file", TestResource.BookResources.XSL, Arrays.asList("Book-1", "Book-2"));
+        final Schematron schematron = new Schematron("schematron", TestResource.BookResources.XSL, Arrays.asList("Book-1", "Book-2"));
         schematronFiles.add(schematron);
         return new ValidateAction(schema, schematronFiles, targetFolder);
     }

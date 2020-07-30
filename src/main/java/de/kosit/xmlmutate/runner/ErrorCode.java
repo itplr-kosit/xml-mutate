@@ -21,7 +21,7 @@ public enum ErrorCode implements NamedError {
 
     MUTATION_XML_FILE_READ_PROBLEM("Error while while trying to read the xml mutation file"),
 
-    SCHEMATRON_RULE_NOT_EXIST("Rule {0} does not exist"),
+    SCHEMATRON_RULE_NOT_EXIST("Rule {0} does not exist in schematron {1}"),
 
     SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation assert for {0}"),
 
