@@ -22,7 +22,9 @@ public enum ErrorCode implements NamedError {
 
     SCHEMA_ERROR("Schema validation error: {0}"),
 
-    SCHEMATRON_RULE_DEFINITION_ERROR("Schematron rule definition incorrect: {0}");
+    SCHEMATRON_RULE_DEFINITION_ERROR("Schematron rule definition incorrect: {0}"),
+
+    SCHEMATRON_KEYWORD_ERROR("Schematron validity definition incorrect");;
 
     @Getter
     private final String template;

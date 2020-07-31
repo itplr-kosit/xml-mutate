@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -97,15 +96,19 @@ public class MutationParser {
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             // replaceAll includes unbreakable spaces too
             final SchematronRulesParserListener l = new SchematronRulesParserListener(evaluateExpectedResult(ctx));
-            final List<SchematronRuleExpectation> expectations = parse(
-                    unquote(ctx.schematronText().getText()), l, parser -> {
-                        parser.schematronRules();
-                        return l.getExpectations();
-                    }, e -> null);
-            if (expectations == null) {
-                throw new MutationException(ErrorCode.SCHEMATRON_RULE_DEFINITION_ERROR, unquote(ctx.schematronText().getText()));
-            } else {
+            try {
+                final List<SchematronRuleExpectation> expectations = parse(
+                        unquote(ctx.schematronText().getText()), l, parser -> {
+                            parser.schematronRules();
+                            return l.getExpectations();
+                        }, e -> null);
                 expectations.forEach(this.config::addExpectation);
+            } catch (final Exception e) {
+                if (ctx.schematronText() != null) {
+                    throw new MutationException(ErrorCode.SCHEMATRON_RULE_DEFINITION_ERROR, unquote(ctx.schematronText().getText()));
+                } else {
+                    throw new MutationException(ErrorCode.SCHEMATRON_KEYWORD_ERROR);
+                }
             }
         }
 
