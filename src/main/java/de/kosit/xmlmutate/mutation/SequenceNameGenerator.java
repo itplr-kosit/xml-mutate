@@ -17,7 +17,17 @@ public class SequenceNameGenerator implements NameGenerator {
 
     @Override
     public String generateName(final String inputFileName, final String mutatorName, final String postfix) {
-        return inputFileName.replace(".xml", "") + "-" + nextValue() + "-" + mutatorName + (StringUtils.isEmpty(postfix)?"":"-" +postfix);
+        final String preprocessed = inputFileName.replace(".xml", "") + "-" + nextValue() + "-" + mutatorName + (StringUtils.isEmpty(postfix) ? "" : "-" + processPostfix(postfix));
+        return preprocessed.replace(" ", "-");
+    }
+
+    private String processPostfix(final String postfix) {
+        final String asciiRemoved = postfix.replaceAll("[^\\x00-\\x7F]", "");
+        if (StringUtils.isBlank(asciiRemoved)) {
+            return "non-ascii-value";
+        } else {
+            return asciiRemoved;
+        }
     }
 
 
