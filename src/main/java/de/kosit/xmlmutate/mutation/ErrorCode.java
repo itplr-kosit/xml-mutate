@@ -20,7 +20,9 @@ public enum ErrorCode implements NamedError {
 
     NO_MUTATION_FOUND("No mutation can be found for {0}. Is PI last element?"),
 
-    SCHEMA_ERROR("Schema validation error: {0}");
+    SCHEMA_ERROR("Schema validation error: {0}"),
+
+    SCHEMATRON_RULE_DEFINITION_ERROR("Schematron rule definition incorrect: {0}");
 
     @Getter
     private final String template;

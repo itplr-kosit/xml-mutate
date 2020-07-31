@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,7 +102,11 @@ public class MutationParser {
                         parser.schematronRules();
                         return l.getExpectations();
                     }, e -> null);
-            expectations.forEach(this.config::addExpectation);
+            if (expectations == null) {
+                throw new MutationException(ErrorCode.SCHEMATRON_RULE_DEFINITION_ERROR, unquote(ctx.schematronText().getText()));
+            } else {
+                expectations.forEach(this.config::addExpectation);
+            }
         }
 
         private ExpectedResult evaluateExpectedResult(final SchematronKeywordContext ctx) {
