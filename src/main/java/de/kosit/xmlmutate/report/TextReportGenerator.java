@@ -493,11 +493,12 @@ public class TextReportGenerator extends BaseReportGenerator {
             final boolean sucess = countSuccessful(allMutations) == allMutations.size();
             final boolean failureButSuccess = failureMode == FailureMode.FAIL_NEVER;
             this.writer.write(
-                    new Line((sucess || failureButSuccess ? Code.GREEN : Code.RED)).add("Result: " + (sucess || failureButSuccess ? "SUCCESSFUL" :"FAILURE"))
+                    new Line((sucess || failureButSuccess ? Code.GREEN : Code.RED)).add("Result: " + (sucess || failureButSuccess ? "SUCCESSFUL" : "FAILURE"))
                             .render());
             this.writer.write(summary.render());
+            this.writer.write(dashes + "\n");
+            this.writer.write(new Line(Code.BLUE).add(getVersionLine()).render());
             this.writer.write(dashes);
-
             this.writer.flush();
         } catch (final IOException e) {
             log.error("Error generating report", e);
@@ -553,7 +554,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final List<String> allErrors = mutation.getMutationErrorContainer().getAllErrorMessagesSorted(failed.stream()
                 .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList()));
 
-        final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, isSchematronExpectationSet,  failed);
+        final List<Cell> expectationCells = createSchematronExpectationCells(isSchematronProcessed, isSchematronExpectationSet, failed);
 
 
         // grid.addCell(mutation.getIdentifier());

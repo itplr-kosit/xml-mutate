@@ -1,10 +1,11 @@
 package de.kosit.xmlmutate.report;
 
-import static java.lang.Math.toIntExact;
+import de.kosit.xmlmutate.context.ProjectInfo;
+import de.kosit.xmlmutate.mutation.Mutation;
 
 import java.util.List;
 
-import de.kosit.xmlmutate.mutation.Mutation;
+import static java.lang.Math.toIntExact;
 
 /**
  * @author Andreas Penski
@@ -15,8 +16,7 @@ public abstract class BaseReportGenerator implements ReportGenerator {
     /**
      * Counts all valid mutations
      *
-     * @param mutations
-     *                      all mutations
+     * @param mutations all mutations
      * @return number of valid mutations
      */
     protected static long aggregateValid(final List<Mutation> mutations) {
@@ -26,8 +26,7 @@ public abstract class BaseReportGenerator implements ReportGenerator {
     /**
      * Counts failed mutations
      *
-     * @param mutations
-     *                      all mutations
+     * @param mutations all mutations
      * @return number of failed mutations
      */
     protected static long countFailures(final List<Mutation> mutations) {
@@ -37,8 +36,7 @@ public abstract class BaseReportGenerator implements ReportGenerator {
     /**
      * Counts mutations with processing errors.
      *
-     * @param mutations
-     *                      all mutations
+     * @param mutations all mutations
      * @return number of mutations with errors
      */
     protected int countErrors(final List<Mutation> mutations) {
@@ -48,11 +46,20 @@ public abstract class BaseReportGenerator implements ReportGenerator {
     /**
      * Counts mutations which are successful.
      *
-     * @param mutations
-     *                      all mutations
+     * @param mutations all mutations
      * @return number of mutations with errors
      */
     protected int countSuccessful(final List<Mutation> mutations) {
         return toIntExact(mutations.stream().filter(x -> x.isAllAsExpected() || x.isOneAsExpectedAndOneUnprocessed()).count());
+    }
+
+    /**
+     * Create a line with project name and project version
+     *
+     * @return the created line
+     */
+    protected String getVersionLine() {
+        final ProjectInfo projectInfo = new ProjectInfo();
+        return projectInfo.getName() + " - Version: " + projectInfo.getVersion();
     }
 }
