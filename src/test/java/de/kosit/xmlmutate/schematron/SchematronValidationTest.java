@@ -1,42 +1,38 @@
 package de.kosit.xmlmutate.schematron;
 
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
+import de.kosit.xmlmutate.TestResource;
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronEnterity;
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationResult;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.ValidateAction;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
-
-import de.kosit.xmlmutate.TestResource;
-import de.kosit.xmlmutate.expectation.SchematronEnterity;
-import javafx.util.Pair;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import de.kosit.xmlmutate.expectation.ExpectedResult;
-import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationResult;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.Services;
-import de.kosit.xmlmutate.runner.ValidateAction;
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A test class for all relevant combinations concerning schematron rules being declared or not
- *
+ * <p>
  * The schema validation is being ignored
  *
  * @author Victor del Campo
@@ -220,7 +216,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.setSchematronEnterityExpectation(new Pair<> (SchematronEnterity.ALL, ExpectedResult.PASS));
+        config.setSchematronEnterityExpectation(Pair.of(SchematronEnterity.ALL, ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -236,7 +232,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.setSchematronEnterityExpectation(new Pair<> (SchematronEnterity.ALL, ExpectedResult.PASS));
+        config.setSchematronEnterityExpectation(Pair.of(SchematronEnterity.ALL, ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);
@@ -252,7 +248,7 @@ public class SchematronValidationTest {
         final Document doc = getXmlDocument(filePath);
 
         final MutationConfig config = new MutationConfig();
-        config.setSchematronEnterityExpectation(new Pair<> (SchematronEnterity.NONE, ExpectedResult.PASS));
+        config.setSchematronEnterityExpectation(Pair.of(SchematronEnterity.NONE, ExpectedResult.PASS));
 
         final Mutation mutation = new Mutation(createContext(doc, filePath), RandomStringUtils.randomAlphanumeric(5), config);
         createValidationAction().run(mutation);

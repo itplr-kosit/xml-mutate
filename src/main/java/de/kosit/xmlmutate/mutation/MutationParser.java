@@ -10,7 +10,6 @@ import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
-import javafx.util.Pair;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Parser for the evaluation of
@@ -114,7 +114,7 @@ public class MutationParser {
                     }
                 }
             } else {
-                this.config.setSchematronEnterityExpectation(new Pair<>(evaluateEnterity(ctx), evaluateExpectedResult(ctx)));
+                this.config.setSchematronEnterityExpectation(Pair.of(evaluateEnterity(ctx), evaluateExpectedResult(ctx)));
             }
         }
 

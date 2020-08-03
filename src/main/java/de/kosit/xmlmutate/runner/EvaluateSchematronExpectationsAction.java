@@ -8,7 +8,7 @@ import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
