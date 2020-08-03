@@ -108,6 +108,9 @@ public class Mutation {
         return !configuration.getSchematronExpectations().isEmpty();
     }
 
+    public boolean isSchematronEnteritySet() {
+        return configuration.getSchematronEnterityExpectation() != null;
+    }
 
     public boolean isAllAsExpected() {
         return result.isExpectationCompliant();
@@ -139,6 +142,8 @@ public class Mutation {
     public boolean isAllUnprocessed() {
         return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
     }
+
+
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED

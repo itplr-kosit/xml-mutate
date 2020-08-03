@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
@@ -9,6 +10,7 @@ import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.MutatorRegistry;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
+import javafx.util.Pair;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -96,16 +98,32 @@ public class MutationParser {
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             // replaceAll includes unbreakable spaces too
             final SchematronRulesParserListener l = new SchematronRulesParserListener(evaluateExpectedResult(ctx));
-            final List<SchematronRuleExpectation> expectations = parse(
-                    unquote(ctx.schematronText().getText()), l, parser -> {
-                        parser.schematronRules();
-                        return l.getExpectations();
-                    }, e -> null);
-            expectations.forEach(this.config::addExpectation);
+            if (ctx.entirity() == null) {
+                try {
+                    final List<SchematronRuleExpectation> expectations = parse(
+                            unquote(ctx.schematronText().getText()), l, parser -> {
+                                parser.schematronRules();
+                                return l.getExpectations();
+                            }, e -> null);
+                    expectations.forEach(this.config::addExpectation);
+                } catch (final Exception e) {
+                    if (ctx.schematronText() != null) {
+                        throw new MutationException(ErrorCode.SCHEMATRON_RULE_DEFINITION_ERROR, unquote(ctx.schematronText().getText()));
+                    } else {
+                        throw new MutationException(ErrorCode.SCHEMATRON_KEYWORD_ERROR);
+                    }
+                }
+            } else {
+                this.config.setSchematronEnterityExpectation(new Pair<>(evaluateEnterity(ctx), evaluateExpectedResult(ctx)));
+            }
         }
 
         private ExpectedResult evaluateExpectedResult(final SchematronKeywordContext ctx) {
             return ctx.assertion().getText().equals("valid") ? ExpectedResult.PASS : ExpectedResult.FAIL;
+        }
+
+        private SchematronEnterity evaluateEnterity(final SchematronKeywordContext ctx) {
+            return ctx.entirity().getText().equals("all") ? SchematronEnterity.ALL : SchematronEnterity.NONE;
         }
 
 

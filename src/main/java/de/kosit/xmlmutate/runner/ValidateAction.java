@@ -58,22 +58,23 @@ public class ValidateAction implements RunAction {
 
         final List<SchematronRuleExpectation> unknownRules = new ArrayList<>();
         final List<SchematronRuleExpectation> failedRules = new ArrayList<>();
-
+        int failedCount = 0;
         for (final Schematron schematron : getSchematronFiles()) {
 
             this.log.debug("Using schematron={}", schematron.getName());
 
             // Add unknown rules to this schematron file
             unknownRules.addAll(mutation.getConfiguration().getSchematronExpectations().stream().filter(n -> !schematron.hasRule(n)).collect(Collectors.toList()));
-
             try {
                 final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(),
                         mutation.getContext().getDocument());
                 this.log.debug("result={}", out.getText());
-
                 // add failed rules that were also declared, to this schematron file
-                failedRules.addAll(getDeclaredFailedRules(schematron.getName(), out, mutation.getConfiguration().getSchematronExpectations()));
-
+                if (mutation.getConfiguration().getSchematronEnterityExpectation() == null) {
+                    failedRules.addAll(getDeclaredFailedRules(schematron.getName(), out, mutation.getConfiguration().getSchematronExpectations()));
+                } else {
+                    failedCount += out.getFailedAsserts().size();
+                }
                 mutation.getResult().addSchematronResult(schematron, out);
 
             } catch (final CommonException e) {
@@ -86,19 +87,21 @@ public class ValidateAction implements RunAction {
             }
 
         }
-
         // Check which unknown rules were unknown to all schematron files
         final List<SchematronRuleExpectation> actualUnknowns = unknownRules.stream()
                 .filter(e -> Collections.frequency(unknownRules, e) > 1)
                 .distinct()
                 .collect(Collectors.toList());
         // Set validation state
-        final boolean unknownRulesPresent = getSchematronFiles().size() > 1 ? !actualUnknowns.isEmpty() : !unknownRules.isEmpty();
-        final ValidationState schematronValidationState = !failedRules.isEmpty() || unknownRulesPresent ? ValidationState.INVALID
+        final boolean unknownRulesPresent = getSchematronFiles().size() > 1 ?
+                !actualUnknowns.isEmpty() : !unknownRules.isEmpty();
+        final boolean failedRulesPresent = mutation.getConfiguration().getSchematronEnterityExpectation() == null ?
+                !failedRules.isEmpty() : failedCount != 0;
+        final ValidationState schematronValidationState = failedRulesPresent || unknownRulesPresent ? ValidationState.INVALID
                 : ValidationState.VALID;
         mutation.getResult().setSchematronValidationState(schematronValidationState);
 
-        this.log.debug("failed asserts={}", failedRules.size());
+        this.log.debug("failed asserts={}", failedRules.isEmpty() ? failedCount : failedRules.size());
 
     }
 

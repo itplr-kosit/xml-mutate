@@ -519,7 +519,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
                     new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
-                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 50),
+                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 55),
                     new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
@@ -544,7 +544,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.isSchematronProcessed();
-        final boolean isSchematronExpectationSet = mutation.isSchematronExpectationSet();
+        final boolean isSchematronExpectationSet = mutation.isSchematronExpectationSet() || mutation.isSchematronEnteritySet();
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Map.Entry::getKey)
