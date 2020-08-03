@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <book isbn="1-861002-85-8">
     <title>Professional Java XML Programming</title>
-    <?xmute mutator="remove" schema-valid schematron-valid="Book-1"?>
+    <?xmute mutator="remove" schema-valid schematron-valid="schematron:Book-1"?>
     <publisher>Wrox Press</publisher>
     <price>35.99</price>
     <pages>772</pages>

@@ -1,24 +1,5 @@
 package de.kosit.xmlmutate.runner;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.xml.validation.Schema;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
@@ -28,6 +9,23 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.oclc.purl.dsdl.svrl.FailedAssert;
+import org.oclc.purl.dsdl.svrl.SchematronOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.validation.Schema;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Validator validating against XSD and Schematron.
@@ -58,38 +56,26 @@ public class ValidateAction implements RunAction {
 
     private void schematronValidation(final Mutation mutation) {
 
-        long failedAssertCount = 0;
-        boolean unknownRulenameExist = false;
-        boolean failedRulesAreListed = false;
-        final List<String> ruleNamesDeclared = mutation.getConfiguration().getSchematronExpectations().stream()
-                .map(SchematronRuleExpectation::getRuleName).collect(Collectors.toList());
+        final List<SchematronRuleExpectation> unknownRules = new ArrayList<>();
+        final List<SchematronRuleExpectation> failedRules = new ArrayList<>();
 
         for (final Schematron schematron : getSchematronFiles()) {
 
-            // Check if unknown rule names were declared
-            if (!unknownRulenameExist) {
-                unknownRulenameExist = mutation.getConfiguration().getSchematronExpectations().stream()
-                        .anyMatch(n -> !schematron.hasRule(n.getRuleName()));
-            }
-
             this.log.debug("Using schematron={}", schematron.getName());
+
+            // Add unknown rules to this schematron file
+            unknownRules.addAll(mutation.getConfiguration().getSchematronExpectations().stream().filter(n -> !schematron.hasRule(n)).collect(Collectors.toList()));
 
             try {
                 final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(),
                         mutation.getContext().getDocument());
                 this.log.debug("result={}", out.getText());
-                failedAssertCount += out.getFailedAsserts().size();
-                this.log.debug("failed asserts={}", failedAssertCount);
+
+                // add failed rules that were also declared, to this schematron file
+                failedRules.addAll(getDeclaredFailedRules(schematron.getName(), out, mutation.getConfiguration().getSchematronExpectations()));
+
                 mutation.getResult().addSchematronResult(schematron, out);
 
-                // Check if failed rules were also declared
-                if (!failedRulesAreListed) {
-                    failedRulesAreListed = checkPresenceOfFailedRules(out, ruleNamesDeclared);
-                }
-                // Set validation state
-                final ValidationState schematronValidationState = failedRulesAreListed || unknownRulenameExist ? ValidationState.INVALID
-                        : ValidationState.VALID;
-                mutation.getResult().setSchematronValidationState(schematronValidationState);
             } catch (final CommonException e) {
                 this.log.debug("Schematron validation runtime error={}", e.getMessage());
                 mutation.getMutationErrorContainer()
@@ -101,11 +87,30 @@ public class ValidateAction implements RunAction {
 
         }
 
+        // Check which unknown rules were unknown to all schematron files
+        final List<SchematronRuleExpectation> actualUnknowns = unknownRules.stream()
+                .filter(e -> Collections.frequency(unknownRules, e) > 1)
+                .distinct()
+                .collect(Collectors.toList());
+        // Set validation state
+        final boolean unknownRulesPresent = getSchematronFiles().size() > 1 ? !actualUnknowns.isEmpty() : !unknownRules.isEmpty();
+        final ValidationState schematronValidationState = !failedRules.isEmpty() || unknownRulesPresent ? ValidationState.INVALID
+                : ValidationState.VALID;
+        mutation.getResult().setSchematronValidationState(schematronValidationState);
+
+        this.log.debug("failed asserts={}", failedRules.size());
+
     }
 
-    private boolean checkPresenceOfFailedRules(final SchematronOutput out, final List<String> ruleNamesDeclared) {
+    private List<SchematronRuleExpectation> getDeclaredFailedRules(final String schematronName, final SchematronOutput out, final List<SchematronRuleExpectation> expectations) {
+        final List<SchematronRuleExpectation> declaredFailedRules = new ArrayList<>();
         final List<String> ruleNamesFailed = out.getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
-        return CollectionUtils.containsAny(ruleNamesDeclared, ruleNamesFailed);
+        for (final SchematronRuleExpectation e : expectations) {
+            if (ruleNamesFailed.contains(e.getRuleName()) && e.getSource() != null && e.getSource().equalsIgnoreCase(schematronName)) {
+                declaredFailedRules.add(e);
+            }
+        }
+        return declaredFailedRules;
     }
 
     private void schemaValidation(final Mutation mutation) {

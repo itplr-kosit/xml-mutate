@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <book isbn="1-861002-85-8">
 <!--    <title>Professional Java XML Programming</title>-->
-    <?xmute mutator="remove" schema-valid schematron-valid="Book-1" id="id1"?>
+    <?xmute mutator="remove" schema-valid schematron-valid="schematron:Book-1" id="id1"?>
     <publisher>Wrox Press</publisher>
     <price>35.99</price>
     <pages>772</pages>
-    <?xmute mutator="remove" schema-valid schematron-invalid="Book-2" id="id2"?>
+    <?xmute mutator="remove" schema-valid schematron-invalid="schematron:Book-2" id="id2"?>
     <chapters>13</chapters>
     <appendices>13</appendices>
     <authors>

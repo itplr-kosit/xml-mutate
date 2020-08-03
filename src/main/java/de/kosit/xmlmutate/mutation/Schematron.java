@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -37,13 +38,13 @@ public class Schematron {
     private final List<String> rulesIds;
 
     /**
-     * Check if a given rule id is declared in this schematron file
+     * Check if a given rule is declared in this schematron file
      *
-     * @param id
-     * @return
+     * @param schematronRuleExpectation - the expectation
+     * @return true or false
      */
-    public boolean hasRule(final String id) {
-        return rulesIds.contains(id);
+    public boolean hasRule(final SchematronRuleExpectation schematronRuleExpectation) {
+        return rulesIds.contains(schematronRuleExpectation.getRuleName()) && this.name.equalsIgnoreCase(schematronRuleExpectation.getSource());
     }
 
     @Override
