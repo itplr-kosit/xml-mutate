@@ -582,7 +582,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
 
         // Rest of error messages and failed schematron rules (if they exist)
-        for (int i = 1; i < allErrors.size(); i++) {
+        for (int i = 1; i < (Math.min(allErrors.size(), 6)); i++) {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
@@ -590,12 +590,16 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
-            if (expectationCells.size() > i) {
+            if (expectationCells.size() > i && i < 5) {
                 grid.addCell(expectationCells.get(i));
             } else {
                 grid.addCell(EMPTY);
             }
-            grid.addCell(allErrors.get(i));
+            if (i == 5) {
+                grid.addCell("There are more schematron rules with failed expectation");
+            } else {
+                grid.addCell(allErrors.get(i));
+            }
             grid.addCell(EMPTY);
         }
 
