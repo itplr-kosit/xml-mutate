@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -86,6 +87,10 @@ public class CodeMutationGenerator implements MutationGenerator {
 
     private static final String PROP_VALUES = "values";
 
+    private static final String PROP_TRIM = "trim";
+
+    private static final boolean DEFAULT_TRIM = true;
+
     private static final String PROP_CODE_KEY = "codeKey";
 
     private static final String PROP_GENERICODE = "genericode";
@@ -136,15 +141,17 @@ public class CodeMutationGenerator implements MutationGenerator {
 
     private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
         final String separator = config.getProperties().get(SEPARATOR) != null ? config.getProperties().get(SEPARATOR).toString() : DEFAULT_SEPARATOR;
-        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(separator))
+        return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(Pattern.quote(separator)))
                 .filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
     }
 
     private Mutation createMutation(final MutationConfig config, final MutationContext context, final String code) {
+        final boolean doTrim = config.getProperties().get(PROP_TRIM) != null ? Boolean.parseBoolean(config.getProperties().get(PROP_TRIM).toString()) : DEFAULT_TRIM;
+
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
-        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
-        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), trim(code)), cloned,
+        cloned.add(CodeMutator.INTERNAL_PROP_VALUE, doTrim? trim(code) : code);
+        return new Mutation(context.cloneContext(), Services.getNameGenerator().generateName(context.getDocumentName(), doTrim? trim(code) : code), cloned,
                 mutator);
     }
 
