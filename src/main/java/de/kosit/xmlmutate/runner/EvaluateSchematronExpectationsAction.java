@@ -39,7 +39,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
                     if (!valid) {
                         mutation.setState(State.ERROR);
-                        mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION, e.getRuleName()));
+                        mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION));
                     }
                     log.trace(
                             "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
@@ -75,7 +75,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 if (expectationNotMet(schematronEnterityExpectation, true)) {
                     expectationsMatches.put(new SchematronRuleExpectation(entry.getKey().getName(), f, expectedResult), false);
                     mutation.setState(State.ERROR);
-                    mutation.getMutationErrorContainer().addSchematronErrorMessage(f, new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY, f, entry.getKey().getName()));
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(f, new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY));
 
                 }
             });
@@ -83,7 +83,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 if (expectationNotMet(schematronEnterityExpectation, false)) {
                     expectationsMatches.put(new SchematronRuleExpectation(entry.getKey().getName(), p, expectedResult), false);
                     mutation.setState(State.ERROR);
-                    mutation.getMutationErrorContainer().addSchematronErrorMessage(p, new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY, p, entry.getKey().getName()));
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(p, new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY));
 
                 }
             });

@@ -519,7 +519,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
                     new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
-                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 55),
+                    new ColumnDefinition("Exp", 18, 1000), new ColumnDefinition("Error Message", 40),
                     new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
@@ -596,7 +596,7 @@ public class TextReportGenerator extends BaseReportGenerator {
                 grid.addCell(EMPTY);
             }
             if (i == 5) {
-                grid.addCell("There are more schematron rules with failed expectation");
+                grid.addCell("There are more failed expectations");
             } else {
                 grid.addCell(allErrors.get(i));
             }
@@ -643,7 +643,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             cells.add(new Cell("Y", Code.GREEN));
             return cells;
         }
-        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N", Code.RED)));
+        failed.forEach(e -> cells.add(new Cell(e.getSource()+ ":"+e.getRuleName() + ":N", Code.RED)));
         return cells;
     }
 
