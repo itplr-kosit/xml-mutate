@@ -1,6 +1,8 @@
 package de.kosit.xmlmutate.cli;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,18 +20,22 @@ import java.util.stream.Stream;
 
 import javax.xml.validation.Schema;
 
+import com.sun.media.jfxmedia.logging.Logger;
+import de.kosit.xmlmutate.runner.*;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
 import org.fusesource.jansi.AnsiConsole;
 
 import lombok.extern.slf4j.Slf4j;
 
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.FailureMode;
-import de.kosit.xmlmutate.runner.MutationRunner;
-import de.kosit.xmlmutate.runner.RunMode;
-import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.RunnerResult;
-import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
 
 import picocli.CommandLine;
@@ -83,10 +89,22 @@ public class XmlMutate implements Callable<Integer> {
             defaultValue = "false")
     private boolean saveParsingMode;
 
+    @Option(names = { "-l", "--log" }, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN")
+    private LogLevel logLevel;
+
+    @Option(names = { "-lf", "--logfile" }, paramLabel = "LOGFILE", description = "An input configuration log file")
+    private Path logInputFile;
+
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
+    static {
+        System.setProperty("log4j.configurationFile", "log4j-alternate.xml");
+    }
+
+
     public static void main(final String[] args) {
+
         AnsiConsole.systemInstall();
         int i = -1;
         try {
@@ -109,11 +127,29 @@ public class XmlMutate implements Callable<Integer> {
      */
     @Override
     public Integer call() throws Exception {
+        configureLogging();
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
         final RunnerResult result = runner.run();
         executor.shutdown();
         return result.isErrorPresent() ? 1 : 0;
+    }
+
+    private void configureLogging() {
+        if (logInputFile != null) {
+            try {
+                final LoggerContext loggerContext = LoggerContext.getContext(false);
+                final InputStream inputStream = new FileInputStream(logInputFile.toFile());
+                final ConfigurationSource source = new ConfigurationSource(inputStream);
+                final XmlConfigurationFactory xmlConfigurationFactory = new XmlConfigurationFactory();
+                final Configuration newConfiguration = xmlConfigurationFactory.getConfiguration(loggerContext, source);
+                loggerContext.setConfiguration(newConfiguration);
+            } catch (final IOException ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        } else {
+            Configurator.setAllLevels(LogManager.getRootLogger().getName(), this.logLevel.level);
+        }
     }
 
     /**
