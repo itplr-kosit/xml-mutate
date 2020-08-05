@@ -1,29 +1,10 @@
 package de.kosit.xmlmutate.cli;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.validation.Schema;
-
-import com.sun.media.jfxmedia.logging.Logger;
+import de.kosit.xmlmutate.mutation.NamedTemplate;
+import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.*;
-
-import org.apache.logging.log4j.Level;
+import de.kosit.xmlmutate.schematron.SchematronCompiler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
@@ -31,18 +12,26 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory;
 import org.fusesource.jansi.AnsiConsole;
-
-import lombok.extern.slf4j.Slf4j;
-
-import de.kosit.xmlmutate.mutation.NamedTemplate;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.schematron.SchematronCompiler;
-
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParseResult;
+
+import javax.xml.validation.Schema;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base class for command line interface.
@@ -51,48 +40,48 @@ import picocli.CommandLine.ParseResult;
  * @author Renzo Kottmann
  */
 @Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
-         separator = " ")
+        separator = " ")
 @Slf4j
 public class XmlMutate implements Callable<Integer> {
 
-    @Option(names = { "-o", "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+    @Option(names = {"-o", "--target"}, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = { "-x", "--schema", "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
+    @Option(names = {"-x", "--schema", "--xsd"}, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
-    @Option(names = { "-s", "--schematron" }, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
+    @Option(names = {"-s", "--schematron"}, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
     private final Map<String, Path> schematrons = new HashMap<String, Path>();
 
-    @Option(names = { "-m", "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = {"-m", "--mode"}, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
-    @Option(names = { "-t", "--transformations" }, paramLabel = "MAP",
+    @Option(names = {"-t", "--transformations"}, paramLabel = "MAP",
             description = "Named transformations used for the Transformation-Mutator")
     private final Map<String, Path> transformations = new HashMap<String, Path>();
 
-    @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
+    @Option(names = {"-ff", "--fail-fast"}, description = "The run failure control mode for fail fast")
     private boolean failfast;
 
-    @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
+    @Option(names = {"-fae", "--fail-at-end"}, description = "The run failure control mode for fail at end")
     private boolean failatend;
 
-    @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
+    @Option(names = {"-fn", "--fail-never"}, description = "The run failure control mode for fail never")
     private boolean failnever;
 
-    @Option(names = { "-isi", "--ignore-schema-invalidity" },
+    @Option(names = {"-isi", "--ignore-schema-invalidity"},
             description = "If set, whenever an original document is not schema valid, it wont stop the programm")
     private boolean ignoreSchemaInvalidity;
 
-    @Option(names = { "--saveParsing" },
+    @Option(names = {"--saveParsing"},
             description = "Enables the save parsing mode, which does not providing line number information, but is more robust",
             defaultValue = "false")
     private boolean saveParsingMode;
 
-    @Option(names = { "-l", "--log" }, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN")
+    @Option(names = {"-l", "--log"}, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN")
     private LogLevel logLevel;
 
-    @Option(names = { "-lf", "--logfile" }, paramLabel = "LOGFILE", description = "An input configuration log file")
+    @Option(names = {"-lf", "--logfile"}, paramLabel = "LOGFILE", description = "An input configuration log file")
     private Path logInputFile;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
