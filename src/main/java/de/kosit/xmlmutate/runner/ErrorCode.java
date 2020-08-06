@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import de.init.kosit.commons.util.NamedError;
+import org.apache.logging.log4j.Level;
 
 /**
  * @author Andreas Penski
@@ -33,8 +34,9 @@ public enum ErrorCode implements NamedError {
 
     ORIGINAL_XML_NOT_SCHEMA_VALID("Original document {0} is not schema valid:{1}"),
 
-    CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION("No {0} given at CLI but expectation declared in a xmute pi");
+    CLI_ARGUMENT_NOT_PRESENT_BUT_PI_EXPECTATION("No {0} given at CLI but expectation declared in a xmute pi"),
 
+    LOGLEVEL_WRONG("Log level incorrect: {0}. Please choose between OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE or ALL (case-insensitive)");
 
     @Getter
     private final String template;

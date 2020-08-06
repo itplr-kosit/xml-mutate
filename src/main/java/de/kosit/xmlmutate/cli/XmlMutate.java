@@ -78,7 +78,7 @@ public class XmlMutate implements Callable<Integer> {
             defaultValue = "false")
     private boolean saveParsingMode;
 
-    @Option(names = {"-l", "--log"}, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN")
+    @Option(names = {"-l", "--log"}, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
     private LogLevel logLevel;
 
     @Option(names = {"-lf", "--logfile"}, paramLabel = "LOGFILE", description = "An input configuration log file")
@@ -87,10 +87,16 @@ public class XmlMutate implements Callable<Integer> {
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
-    static {
-        System.setProperty("log4j.configurationFile", "log4j-alternate.xml");
+    static class LogLevelConverter implements CommandLine.ITypeConverter<LogLevel> {
+        @Override
+        public LogLevel convert(final String value) {
+            try {
+                return LogLevel.valueOf(value.toUpperCase());
+            } catch (final IllegalArgumentException e) {
+                throw new MutationException(ErrorCode.LOGLEVEL_WRONG, value);
+            }
+        }
     }
-
 
     public static void main(final String[] args) {
 
@@ -99,6 +105,7 @@ public class XmlMutate implements Callable<Integer> {
         try {
             final CommandLine commandLine = new CommandLine(new XmlMutate());
             commandLine.setExecutionExceptionHandler(XmlMutate::logExecutionException);
+            commandLine.registerConverter(LogLevel.class, new LogLevelConverter());
             i = commandLine.execute(args);
         } catch (final Exception e) {
             System.err.print(e.getMessage());
