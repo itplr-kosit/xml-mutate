@@ -1,4 +1,3 @@
-
 # Documentation of available mutators
 
 ## Add Mutator (TODO Issue #2)
@@ -23,27 +22,7 @@
 | Optional items| none|
 
 **Example**: (in development)
-
-## Code Mutator (GenericCode Mutator as of Issue #94)
-
-| | |  
-|---|---|  
-| Name | "code" ("genericcode")|  
-| Purpose| Iterate through a code list and create as many mutations as codes present in the code list. If no attribute parameter has been given, the text content of the target node will be replace with the code. |  
-| Default| Replacement of the text content. |  
-| Required items|"genericode" , "codekey"|
-| Optional items| "attribute"|
-
-**Configuration**:
-* `genericode` : URI of a genericode file with code values to test. The URI can be an absolute URI (e.g. loaded from web), a path relative to the document or path relative to current working directory. 
-* `codeKey` : the name of the code key column to use for values of a genericode code list
-* `attribute` : the name of the attribute to mutate. If not configured the text content of the target element will be mutated
-
-**Example**:
-```xml
-<?xmute mutator="code" genericode="https://www.xrepository.de/api/xrepository/urn:de:xoev:codeliste:erreichbarkeit_3:technischerBestandteilGenericode"  codekey="SimpleValue" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
-```        
-
+ 
 ## Empty Mutator
 
 | | |  
@@ -59,6 +38,53 @@
 <?xmute mutator="empty" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
 ```    
 
+## Code Mutator
+| | |  
+|---|---|  
+| Name | "code" |  
+| Purpose| Changes text content of an element or attribute with values given in `values` separated by comma `,`|  
+| Default| Changes text content of target element creating 4 mutations: 1) Same text length as actual content  2) Max length of 10.000 3) Length of 9.999 4) Length of 10.001 |  
+| Required items| "values" |
+| Optional items| "separator" , "attribute", "trim"|
+
+**Configuration**:
+* `values`:  separated list of code values to use. 
+* `separator`: the separator for the values property, default is `,`
+* `trim`: if the codes provided in `values` should be trimmed or not
+* `attribute`: the name of the attribute which text content should be replaced
+
+
+**Examples**:
+
+Values given
+```xml
+ <?xmute mutator="text" values="01, 02, 03" schema-valid schematron-valid = "schematron:BR-DE-2"?>
+```
+Values and separator given
+```xml
+ <?xmute mutator="text" values="01|02|03" separator ="|" schema-valid schematron-valid = "schematron:BR-DE-2"?>
+```
+
+## GeneriCode Mutator
+
+| | |  
+|---|---|  
+| Name | "genericcode"|  
+| Purpose| Iterate through a code list and create as many mutations as codes present in the code list. If no attribute parameter has been given, the text content of the target node will be replace with the code. |  
+| Default| Replacement of the text content. |  
+| Required items|"genericode" , "codekey"|
+| Optional items| "attribute"|
+
+**Configuration**:
+* `genericode` : URI of a genericode file with code values to test. The URI can be an absolute URI (e.g. loaded from web), a path relative to the document or path relative to current working directory. 
+* `codeKey` : the name of the code key column to use for values of a genericode code list
+* `attribute` : the name of the attribute to mutate. If not configured the text content of the target element will be mutated
+
+**Example**:
+```xml
+<?xmute mutator="code" genericode="https://www.xrepository.de/api/xrepository/urn:de:xoev:codeliste:erreichbarkeit_3:technischerBestandteilGenericode"  codekey="SimpleValue" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
+```       
+
 ## Identity Mutator
 | | |  
 |---|---|  
@@ -72,6 +98,32 @@
 ```xml
 <?xmute mutator="noop" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
 ```  
+
+
+## Length Mutator
+| | |  
+|---|---|  
+| Name | "length" |  
+| Purpose| Changes text content of an element or attribute with random values but a certain min or max length.|  
+| Default| Changes text content of target element creating 4 mutations: 1) Same text length as actual content  2) Max length of 10.000 3) Length of 9.999 4) Length of 10.001 |  
+| Required items|  |
+| Optional items| "min-length", "max-length"|
+
+**Configuration**:
+* `min-length`: the minimum length for the random generated text content
+* `max-length`: the maximum length for the random generated text content
+
+**Examples**:
+
+Default behaviour
+```xml
+ <?xmute mutator="text" schema-valid schematron-valid = "schematron:BR-DE-2"?>
+```
+Min and max length given
+```xml
+ <?xmute mutator="text" min-length="10" max-length="100" schema-valid schematron-valid = "schematron:BR-DE-2"?>
+```
+
 
 ## Remove Mutator
 | | |  
@@ -90,45 +142,6 @@
 <?xmute mutator="remove" attribute="language" attribute "country" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
 ```  
 
-## Text Mutator (to be updated as of Issue #94)
-| | |  
-|---|---|  
-| Name | "text" |  
-| Purpose| Changes text content of an element or attribute. Changes text content of next element with: 1) values given in `values` separated by comma `,` or 2) random values but a certain min or max length.|  
-| Default| Changes text content of target element creating 4 mutations: 1) Same text length as actual content  2) Max length of 10.000 3) Length of 9.999 4) Length of 10.001 |  
-| Required items| "values" (when new text shall be given) |
-| Optional items| "separator" , "attribute", "min-length", "max-length"|
-
-**Configuration**:
-* `values`:  separated list of code values to use. 
-* `separator`: the separator for the values property, default is `,`
-* `attribute`: the name of the attribute which text content should be replaced
-* `min-length`: the minimum length for the random generated text content
-* `max-length`: the maximum length for the random generated text content
-
-**Possible configurations**:
-1) Nothing, meaning default behaviour
-2) min-length and/or max-length and/or attribute (This has to be discussed in #94)
-3) values and/or separator and/or attribute
-
-**Examples**:
-
-Default behaviour
-```xml
- <?xmute mutator="text" schema-valid schematron-valid = "schematron:BR-DE-2"?>
-```
-Min and max length given
-```xml
- <?xmute mutator="text" min-length="10" max-length="100" schema-valid schematron-valid = "schematron:BR-DE-2"?>
-```
-Values given
-```xml
- <?xmute mutator="text" values="01, 02, 03" schema-valid schematron-valid = "schematron:BR-DE-2"?>
-```
-Values and separator given
-```xml
- <?xmute mutator="text" values="01|02|03" separator ="|" schema-valid schematron-valid = "schematron:BR-DE-2"?>
-```
 ## XSLT Mutator
 | | |  
 |---|---|  
