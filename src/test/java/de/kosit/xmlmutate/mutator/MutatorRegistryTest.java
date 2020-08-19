@@ -26,8 +26,8 @@ public class MutatorRegistryTest {
     @Test
     @DisplayName("Simple Test Generator")
     public void testSimpleGenerator() {
-        assertThat(this.registry.getGenerator("text")).isNotNull();
-        assertThat(this.registry.getGenerator("text").getPreferredName()).isEqualTo("text");
+        assertThat(this.registry.getGenerator("length")).isNotNull();
+        assertThat(this.registry.getGenerator("length").getPreferredName()).isEqualTo("length");
         assertThat(this.registry.getGenerator("unknown")).isNotNull();
         assertThat(this.registry.getGenerator("unknown").getPreferredName()).isEqualTo(DefaultMutationGenerator.NAME);
         assertThat(this.registry.getGenerator("remove")).isNotNull();
