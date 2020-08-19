@@ -23,21 +23,6 @@
 
 **Example**: (in development)
  
-## Empty Mutator
-
-| | |  
-|---|---|  
-| Name | "empty" |  
-| Purpose| Mutator for emptying an element. If the element to be emptied contains any subelements, they will be removed. If it contains text it will be removed.  |  
-| Default| Empty next element |  
-| Required items| none|
-| Optional items| none|
-
-**Example**:
-```xml
-<?xmute mutator="empty" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
-```    
-
 ## Code Mutator
 | | |  
 |---|---|  
@@ -64,6 +49,21 @@ Values and separator given
 ```xml
  <?xmute mutator="text" values="01|02|03" separator ="|" schema-valid schematron-valid = "schematron:BR-DE-2"?>
 ```
+
+## Empty Mutator
+
+| | |  
+|---|---|  
+| Name | "empty" |  
+| Purpose| Mutator for emptying an element. If the element to be emptied contains any subelements, they will be removed. If it contains text it will be removed.  |  
+| Default| Empty next element |  
+| Required items| none|
+| Optional items| none|
+
+**Example**:
+```xml
+<?xmute mutator="empty" schema-valid schematron-valid = "schematron:BR-DE-2" ?>
+```    
 
 ## GeneriCode Mutator
 
