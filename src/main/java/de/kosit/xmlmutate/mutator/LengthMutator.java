@@ -20,9 +20,9 @@ import java.util.List;
  * @author Andreas Penski
  */
 @RequiredArgsConstructor
-public class TextMutator extends BaseMutator implements MutationGenerator {
+public class LengthMutator extends BaseMutator implements MutationGenerator {
 
-    private static final String NAME = "text";
+    private static final String NAME = "length";
 
     private static final String LENGTH_PARAM = "length";
 

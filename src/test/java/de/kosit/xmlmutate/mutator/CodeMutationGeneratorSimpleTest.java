@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * It tests the value list version of {@link CodeMutationGenerator}.
+ * It tests the value list version of {@link GeneriCodeMutationGenerator}.
  *
  * @author Andreas Penski
  */

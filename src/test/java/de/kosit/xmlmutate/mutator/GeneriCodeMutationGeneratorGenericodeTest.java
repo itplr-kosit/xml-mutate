@@ -17,15 +17,15 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
- * Tests the genericode based codelists with {@link CodeMutationGenerator}s.
+ * Tests the genericode based codelists with {@link GeneriCodeMutationGenerator}s.
  * 
  * @author Andreas Penski
  */
-public class CodeMutationGeneratorGenericodeTest {
+public class GeneriCodeMutationGeneratorGenericodeTest {
 
     private static final URI TEST_ROOT = Paths.get("src/test/resources").toUri();
 
-    private final CodeMutationGenerator generator = new CodeMutationGenerator();
+    private final GeneriCodeMutationGenerator generator = new GeneriCodeMutationGenerator();
 
     @Test
     public void testSimpleGenericode() {

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
- * Testet die Werte-Liste-Variante des {@link CodeMutationGenerator}s.
+ * Testet die Werte-Liste-Variante des {@link GeneriCodeMutationGenerator}s.
  *
  * @author Andreas Penski
  */

@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.kosit.xmlmutate.mutator.CodeMutationGenerator.Code;
-import de.kosit.xmlmutate.mutator.CodeMutationGenerator.CodeFactory;
+import de.kosit.xmlmutate.mutator.GeneriCodeMutationGenerator.Code;
+import de.kosit.xmlmutate.mutator.GeneriCodeMutationGenerator.CodeFactory;
 import de.kosit.xmlmutate.runner.MutationException;
 
 /**
@@ -20,7 +20,7 @@ import de.kosit.xmlmutate.runner.MutationException;
  *
  * @author Andreas Penski
  */
-public class CodeFactoryTest {
+public class GeneriCodeFactoryTest {
 
     public static final URI REMOTE_URI = URI.create(
             "https://www.xrepository.de/api/xrepository/urn:de:xauslaender:codelist:geschlecht_2:technischerBestandteilGenericode");
