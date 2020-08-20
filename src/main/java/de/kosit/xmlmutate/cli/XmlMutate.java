@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 import javax.xml.validation.Schema;
 
+import de.init.kosit.schematron.SchematronCompiler;
+import de.init.kosit.schematron.SchematronExtractor;
 import org.fusesource.jansi.AnsiConsole;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +32,6 @@ import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.Services;
-import de.kosit.xmlmutate.schematron.SchematronCompiler;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -170,7 +171,7 @@ public class XmlMutate implements Callable<Integer> {
         final List<Schematron> schematronList = new ArrayList<>();
         for (final Map.Entry<String, Path> entry : this.schematrons.entrySet()) {
             final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
-            schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
+            schematronList.add(new Schematron(entry.getKey(), compiledSchematron, SchematronExtractor.extractRulesIds(compiledSchematron)));
         }
         return schematronList;
     }
