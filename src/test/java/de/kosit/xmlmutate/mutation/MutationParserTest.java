@@ -1,5 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import org.apache.commons.lang3.StringUtils;
@@ -193,6 +195,44 @@ public class MutationParserTest {
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "Mutation instruction can only have 1 id"))).isTrue();
+    }
+
+    @Test
+    @DisplayName("schematronKeyword with all valid")
+    public void schematronAllValid() {
+        final MutationContext context = createContext(
+                "mutator=remove schematron-valid-all");
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertValid(mutations);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getConfiguration().getSchematronExpectations()).isEmpty();
+        assertThat(mutations.get(0).getConfiguration().getSchematronEnterityExpectation().getKey()).isEqualTo(SchematronEnterity.ALL);
+        assertThat(mutations.get(0).getConfiguration().getSchematronEnterityExpectation().getValue()).isEqualTo(ExpectedResult.PASS);
+    }
+
+    @Test
+    @DisplayName("schematronKeyword with none invalid")
+    public void schematronNoneInvalid() {
+        final MutationContext context = createContext(
+                "mutator=remove schematron-invalid-none");
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertValid(mutations);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getConfiguration().getSchematronExpectations()).isEmpty();
+        assertThat(mutations.get(0).getConfiguration().getSchematronEnterityExpectation().getKey()).isEqualTo(SchematronEnterity.NONE);
+        assertThat(mutations.get(0).getConfiguration().getSchematronEnterityExpectation().getValue()).isEqualTo(ExpectedResult.FAIL);
+    }
+
+    @Test
+    @DisplayName("schematronKeyword with all valid and schematron rules")
+    public void schematronEntertyMixedWithRules() {
+        final MutationContext context = createContext(
+                "mutator=remove schematron-valid-all=\"BR-DE-1\"");
+        final List<Mutation> mutations = this.parser.parse(context);
+        assertThat(mutations).hasSize(1);
+        assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutations.get(0).getConfiguration().getSchematronExpectations()).isEmpty();
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
     }
 
     private void assertValid(final List<Mutation> mutations) {
