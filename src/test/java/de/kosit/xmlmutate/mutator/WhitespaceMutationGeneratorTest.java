@@ -149,7 +149,7 @@ public class WhitespaceMutationGeneratorTest {
              positionArrayList = WhitespaceMutator.Position.getAllPositionsButMix();
         }
         for (final WhitespaceMutator.Position position : positionArrayList) {
-            final List<Mutation> result = mutations.stream().filter(m -> m.getIdentifier().contains(position.name())).collect(Collectors.toList());
+            final List<Mutation> result = mutations.stream().filter(m -> m.getIdentifier().contains(position.name().toLowerCase())).collect(Collectors.toList());
             if (result.size() > 1) {
                 return false;
             } else {

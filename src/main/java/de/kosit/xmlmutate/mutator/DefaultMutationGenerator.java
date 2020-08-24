@@ -27,7 +27,8 @@ public class DefaultMutationGenerator implements MutationGenerator {
         // Get first name of name list of mutator
 
         final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
-        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(), config, mutator);
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(context.getDocumentName(), mutator.getPreferredName(), null), config, mutator);
+
 
         return Collections.singletonList(m);
     }

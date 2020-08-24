@@ -167,7 +167,7 @@ public class MutationRunner {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 pi.setData(StringUtils.normalizeSpace(pi.getData()));
-                final MutationContext context = new MutationContext(pi, documentPath);
+                final MutationContext context = new MutationContext(pi, documentPath, this.configuration.getSavingMode());
                 final List<Mutation> mutations = this.parser.parse(context);
                 checkSchemaSchematronDeclarations(mutations);
                 // Check if PI id is duplicated
