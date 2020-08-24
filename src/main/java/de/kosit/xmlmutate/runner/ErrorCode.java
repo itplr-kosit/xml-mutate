@@ -23,7 +23,9 @@ public enum ErrorCode implements NamedError {
 
     SCHEMATRON_RULE_NOT_EXIST("Rule {0} does not exist in schematron {1}"),
 
-    SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation assert for {0}"),
+    SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation"),
+
+    SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY("Failed expectation"),
 
     ACTION_RUNNER_ERROR("Error running action {0} in mutation {1} "),
 

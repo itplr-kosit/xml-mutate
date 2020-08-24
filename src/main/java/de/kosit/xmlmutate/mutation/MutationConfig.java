@@ -1,9 +1,11 @@
 package de.kosit.xmlmutate.mutation;
 
+import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -22,6 +24,8 @@ public class MutationConfig {
     private ExpectedResult schemaValidationExpectation;
 
     private List<SchematronRuleExpectation> schematronExpectations = new ArrayList<>();
+
+    private Pair<SchematronEnterity, ExpectedResult> schematronEnterityExpectation;
 
     private String mutatorName;
 

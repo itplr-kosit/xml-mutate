@@ -519,7 +519,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15),
                     new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3),
                     new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3),
-                    new ColumnDefinition("Exp", 15, 1000), new ColumnDefinition("Error Message", 50),
+                    new ColumnDefinition("Exp", 18, 1000), new ColumnDefinition("Error Message", 40),
                     new ColumnDefinition("Description", 15, 10));
 
             IntStream.range(0, mutations.size()).forEach(i -> {
@@ -544,7 +544,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         final boolean asSchemaExpected = mutation.isSchemaValidationAsExpected();
         final boolean isSchematronValid = mutation.isSchematronValid();
         final boolean isSchematronProcessed = mutation.isSchematronProcessed();
-        final boolean isSchematronExpectationSet = mutation.isSchematronExpectationSet();
+        final boolean isSchematronExpectationSet = mutation.isSchematronExpectationSet() || mutation.isSchematronEnteritySet();
 
         final List<SchematronRuleExpectation> failed = mutation.getResult().getSchematronExpectationMatches().entrySet()
                 .stream().filter(e -> Boolean.FALSE.equals(e.getValue())).map(Map.Entry::getKey)
@@ -582,7 +582,7 @@ public class TextReportGenerator extends BaseReportGenerator {
         }
 
         // Rest of error messages and failed schematron rules (if they exist)
-        for (int i = 1; i < allErrors.size(); i++) {
+        for (int i = 1; i < (Math.min(allErrors.size(), 6)); i++) {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
@@ -590,12 +590,16 @@ public class TextReportGenerator extends BaseReportGenerator {
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
             grid.addCell(EMPTY);
-            if (expectationCells.size() > i) {
+            if (expectationCells.size() > i && i < 5) {
                 grid.addCell(expectationCells.get(i));
             } else {
                 grid.addCell(EMPTY);
             }
-            grid.addCell(allErrors.get(i));
+            if (i == 5) {
+                grid.addCell("There are more failed expectations");
+            } else {
+                grid.addCell(allErrors.get(i));
+            }
             grid.addCell(EMPTY);
         }
 
@@ -639,7 +643,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             cells.add(new Cell("Y", Code.GREEN));
             return cells;
         }
-        failed.forEach(e -> cells.add(new Cell(e.getRuleName() + ":N", Code.RED)));
+        failed.forEach(e -> cells.add(new Cell(e.getSource()+ ":"+e.getRuleName() + ":N", Code.RED)));
         return cells;
     }
 
