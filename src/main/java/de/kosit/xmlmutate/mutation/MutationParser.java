@@ -212,7 +212,7 @@ public class MutationParser {
     }
 
     private List<Mutation> createErrorMutation(final MutationContext context, final Exception exception) {
-        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(context.getDocumentName(), "error", null));
         m.setState(State.ERROR);
         m.getMutationErrorContainer().addGlobalErrorMessage(exception);
         return Collections.singletonList(m);

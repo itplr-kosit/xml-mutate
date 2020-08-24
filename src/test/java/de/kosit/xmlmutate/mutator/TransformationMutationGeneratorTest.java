@@ -30,6 +30,8 @@ public class TransformationMutationGeneratorTest {
 
     private static final URI SIMPLE_TRANSFORMATION = TEST_ROOT.resolve("transform/simple.xsl");
 
+    private static final String MUTATOR_NAME = "xslt";
+
     private static final String SIMPLE_NAME = "simple";
 
     private TemplateRepository repository;
@@ -45,6 +47,7 @@ public class TransformationMutationGeneratorTest {
     @Test
     public void testSimpleGenerate() {
         final MutationConfig config = createConfig().add("template", SIMPLE_NAME);
+        config.setMutatorName(MUTATOR_NAME);
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
         assertThat(mutations).hasSize(1);
@@ -58,6 +61,7 @@ public class TransformationMutationGeneratorTest {
     @Test
     public void testParameters() {
         final MutationConfig config = createConfig().add("template", SIMPLE_NAME).add("param-test", "value").add("param-test2", "value");
+        config.setMutatorName(MUTATOR_NAME);
         this.repository.registerTemplate(SIMPLE_NAME, SIMPLE_TRANSFORMATION);
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
         assertThat(mutations).hasSize(1);
@@ -71,6 +75,7 @@ public class TransformationMutationGeneratorTest {
     @Test
     public void testRelativeToDocumentTest() {
         final MutationConfig config = createConfig().add("template", "simple.xsl");
+        config.setMutatorName(MUTATOR_NAME);
         final MutationContext context = createContext(d -> {
         }, Paths.get(TransformResource.BOOK_XML));
         final List<Mutation> mutations = this.generator.generateMutations(config, context);
@@ -81,6 +86,7 @@ public class TransformationMutationGeneratorTest {
     @Test
     public void testRelativeToCwdTest() {
         final MutationConfig config = createConfig().add("template", "src/test/resources/transform/simple.xsl");
+        config.setMutatorName(MUTATOR_NAME);
         final MutationContext context = createContext(d -> {
         }, Paths.get(TransformResource.BOOK_XML));
         final List<Mutation> mutations = this.generator.generateMutations(config, context);
@@ -91,6 +97,7 @@ public class TransformationMutationGeneratorTest {
     @Test
     public void testMissingTemplate() {
         final MutationConfig config = createConfig().add("name", SIMPLE_NAME);
+        config.setMutatorName(MUTATOR_NAME);
         assertThrows(MutationException.class, () -> {
             this.generator.generateMutations(config, createContext());
         });

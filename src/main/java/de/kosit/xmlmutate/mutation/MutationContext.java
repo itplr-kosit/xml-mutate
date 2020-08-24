@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.mutation;
 
 import java.nio.file.Path;
 
+import de.kosit.xmlmutate.runner.SavingMode;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -31,6 +32,8 @@ public class MutationContext {
 
     private Node specificTarget;
 
+    private SavingMode savingMode;
+
     /**
      * Constructor.
      *
@@ -44,6 +47,23 @@ public class MutationContext {
         this.pi = pi;
         this.documentPath = path;
         this.originalFragment = createFragment();
+        this.savingMode = SavingMode.SINGLE;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pi the {@link ProcessingInstruction} linked to this context,
+     * @param path name of the mutation
+     */
+    public MutationContext(@NonNull final ProcessingInstruction pi, @NonNull final Path path, final SavingMode savingMode) {
+        if (path == null) {
+            throw new IllegalArgumentException("Valid path must be specified");
+        }
+        this.pi = pi;
+        this.documentPath = path;
+        this.originalFragment = createFragment();
+        this.savingMode = savingMode;
     }
 
     /**
@@ -151,6 +171,6 @@ public class MutationContext {
      * @return a clone of this
      */
     public MutationContext cloneContext() {
-        return new MutationContext(getPi(), getDocumentPath());
+        return new MutationContext(getPi(), getDocumentPath(), getSavingMode());
     }
 }
