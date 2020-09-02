@@ -33,7 +33,6 @@ import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.Services;
-import de.kosit.xmlmutate.schematron.SchematronCompiler;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;

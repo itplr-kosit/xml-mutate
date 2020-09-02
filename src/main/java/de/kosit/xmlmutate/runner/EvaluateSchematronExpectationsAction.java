@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate.runner;
 
+import de.init.kosit.schematron.SchematronExtractor;
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
@@ -7,7 +8,6 @@ import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.schematron.SchematronCompiler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
@@ -68,7 +68,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
        final Map<SchematronRuleExpectation, Boolean> expectationsMatches = new HashMap<>();
        final ExpectedResult expectedResult = schematronEnterityExpectation.getValue();
         for (final Map.Entry<Schematron, SchematronOutput> entry : mutation.getResult().getSchematronResult().entrySet()) {
-            final List<String> allRules = new SchematronCompiler().extractRulesIds(entry.getKey().getUri());
+            final List<String> allRules = SchematronExtractor.extractRulesIds(entry.getKey().getUri());
             final List<String> failedRules = entry.getValue().getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
             final List<String> passedRules = allRules.stream().filter(r -> !failedRules.contains(r)).collect(Collectors.toList());
             failedRules.forEach(f -> {
