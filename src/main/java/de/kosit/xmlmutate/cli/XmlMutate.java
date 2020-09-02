@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import javax.xml.validation.Schema;
 
+import de.kosit.xmlmutate.runner.*;
 import de.init.kosit.schematron.SchematronCompiler;
 import de.init.kosit.schematron.SchematronExtractor;
 import org.fusesource.jansi.AnsiConsole;
@@ -32,6 +33,7 @@ import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.schematron.SchematronCompiler;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -84,6 +86,10 @@ public class XmlMutate implements Callable<Integer> {
             defaultValue = "false")
     private boolean saveParsingMode;
 
+    @Option(names = { "-sm",
+            "--saving-mode" }, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
+    private SavingMode savingMode;
+
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;
 
@@ -127,7 +133,7 @@ public class XmlMutate implements Callable<Integer> {
             throw new IllegalArgumentException("Target folder is not writable");
         }
         return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron())
-                .checkSchema(prepareSchema()).useTransformations(prepareTransformations()).withFailureMode(getFailureMode())
+                .checkSchema(prepareSchema()).useTransformations(prepareTransformations()).withFailureMode(getFailureMode()).withSavingMode(this.savingMode)
                 .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity).saveParsing(this.saveParsingMode).build();
 
     }

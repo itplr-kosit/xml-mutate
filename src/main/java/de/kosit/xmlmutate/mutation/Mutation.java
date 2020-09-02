@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 
+import de.kosit.xmlmutate.runner.SavingMode;
 import org.apache.commons.lang3.RegExUtils;
 
 import lombok.Getter;
@@ -74,8 +75,13 @@ public class Mutation {
     }
 
     public Path getResultDocument() {
-        return Paths.get(getContext().getDocumentName()).resolve(
-                RegExUtils.replacePattern(this.identifier, "[^a-zA-Z0-9\\\\.\\-_]", "_") + ".xml");
+        if (this.context.getSavingMode().equals(SavingMode.MULTIPLE)) {
+           return Paths.get(getContext().getDocumentName()).resolve(
+                    RegExUtils.replacePattern(this.identifier, "[^a-zA-Z0-9\\\\.\\-_]", "_") + ".xml");
+        } else {
+            return Paths.get(RegExUtils.replacePattern(this.identifier, "[^a-zA-Z0-9\\\\.\\-_]", "_") + ".xml");
+        }
+
     }
 
     public boolean isSchemaValid() {
@@ -108,6 +114,9 @@ public class Mutation {
         return !configuration.getSchematronExpectations().isEmpty();
     }
 
+    public boolean isSchematronEnteritySet() {
+        return configuration.getSchematronEnterityExpectation() != null;
+    }
 
     public boolean isAllAsExpected() {
         return result.isExpectationCompliant();
@@ -139,6 +148,8 @@ public class Mutation {
     public boolean isAllUnprocessed() {
         return !this.result.isSchemaProcessed() && !result.isSchematronProcessed();
     }
+
+
 
     public enum State {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED

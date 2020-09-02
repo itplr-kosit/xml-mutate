@@ -89,10 +89,10 @@ public class TextMutator extends BaseMutator implements MutationGenerator {
     }
 
     private Mutation create(final MutationConfig cloneConfig, final MutationContext cloneContext, final int length) {
-        final String baseName = "length-" + length;
+        final String postfix = "length-" + length;
         cloneConfig.getProperties().put(LENGTH_PARAM, length);
 
-        return new Mutation(cloneContext, Services.getNameGenerator().generateName("", baseName),
+        return new Mutation(cloneContext, Services.getNameGenerator().generateName(cloneContext.getDocumentName(), NAME, postfix),
                 cloneConfig, Services.getRegistry().getMutator(NAME));
     }
 }

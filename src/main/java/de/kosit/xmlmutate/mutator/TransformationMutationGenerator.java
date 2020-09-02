@@ -54,7 +54,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
 
         config.add(TransformationMutator.TEMPLATE_PARAM, this.repository.getTemplate(template));
         config.add(TransformationMutator.PARAMETER_PARAM, collectParameters(config));
-        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(), config, mutator);
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(context.getDocumentName(), mutator.getPreferredName(), null), config, mutator);
 
         return Collections.singletonList(m);
     }

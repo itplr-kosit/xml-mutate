@@ -5,7 +5,6 @@ package de.kosit.xmlmutate.mutation;
  */
 public interface NameGenerator {
 
-    String generateName(String docName, String postfix);
+    String generateName(String inputFileName, String mutatorName, String postfix);
 
-    String generateName();
 }

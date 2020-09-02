@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.mutation;
 
 import de.kosit.xmlmutate.expectation.ExpectedResult;
+import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.parser.MutationLexer;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Parser for the evaluation of
@@ -96,16 +98,32 @@ public class MutationParser {
         public void exitSchematronKeyword(final SchematronKeywordContext ctx) {
             // replaceAll includes unbreakable spaces too
             final SchematronRulesParserListener l = new SchematronRulesParserListener(evaluateExpectedResult(ctx));
-            final List<SchematronRuleExpectation> expectations = parse(
-                    unquote(ctx.schematronText().getText()), l, parser -> {
-                        parser.schematronRules();
-                        return l.getExpectations();
-                    }, e -> null);
-            expectations.forEach(this.config::addExpectation);
+            if (ctx.entirity() == null) {
+                try {
+                    final List<SchematronRuleExpectation> expectations = parse(
+                            unquote(ctx.schematronText().getText()), l, parser -> {
+                                parser.schematronRules();
+                                return l.getExpectations();
+                            }, e -> null);
+                    expectations.forEach(this.config::addExpectation);
+                } catch (final Exception e) {
+                    if (ctx.schematronText() != null) {
+                        throw new MutationException(ErrorCode.SCHEMATRON_RULE_DEFINITION_ERROR, unquote(ctx.schematronText().getText()));
+                    } else {
+                        throw new MutationException(ErrorCode.SCHEMATRON_KEYWORD_ERROR);
+                    }
+                }
+            } else {
+                this.config.setSchematronEnterityExpectation(Pair.of(evaluateEnterity(ctx), evaluateExpectedResult(ctx)));
+            }
         }
 
         private ExpectedResult evaluateExpectedResult(final SchematronKeywordContext ctx) {
             return ctx.assertion().getText().equals("valid") ? ExpectedResult.PASS : ExpectedResult.FAIL;
+        }
+
+        private SchematronEnterity evaluateEnterity(final SchematronKeywordContext ctx) {
+            return ctx.entirity().getText().equals("all") ? SchematronEnterity.ALL : SchematronEnterity.NONE;
         }
 
 
@@ -212,7 +230,7 @@ public class MutationParser {
     }
 
     private List<Mutation> createErrorMutation(final MutationContext context, final Exception exception) {
-        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName());
+        final Mutation m = new Mutation(context, Services.getNameGenerator().generateName(context.getDocumentName(), "error", null));
         m.setState(State.ERROR);
         m.getMutationErrorContainer().addGlobalErrorMessage(exception);
         return Collections.singletonList(m);
