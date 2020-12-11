@@ -1,7 +1,5 @@
 package de.kosit.xmlmutate.mutator;
 
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +14,9 @@ import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.DocumentParser;
+import de.kosit.xmlmutate.runner.Services;
+
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * This mutator operates on a set of comments, which are used as alternatives to the target element.
@@ -30,11 +31,10 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
         final List<Mutation> l = new ArrayList<>();
         final long count = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).count();
+        final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
         IntStream.range(0, (int) count).forEach(c -> {
             final MutationConfig newConfig = config.cloneConfig().add(ALT_KEY, c);
-            // final MutationContext context, final String identifier, MutationConfig
-            // configuration
-            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c), newConfig);
+            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c), newConfig, mutator);
 
             l.add(m);
 
