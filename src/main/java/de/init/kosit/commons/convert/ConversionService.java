@@ -6,10 +6,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -31,9 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 
 import de.init.kosit.commons.CollectingErrorEventHandler;
 import de.init.kosit.commons.ObjectFactory;
@@ -82,18 +82,23 @@ public class ConversionService {
         return new QName(model.getClass().getSimpleName().toLowerCase());
     }
 
+    @Nonnull
+    private static String _joinByColon (@Nullable final String[] a) {
+      final StringBuilder aSB = new StringBuilder ();
+      if (a != null)
+        for (final String s : a) {
+          if (aSB.length () > 0)
+            aSB.append (':');
+          aSB.append (s);
+        }
+      return aSB.toString ();
+    }
+
     private static String getJAxbContextPath() {
         final Reflections r = new Reflections("de");
         final Set<Class<?>> types = r.getTypesAnnotatedWith(XmlRegistry.class);
         final String[] packages = types.stream().map(t -> t.getPackage().getName()).toArray(String[]::new);
-        return Joiner.on(":").join(packages);
-    }
-
-    @Deprecated
-    private void checkInputEmpty(final String xml) {
-        if (StringUtils.isEmpty(xml)) {
-            throw new ConversionExeption("Can not unmarshal empty string");
-        }
+        return _joinByColon (packages);
     }
 
     private void checkInputEmpty(final byte[] xml) {
@@ -122,7 +127,7 @@ public class ConversionService {
      */
     public void initialize(final Collection<Package> context) {
         final String[] packages = context != null ? context.stream().map(Package::getName).toArray(String[]::new) : new String[0];
-        initialize(Joiner.on(":").join(packages));
+        initialize(_joinByColon(packages));
     }
 
     /**
@@ -241,7 +246,7 @@ public class ConversionService {
      * @return the serialized form.
      */
     public <T> String toString(final T model) {
-        return new String(writeXml(model, true), Charsets.UTF_8);
+        return new String(writeXml(model, true), StandardCharsets.UTF_8);
     }
 
     /**

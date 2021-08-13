@@ -19,9 +19,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
 
-import de.kosit.xmlmutate.runner.SavingMode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -35,7 +33,7 @@ import de.kosit.xmlmutate.mutation.MutationContext;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.FailureMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.runner.SavingMode;
 
 /**
  * Some helper function for testing.
@@ -106,8 +104,7 @@ public class TestHelper {
      * @return the context
      */
     public static MutationContext createContext(final String piString) {
-        return createContext(piString, DOCUMENT_PATH, d -> {
-        });
+        return createContext(piString, DOCUMENT_PATH, d -> {});
     }
 
     /**
