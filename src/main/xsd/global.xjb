@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+               xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+               jaxb:extensionBindingPrefixes="inheritance"
+               version="2.1">
+    <jaxb:globalBindings>
+        <xjc:serializable uid="-1" />
+    </jaxb:globalBindings>
+
+    <jaxb:bindings schemaLocation="svrl-kosit.xsd">
+
+        <jaxb:bindings node="//xs:element[@name='schematron-output']/xs:complexType">
+            <inheritance:extends>de.init.kosit.commons.schematron.BaseOutput</inheritance:extends>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>
