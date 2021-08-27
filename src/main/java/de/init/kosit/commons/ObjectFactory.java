@@ -114,24 +114,18 @@ public final class ObjectFactory {
      *
      * @return eine DocumentBuilderFactory
      */
-    // @Produces
     public static DocumentBuilderFactory createDocumentBuilderFactory() {
         return createDocumentBuilderFactory(true);
     }
 
- // @Produces
-    @NonValidatating
     public static DocumentBuilderFactory createNonValidatingDocumentBuilderFactory() {
         return createDocumentBuilderFactory(false);
     }
 
- // @Produces
     public static DocumentBuilder createValidatingDocumentBuilder() {
         return createDocumentBuilder(true);
     }
 
- // @Produces
-    @NonValidatating
     public static DocumentBuilder createNonValidatingDocumentBuilder() {
         return createDocumentBuilder(false);
     }

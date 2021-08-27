@@ -1,11 +1,7 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import org.reflections.Reflections;
 
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 
@@ -43,33 +39,37 @@ public class MutatorRegistry {
         this.generators = initGenerators();
     }
 
+    private static void registerMutator (final Mutator mutator, final Map<String, Mutator> map) {
+      for (final String name : mutator.getNames ())
+        map.put (name, mutator);
+    }
+
     private static Map<String, Mutator> initMutators() {
         final Map<String, Mutator> map = new HashMap<>();
-        final Set<Class<? extends Mutator>> mutatorClasses = new Reflections("de").getSubTypesOf(Mutator.class);
-        mutatorClasses.forEach(c -> {
-            try {
-                if (!Modifier.isAbstract(c.getModifiers())) {
-                    final Mutator mutator = c.getDeclaredConstructor().newInstance();
-                    mutator.getNames().forEach(o -> map.put(o, mutator));
-                }
-            } catch (final ReflectiveOperationException e) {
-                throw new IllegalStateException("Can not initialize mutators", e);
-            }
-        });
+        registerMutator (new AlternativeMutator (), map);
+        registerMutator (new CodeMutator (), map);
+        registerMutator (new EmptyMutator (), map);
+        registerMutator (new RemoveMutator (), map);
+        registerMutator (new TextMutator (), map);
+        registerMutator (new TransformationMutator (), map);
+        registerMutator (new WhitespaceMutator (), map);
+        registerMutator (new IdentityMutator (), map);
         return map;
+    }
+
+    private static void registerGenerator (final MutationGenerator gen, final Map<String, MutationGenerator> map) {
+      for (final String name : gen.getNames ())
+        map.put (name, gen);
     }
 
     private static Map<String, MutationGenerator> initGenerators() {
         final Map<String, MutationGenerator> map = new HashMap<>();
-        final Set<Class<? extends MutationGenerator>> mutatorClasses = new Reflections("de").getSubTypesOf(MutationGenerator.class);
-        mutatorClasses.forEach(c -> {
-            try {
-                final MutationGenerator mutator = c.getDeclaredConstructor().newInstance();
-                mutator.getNames().forEach(o -> map.put(o, mutator));
-            } catch (final ReflectiveOperationException e) {
-                throw new IllegalStateException("Can not initialize mutators", e);
-            }
-        });
+        registerGenerator (new AlternativeMutator (), map);
+        registerGenerator (new CodeMutationGenerator (), map);
+        registerGenerator (new DefaultMutationGenerator (), map);
+        registerGenerator (new TextMutator (), map);
+        registerGenerator (new TransformationMutationGenerator (), map);
+        registerGenerator (new WhitespaceMutationGenerator (), map);
         return map;
     }
 

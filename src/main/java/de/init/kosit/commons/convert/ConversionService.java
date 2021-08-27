@@ -7,12 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -20,7 +16,6 @@ import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
-import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.stream.XMLInputFactory;
@@ -31,7 +26,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -82,23 +76,7 @@ public class ConversionService {
         return new QName(model.getClass().getSimpleName().toLowerCase());
     }
 
-    @Nonnull
-    private static String _joinByColon (@Nullable final String[] a) {
-      final StringBuilder aSB = new StringBuilder ();
-      if (a != null)
-        for (final String s : a) {
-          if (aSB.length () > 0)
-            aSB.append (':');
-          aSB.append (s);
-        }
-      return aSB.toString ();
-    }
-
-    private static String getJAxbContextPath() {
-        final Reflections r = new Reflections("de");
-        final Set<Class<?>> types = r.getTypesAnnotatedWith(XmlRegistry.class);
-        final String[] packages = types.stream().map(t -> t.getPackage().getName()).toArray(String[]::new);
-        return _joinByColon (packages);
+    public ConversionService () {
     }
 
     private void checkInputEmpty(final byte[] xml) {
@@ -111,23 +89,6 @@ public class ConversionService {
         if (type == null) {
             throw new ConversionExeption("Can not unmarshal without type information. Need to specify a target type");
         }
-    }
-
-    /**
-     * Initialisiert den default context; Alle Packages mit {@link XmlRegistry XmlRegistries}.
-     */
-    public void initialize() {
-        initialize(getJAxbContextPath());
-    }
-
-    /**
-     * Initialisiert den conversion service mit den angegegebenen Packages.
-     *
-     * @param context packages für den JAXB Kontext
-     */
-    public void initialize(final Collection<Package> context) {
-        final String[] packages = context != null ? context.stream().map(Package::getName).toArray(String[]::new) : new String[0];
-        initialize(_joinByColon(packages));
     }
 
     /**
@@ -145,7 +106,7 @@ public class ConversionService {
 
     public JAXBContext getJaxbContext() {
         if (this.jaxbContext == null) {
-            initialize();
+            throw new IllegalStateException ("JAXB Context was never initialized");
         }
         return this.jaxbContext;
     }
