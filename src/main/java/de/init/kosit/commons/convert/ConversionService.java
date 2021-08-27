@@ -18,9 +18,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -184,17 +181,9 @@ public class ConversionService {
     public <T> T readXml(final Source source, final Class<T> type, final Listener listener) {
         try {
             final Unmarshaller u = getJaxbContext().createUnmarshaller();
-            if (listener != null && StreamAccess.class.isAssignableFrom(listener.getClass()) && StreamSource.class.isAssignableFrom(source.getClass())) {
-                final XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
-                final XMLStreamReader xsr = xmlInputFactory.createXMLStreamReader(source);
-                ((StreamAccess) listener).setStreamReader(xsr);
-                u.setListener(listener);
-                return u.unmarshal(xsr, type).getValue();
-            } else {
-                u.setListener(listener);
-                return u.unmarshal(source, type).getValue();
-            }
-        } catch (final JAXBException | XMLStreamException e) {
+            u.setListener(listener);
+            return u.unmarshal(source, type).getValue();
+        } catch (final JAXBException e) {
             throw new ConversionExeption(String.format("Can not unmarshal to type %s: %s", type.getSimpleName(), StringUtils.abbreviate(source.getSystemId(), MAX_LOG_CONTENT)), e);
         }
     }
