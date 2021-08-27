@@ -16,7 +16,8 @@
         <log4j.version>2.12.0</log4j.version>
         <slf4j.version>1.7.27</slf4j.version>
         <saxon-he.version>9.9.1-8</saxon-he.version>
-        <antlr.version>4.9.2</antlr.version>
+        <!-- 4.9.2 does not work -->
+        <antlr.version>4.5.1</antlr.version>
         <picocli.version>4.6.1</picocli.version>
         <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
             the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
