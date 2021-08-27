@@ -6,13 +6,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.xml.XMLConstants;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,16 +17,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-
-import com.sun.org.apache.xerces.internal.xs.XSImplementation;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.XPathContext;
@@ -194,46 +182,6 @@ public final class ObjectFactory {
     }
 
     /**
-     * Erzeugt eine XSLoader zum Laden und Prüfen eines xml Schemas. Die Methode gibt aus zwei Gründen ein {@link Object
-     * zurück}:
-     *
-     * <ol>
-     * <li>Oracle JDK und Xerces verwenden intern unterschiedliche Interfaces, sodass nicht klar ist, welche
-     * Schema-Loader-Implementierung erzeugt wird</li>
-     * <li>Der Wildfly Module Loader "versteckt" die JDK-Klassen per Default vor der Anwendung, sodass die Anwendung nicht
-     * mehr starten kann</li>
-     * </ol>
-     *
-     * @return einen initialisierten Loader
-     * @throws IllegalStateException wenn bei der Erzeugung etwas schief geht.
-     */
-    public static Object createSchemaLoader() {
-        try {
-            // aktuell nur JDK Unterstützung!
-            final DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-            final XSImplementation impl = (XSImplementation) registry.getDOMImplementation("XS-Loader");
-            return impl.createXSLoader(null);
-        } catch (final ReflectiveOperationException e) {
-            throw new IllegalStateException("Can not create schema loader", e);
-        }
-    }
-
-    /**
-     * Erzeugt einen Zeitstempel zur Verwendung in XML-Objekten.
-     *
-     * @return eine Instanz {@link XMLGregorianCalendar}
-     */
-    public static XMLGregorianCalendar createTimestamp() {
-        try {
-            final GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(new Date());
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-        } catch (final DatatypeConfigurationException e) {
-            throw new IllegalStateException("Can not create timestamp", e);
-        }
-    }
-
-    /**
      * Create a standard {@link DocumentBuilder} with or without validing features.
      *
      * @param validating defines whether validation is enabled
@@ -280,29 +228,6 @@ public final class ObjectFactory {
             processor.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(LOAD_EXTERNAL_DTD_FEATURE), false);
         }
         return processor;
-    }
-
-    /**
-     * Erzeugt einen Validier für das angegebenen Schema.
-     *
-     * @param schema das Schema mit dem validiert werden soll
-     * @return einen vorkonfigurierten Validator
-     */
-    public static Validator createValidator(final Schema schema) {
-        final Validator validator = schema.newValidator();
-        try {
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
-            log.warn("Can not disable external DTD access. Maybe an unsupported JAXP implementation is used.");
-            log.debug(e.getMessage(), e);
-        }
-        try {
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-        } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
-            log.warn("Can not disable external DTD access. Maybe an unsupported JAXP implementation is used.");
-            log.debug(e.getMessage(), e);
-        }
-        return validator;
     }
 
     /**
