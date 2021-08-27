@@ -5,19 +5,17 @@ import de.init.kosit.commons.util.NamedMessage;
 
 /**
  * Spezifischen Fehler bei der Validierung von XML Daten.
- * 
+ *
  * @author apenski
  */
 public enum ErrorCode implements NamedMessage {
     VALIDATION_ERROR("Technischer Fehler bei der Validierung gemäß Schema");
     private final String template;
 
-    @java.lang.SuppressWarnings("all")
-    private ErrorCode(final String template) {
+    ErrorCode(final String template) {
         this.template = template;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getTemplate() {
         return this.template;
     }

@@ -22,7 +22,6 @@ import de.kosit.xmlmutate.runner.MutationException;
  * @author Andreas Penski
  */
 public class EmptyMutator extends BaseMutator {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(EmptyMutator.class);
     private static final String MUTATOR_NAME = "empty";
 

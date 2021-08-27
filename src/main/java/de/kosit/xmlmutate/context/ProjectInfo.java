@@ -24,22 +24,18 @@ public class ProjectInfo {
         }
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getVersion() {
         return this.version;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getBuildTimestamp() {
         return this.buildTimestamp;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getName() {
         return this.name;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getDescription() {
         return this.description;
     }

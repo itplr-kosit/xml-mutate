@@ -43,21 +43,12 @@ import net.sf.saxon.s9api.XsltTransformer;
  */
 //@ApplicationScoped
 public class TransformationService {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TransformationService.class);
 
-
-    private class Messages {
-    }
-
-    //@Inject
-    private ConversionService conversionService;
-    //@Inject
-    private SchemaValidationService schemaValidationService;
-    //@Inject
-    private ExecutableRepository repository;
-    //@Inject
-    private Processor processor;
+    private final ConversionService conversionService;
+    private final SchemaValidationService schemaValidationService;
+    private final ExecutableRepository repository;
+    private final Processor processor;
 
     public Result<byte[], SyntaxError> transform(final URI uri, final Model model) {
         return transform(uri, null, model);
@@ -70,7 +61,7 @@ public class TransformationService {
 
     public <T> Result<T, SyntaxError> transform(final Transform<T> transform, final Model model) {
         log.debug("Start transformation");
-        return transform(transform, model, Collections.EMPTY_MAP);
+        return transform(transform, model, Collections.emptyMap ());
     }
 
     public <T> Result<T, SyntaxError> transform(final Transform<T> transform, final Model model, final Map<QName, XdmValue> parameters) {
@@ -144,15 +135,10 @@ public class TransformationService {
         return execute(t, new DOMSource(document), createConvert(t));
     }
 
-    @java.lang.SuppressWarnings("all")
     public TransformationService(final ConversionService conversionService, final SchemaValidationService schemaValidationService, final ExecutableRepository repository, final Processor processor) {
         this.conversionService = conversionService;
         this.schemaValidationService = schemaValidationService;
         this.repository = repository;
         this.processor = processor;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public TransformationService() {
     }
 }

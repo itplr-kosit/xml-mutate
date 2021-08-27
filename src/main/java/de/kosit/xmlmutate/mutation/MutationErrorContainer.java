@@ -64,6 +64,7 @@ public class MutationErrorContainer {
 
     /**
      * To create a common error message list for the report generator in the order needed
+     * @return list
      */
     public List<String> getAllErrorMessages() {
         final List<String> allErrorsList = new ArrayList<>();
@@ -82,7 +83,6 @@ public class MutationErrorContainer {
         return !this.globalErrorMessages.isEmpty() || !this.schemaErrorMessages.isEmpty() || !this.schematronErrorMessages.isEmpty();
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<Exception> getGlobalErrorMessages() {
         return this.globalErrorMessages;
     }

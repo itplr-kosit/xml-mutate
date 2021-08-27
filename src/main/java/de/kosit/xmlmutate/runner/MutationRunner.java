@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -20,6 +21,7 @@ import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import org.xml.sax.SAXException;
+
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.Result;
 import de.init.kosit.commons.SyntaxError;
@@ -34,7 +36,6 @@ import de.kosit.xmlmutate.mutation.MutationParser;
  * @author Andreas Penski
  */
 public class MutationRunner {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MutationRunner.class);
     private final RunnerConfig configuration;
     private final MutationParser parser;

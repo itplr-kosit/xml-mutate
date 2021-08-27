@@ -3,9 +3,11 @@ package de.init.kosit.commons.transform;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.URIResolver;
 import javax.xml.validation.Schema;
+
 import de.init.kosit.commons.Result;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmValue;
@@ -13,7 +15,7 @@ import net.sf.saxon.s9api.XsltExecutable;
 
 /**
  * Konfigurationsobjekt für eine auszuführende Transformation.
- * 
+ *
  * @author Andreas Penski (]init[ AG)
  */
 public class Transform<T> {
@@ -30,9 +32,17 @@ public class Transform<T> {
             getObject().setExecutable(executable);
         }
 
+        public Builder(final Transform<T> object) {
+            this.object = object;
+        }
+
+        protected Transform<T> getObject() {
+            return this.object;
+        }
+
         /**
          * Konvertiert optional das Ergebnis in ein Zielobjekt.
-         * 
+         *
          * @param newType der Klasse des Zielobjekts
          * @param <N> der Typ des Zielobjekts
          * @return this
@@ -57,28 +67,18 @@ public class Transform<T> {
             return this;
         }
 
-        public Builder<T> useResult(Result result) {
+        public Builder<T> useResult(final Result result) {
             this.getObject().setResult(result);
             return this;
         }
 
-        public Builder<T> useResolver(URIResolver resolver) {
+        public Builder<T> useResolver(final URIResolver resolver) {
             this.getObject().setResolver(resolver);
             return this;
         }
 
         public Transform<T> build() {
             return getObject();
-        }
-
-        @java.lang.SuppressWarnings("all")
-        public Builder(final Transform<T> object) {
-            this.object = object;
-        }
-
-        @java.lang.SuppressWarnings("all")
-        protected Transform<T> getObject() {
-            return this.object;
         }
     }
 
@@ -116,72 +116,58 @@ public class Transform<T> {
         return new Builder<>(copy);
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSchema(final Schema schema) {
         this.schema = schema;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setExecutable(final XsltExecutable executable) {
         this.executable = executable;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setTargetType(final Class<T> targetType) {
         this.targetType = targetType;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setParameters(final Map<QName, XdmValue> parameters) {
         this.parameters = parameters;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setUnmarshListener(final Unmarshaller.Listener unmarshListener) {
         this.unmarshListener = unmarshListener;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setResolver(final URIResolver resolver) {
         this.resolver = resolver;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setResult(final Result result) {
         this.result = result;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Schema getSchema() {
         return this.schema;
     }
 
-    @java.lang.SuppressWarnings("all")
     public XsltExecutable getExecutable() {
         return this.executable;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Class<T> getTargetType() {
         return this.targetType;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Map<QName, XdmValue> getParameters() {
         return this.parameters;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Unmarshaller.Listener getUnmarshListener() {
         return this.unmarshListener;
     }
 
-    @java.lang.SuppressWarnings("all")
     public URIResolver getResolver() {
         return this.resolver;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Result getResult() {
         return this.result;
     }

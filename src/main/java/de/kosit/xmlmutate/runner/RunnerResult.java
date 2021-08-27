@@ -3,14 +3,15 @@ package de.kosit.xmlmutate.runner;
 
 import java.nio.file.Path;
 import java.util.List;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.Mutation.State;
 
 /**
  * The Result of the xml mutate run.
- * 
+ *
  * @author Andreas Penski
  */
 public class RunnerResult {
@@ -18,7 +19,7 @@ public class RunnerResult {
 
     /**
      * Checks whether there is a Mutation which was not successfuil.
-     * 
+     *
      * @return true when not sucessful
      */
     public boolean isErrorPresent() {
@@ -40,12 +41,10 @@ public class RunnerResult {
         throw new IllegalArgumentException(String.format("No such mutation for coordinates %s,%s", inputIndex, mutationIndex));
     }
 
-    @java.lang.SuppressWarnings("all")
     public RunnerResult(final List<Pair<Path, List<Mutation>>> result) {
         this.result = result;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<Pair<Path, List<Mutation>>> getResult() {
         return this.result;
     }

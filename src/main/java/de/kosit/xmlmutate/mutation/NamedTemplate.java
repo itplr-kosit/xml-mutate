@@ -5,26 +5,23 @@ import java.net.URI;
 
 /**
  * Data objects holding information about xsl templates.
- * 
+ *
  * @author Andreas Penski
  */
 public class NamedTemplate {
     private final String name;
     private final URI path;
 
-    @java.lang.SuppressWarnings("all")
+    public NamedTemplate(final String name, final URI path) {
+        this.name = name;
+        this.path = path;
+    }
+
     public String getName() {
         return this.name;
     }
 
-    @java.lang.SuppressWarnings("all")
     public URI getPath() {
         return this.path;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public NamedTemplate(final String name, final URI path) {
-        this.name = name;
-        this.path = path;
     }
 }

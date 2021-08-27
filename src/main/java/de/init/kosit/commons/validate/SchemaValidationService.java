@@ -29,10 +29,9 @@ import de.init.kosit.commons.util.CommonException;
  * @author ooezpehlivan
  */
 public class SchemaValidationService {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SchemaValidationService.class);
-    // @Inject
-    private ConversionService conversionService;
+
+    private final ConversionService conversionService;
 
     public SchemaValidationService(final ConversionService conversionService) {
         this.conversionService = conversionService;
@@ -43,6 +42,7 @@ public class SchemaValidationService {
      *
      * @param schema das Schema
      * @param xml Zu validierende Datei.
+     * @return result
      */
     public Result<Boolean, SyntaxError> validate(final Schema schema, final byte[] xml) {
         return validate(schema, this.conversionService.parseDocument(xml).getObject());
@@ -86,7 +86,6 @@ public class SchemaValidationService {
      * @param <T> der Typ des Objekts
      * @return Validierungsergebnis
      */
-    @SuppressWarnings("WeakerAccess")
     public <T> Result<Boolean, SyntaxError> validate(final Schema schema, final JAXBContext context, final T objekt) {
         final CollectingErrorEventHandler errorHandler = new CollectingErrorEventHandler();
         try {
@@ -115,9 +114,5 @@ public class SchemaValidationService {
             log.debug(e.getMessage(), e);
         }
         return validator;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public SchemaValidationService() {
     }
 }

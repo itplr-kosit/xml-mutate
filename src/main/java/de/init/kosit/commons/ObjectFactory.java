@@ -41,9 +41,7 @@ import net.sf.saxon.trans.XPathException;
  * @author Andreas Penski
  */
 public final class ObjectFactory {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ObjectFactory.class);
-
 
     private static class SecureUriResolver implements CollectionFinder, OutputURIResolver, UnparsedTextURIResolver {
         public static final String MESSAGE = "Configuration error. Resolving ist not allowed";
@@ -205,21 +203,22 @@ public final class ObjectFactory {
  //  @Produces
     public static Processor createProcessor() {
         if (processor == null) {
-            processor = new Processor(Boolean.valueOf(System.getProperty(SAXON_ENTERPRISE_PROPERTY, "false")));
+            processor = new Processor(Boolean.valueOf(System.getProperty(SAXON_ENTERPRISE_PROPERTY, "false")).booleanValue ());
+            final Configuration config = processor.getUnderlyingConfiguration ();
             // verhindere global im Prinzip alle resolving strategien
             final SecureUriResolver resolver = new SecureUriResolver();
-            // processor.getUnderlyingConfiguration().setCollectionFinder(resolver);
-            // processor.getUnderlyingConfiguration().setOutputURIResolver(resolver);
+            // config.setCollectionFinder(resolver);
+            // config.setOutputURIResolver(resolver);
             // hier fehlt eigentlich noch der UriResolver für unparsed text, wird erst ab Saxon 9.8 unterstützt
             // grundsätzlich Feature-konfiguration:
-            processor.setConfigurationProperty(FeatureKeys.DTD_VALIDATION, false);
-            processor.setConfigurationProperty(FeatureKeys.ENTITY_RESOLVER_CLASS, "");
-            processor.setConfigurationProperty(FeatureKeys.XINCLUDE, false);
-            // processor.setConfigurationProperty(FeatureKeys.ALLOW_EXTERNAL_FUNCTIONS, false);
+            config.setConfigurationProperty(FeatureKeys.DTD_VALIDATION, false);
+            config.setConfigurationProperty(FeatureKeys.ENTITY_RESOLVER_CLASS, "");
+            config.setConfigurationProperty(FeatureKeys.XINCLUDE, false);
+            // config.setConfigurationProperty(FeatureKeys.ALLOW_EXTERNAL_FUNCTIONS, false);
             // Konfiguration des zu verwendenden Parsers, wenn Saxon selbst einen erzeugen muss, bspw. beim XSL parsen
-            processor.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(FEATURE_SECURE_PROCESSING), true);
-            processor.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(DISSALLOW_DOCTYPE_DECL_FEATURE), false);
-            processor.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(LOAD_EXTERNAL_DTD_FEATURE), false);
+            config.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(FEATURE_SECURE_PROCESSING), true);
+            config.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(DISSALLOW_DOCTYPE_DECL_FEATURE), false);
+            config.setConfigurationProperty(FeatureKeys.XML_PARSER_FEATURE + encode(LOAD_EXTERNAL_DTD_FEATURE), false);
         }
         return processor;
     }

@@ -172,32 +172,26 @@ public class MutationContext {
         return new MutationContext(getPi(), getDocumentPath(), getSavingMode());
     }
 
-    @java.lang.SuppressWarnings("all")
     public Path getDocumentPath() {
         return this.documentPath;
     }
 
-    @java.lang.SuppressWarnings("all")
     public ProcessingInstruction getPi() {
         return this.pi;
     }
 
-    @java.lang.SuppressWarnings("all")
     public DocumentFragment getOriginalFragment() {
         return this.originalFragment;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Node getSpecificTarget() {
         return this.specificTarget;
     }
 
-    @java.lang.SuppressWarnings("all")
     public SavingMode getSavingMode() {
         return this.savingMode;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSavingMode(final SavingMode savingMode) {
         this.savingMode = savingMode;
     }

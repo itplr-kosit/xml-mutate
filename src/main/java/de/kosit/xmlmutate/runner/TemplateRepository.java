@@ -2,6 +2,7 @@
 package de.kosit.xmlmutate.runner;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -12,40 +13,39 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.collections4.map.HashedMap;
+
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 
 /**
  * Repository for caching an XSLT Template for reuse.
- * 
+ *
  * @author Andreas Penski
  */
 public class TemplateRepository {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TemplateRepository.class);
 
 
-    private class TemplateAndPath {
+    private static final class TemplateAndPath {
         private final Templates template;
         private final URI path;
 
-        @java.lang.SuppressWarnings("all")
         public TemplateAndPath(final Templates template, final URI path) {
             this.template = template;
             this.path = path;
         }
 
-        @java.lang.SuppressWarnings("all")
         public Templates getTemplate() {
             return this.template;
         }
 
-        @java.lang.SuppressWarnings("all")
         public URI getPath() {
             return this.path;
         }
@@ -68,7 +68,7 @@ public class TemplateRepository {
 
     /**
      * Determine whether a named template exists or not.
-     * 
+     *
      * @param name the name of the template
      * @return true if existing
      */
@@ -78,7 +78,7 @@ public class TemplateRepository {
 
     /**
      * Fetch a template from the cache.
-     * 
+     *
      * @param name the name of the template
      * @return the compiled template or null if it is not existing
      */
@@ -88,7 +88,7 @@ public class TemplateRepository {
 
     /**
      * Register a new template and try to compile it for further usage.
-     * 
+     *
      * @param name the name of the template
      * @param uri the uri of the resource
      */
@@ -135,7 +135,7 @@ public class TemplateRepository {
 
     /**
      * Register a new template and try to compile it for further usage.
-     * 
+     *
      * @param name the name of the template
      * @param path the {@link Path} to the resource
      */
@@ -145,7 +145,7 @@ public class TemplateRepository {
 
     /**
      * Checks for existing template.
-     * 
+     *
      * @param name the name/uri of the template
      * @return true when existing.
      */
@@ -155,7 +155,7 @@ public class TemplateRepository {
 
     /**
      * Checks for not existing template.
-     * 
+     *
      * @param name the name/uri of the template
      * @return true when NOT existing.
      */
@@ -165,7 +165,7 @@ public class TemplateRepository {
 
     /**
      * Returns a list of registered and compiled Templates (just information, not the {@link Templates} themselves)
-     * 
+     *
      * @return List of templates.
      */
     public List<NamedTemplate> getTemplates() {

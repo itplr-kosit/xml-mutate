@@ -16,11 +16,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.validation.Schema;
-import de.kosit.xmlmutate.runner.*;
+
 import org.fusesource.jansi.AnsiConsole;
+
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.RunnerResult;
+import de.kosit.xmlmutate.runner.SavingMode;
+import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -36,18 +45,17 @@ import picocli.CommandLine.ParseResult;
  */
 @Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
 public class XmlMutate implements Callable<Integer> {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlMutate.class);
     @Option(names = {"-o", "--target"}, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
     @Option(names = {"-x", "--schema", "--xsd"}, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
     @Option(names = {"-s", "--schematron"}, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
-    private final Map<String, Path> schematrons = new HashMap<String, Path>();
+    private final Map<String, Path> schematrons = new HashMap<>();
     @Option(names = {"-m", "--mode"}, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
     @Option(names = {"-t", "--transformations"}, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
-    private final Map<String, Path> transformations = new HashMap<String, Path>();
+    private final Map<String, Path> transformations = new HashMap<>();
     @Option(names = {"-ff", "--fail-fast"}, description = "The run failure control mode for fail fast")
     private boolean failfast;
     @Option(names = {"-fae", "--fail-at-end"}, description = "The run failure control mode for fail at end")

@@ -4,11 +4,13 @@ package de.kosit.xmlmutate.mutation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import de.kosit.xmlmutate.runner.SavingMode;
+
 import org.apache.commons.lang3.RegExUtils;
+
 import de.init.kosit.commons.SyntaxError;
 import de.kosit.xmlmutate.mutator.Mutator;
 import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.SavingMode;
 
 /**
  * Collectible object for a mutation within a test file. It collects all possible
@@ -19,12 +21,12 @@ import de.kosit.xmlmutate.runner.MutationException;
  */
 public class Mutation {
     private final MutationContext context;
-    private String identifier;
+    private final String identifier;
     private MutationConfig configuration = new MutationConfig();
     private Mutator mutator;
-    private MutationResult result = new MutationResult();
+    private final MutationResult result = new MutationResult();
     private State state = State.CREATED;
-    private MutationErrorContainer mutationErrorContainer = new MutationErrorContainer();
+    private final MutationErrorContainer mutationErrorContainer = new MutationErrorContainer();
 
     /**
      * Constructor.
@@ -37,18 +39,18 @@ public class Mutation {
         this.identifier = identifier;
     }
 
-    public Mutation(final MutationContext context, final String identifier, MutationConfig configuration) {
+    public Mutation(final MutationContext context, final String identifier, final MutationConfig configuration) {
         this(context, identifier);
         this.configuration = configuration;
     }
 
-    public Mutation(final MutationContext context, final String identifier, MutationConfig configuration, Mutator mutator) {
+    public Mutation(final MutationContext context, final String identifier, final MutationConfig configuration, final Mutator mutator) {
         this(context, identifier, configuration);
         this.mutator = mutator;
         this.result.setSchemaValidationAsExpected(isSchemaValidationAsExpected());
     }
 
-    public void setState(State state) {
+    public void setState(final State state) {
         if (state == null) {
             this.state = State.ERROR;
             throw new IllegalArgumentException("State should not be set to null");
@@ -135,37 +137,30 @@ public class Mutation {
         ERROR, CREATED, MUTATED, VALIDATED, CHECKED;
     }
 
-    @java.lang.SuppressWarnings("all")
     public MutationContext getContext() {
         return this.context;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getIdentifier() {
         return this.identifier;
     }
 
-    @java.lang.SuppressWarnings("all")
     public MutationConfig getConfiguration() {
         return this.configuration;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Mutator getMutator() {
         return this.mutator;
     }
 
-    @java.lang.SuppressWarnings("all")
     public MutationResult getResult() {
         return this.result;
     }
 
-    @java.lang.SuppressWarnings("all")
     public State getState() {
         return this.state;
     }
 
-    @java.lang.SuppressWarnings("all")
     public MutationErrorContainer getMutationErrorContainer() {
         return this.mutationErrorContainer;
     }

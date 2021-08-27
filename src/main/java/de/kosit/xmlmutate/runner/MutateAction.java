@@ -11,7 +11,6 @@ import de.kosit.xmlmutate.mutator.Mutator;
  * @author Andreas Penski
  */
 public class MutateAction implements RunAction {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MutateAction.class);
 
     @Override

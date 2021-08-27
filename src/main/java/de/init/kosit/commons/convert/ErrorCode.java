@@ -5,7 +5,7 @@ import de.init.kosit.commons.util.NamedError;
 
 /**
  * Fehler im Zusammenhang mit Parsing
- * 
+ *
  * @author Andreas Penski (]init[ AG)
  */
 public enum ErrorCode implements NamedError {
@@ -15,12 +15,10 @@ public enum ErrorCode implements NamedError {
     SCHEMA_MISMATCH("Das Dokument {0} wurde nicht erfolgreich validiert: {1}"), SCHEMA_MISMATCH_UPGRADE("Das Dokument {0} hat eine neuere Version und ist nicht kompatibel. {1}");
     private final String template;
 
-    @java.lang.SuppressWarnings("all")
-    private ErrorCode(final String template) {
+    ErrorCode(final String template) {
         this.template = template;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getTemplate() {
         return this.template;
     }

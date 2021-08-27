@@ -3,6 +3,7 @@ package de.init.kosit.commons.transform;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.dom.DOMSource;
+
 import de.init.kosit.commons.convert.ConversionService;
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.s9api.Destination;
@@ -10,18 +11,23 @@ import net.sf.saxon.s9api.XdmDestination;
 
 /**
  * Convert, der via JAXB in ein Zielobjekt umwandelt.
- * 
+ *
  * @author Andreas Penski
  */
 class ObjektConvert<T> implements Convert<T> {
-    private XdmDestination xdmDestination = new XdmDestination();
+    private final XdmDestination xdmDestination = new XdmDestination();
     private final ConversionService conversionService;
     private final Class<T> targetClass;
     private Unmarshaller.Listener listener;
 
-    ObjektConvert(ConversionService conversionService, Class<T> targetClass, Unmarshaller.Listener listener) {
+    ObjektConvert(final ConversionService conversionService, final Class<T> targetClass, final Unmarshaller.Listener listener) {
         this(conversionService, targetClass);
         this.listener = listener;
+    }
+
+    public ObjektConvert(final ConversionService conversionService, final Class<T> targetClass) {
+        this.conversionService = conversionService;
+        this.targetClass = targetClass;
     }
 
     @Override
@@ -32,11 +38,5 @@ class ObjektConvert<T> implements Convert<T> {
     @Override
     public T getResult() {
         return this.conversionService.readXml(new DOMSource(NodeOverNodeInfo.wrap(xdmDestination.getXdmNode().getUnderlyingNode())), targetClass, listener);
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public ObjektConvert(final ConversionService conversionService, final Class<T> targetClass) {
-        this.conversionService = conversionService;
-        this.targetClass = targetClass;
     }
 }

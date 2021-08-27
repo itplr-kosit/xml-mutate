@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * Handled Exception.
- * 
+ *
  * @author Andreas Penski
  */
 public class CommonException extends RuntimeException {
@@ -121,7 +121,6 @@ public class CommonException extends RuntimeException {
         return getErrors().stream().map(Message::getMessage).collect(Collectors.toSet());
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<BusinessError> getErrors() {
         return this.errors;
     }

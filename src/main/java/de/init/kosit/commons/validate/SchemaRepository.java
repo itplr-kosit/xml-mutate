@@ -28,13 +28,10 @@ import de.init.kosit.commons.artefact.Artefact;
  *
  * @author Andreas Penski (]init[ AG)
  */
-// @ApplicationScoped
 public class SchemaRepository {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SchemaRepository.class);
 
-
-    private class MyLSInput implements LSInput {
+    private static final class MyLSInput implements LSInput {
         private String baseURI;
         private InputStream byteStream;
         private String encoding;
@@ -79,52 +76,42 @@ public class SchemaRepository {
             // nothing to set
         }
 
-        @java.lang.SuppressWarnings("all")
         public String getBaseURI() {
             return this.baseURI;
         }
 
-        @java.lang.SuppressWarnings("all")
         public InputStream getByteStream() {
             return this.byteStream;
         }
 
-        @java.lang.SuppressWarnings("all")
         public String getEncoding() {
             return this.encoding;
         }
 
-        @java.lang.SuppressWarnings("all")
         public String getPublicId() {
             return this.publicId;
         }
 
-        @java.lang.SuppressWarnings("all")
         public String getSystemId() {
             return this.systemId;
         }
 
-        @java.lang.SuppressWarnings("all")
         public void setBaseURI(final String baseURI) {
             this.baseURI = baseURI;
         }
 
-        @java.lang.SuppressWarnings("all")
         public void setByteStream(final InputStream byteStream) {
             this.byteStream = byteStream;
         }
 
-        @java.lang.SuppressWarnings("all")
         public void setEncoding(final String encoding) {
             this.encoding = encoding;
         }
 
-        @java.lang.SuppressWarnings("all")
         public void setPublicId(final String publicId) {
             this.publicId = publicId;
         }
 
-        @java.lang.SuppressWarnings("all")
         public void setSystemId(final String systemId) {
             this.systemId = systemId;
         }

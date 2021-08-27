@@ -48,12 +48,10 @@ public class Message implements Serializable {
         return result;
     }
 
-    @java.lang.SuppressWarnings("all")
     public NamedMessage getMessageId() {
         return this.messageId;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Object[] getParams() {
         return this.params;
     }

@@ -11,17 +11,20 @@ package de.init.kosit.commons;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.DOMLocator;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
+
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.XdmNode;
 
@@ -31,7 +34,6 @@ import net.sf.saxon.s9api.XdmNode;
  * @author Andreas Penski (]init[ AG)
  */
 public class CollectingErrorEventHandler implements ValidationEventHandler, ErrorHandler, MessageListener, ErrorListener, DOMErrorHandler {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CollectingErrorEventHandler.class);
     private static final int DEFAULT_ABORT_COUNT = 50;
     private final List<SyntaxError> errors = new ArrayList<>();
@@ -64,13 +66,13 @@ public class CollectingErrorEventHandler implements ValidationEventHandler, Erro
 
     private static Severity translateSeverity(final int severity) {
         switch (severity) {
-        case ValidationEvent.WARNING: 
+        case ValidationEvent.WARNING:
             return Severity.SEVERITY_WARNING;
-        case ValidationEvent.ERROR: 
+        case ValidationEvent.ERROR:
             return Severity.SEVERITY_ERROR;
-        case ValidationEvent.FATAL_ERROR: 
+        case ValidationEvent.FATAL_ERROR:
             return Severity.SEVERITY_FATAL_ERROR;
-        default: 
+        default:
             throw new IllegalArgumentException("Unknown severity level " + severity);
         }
     }
@@ -155,7 +157,7 @@ public class CollectingErrorEventHandler implements ValidationEventHandler, Erro
 
     /**
      * Gibt eine lesbare FM zurück.
-     * 
+     *
      * @return FM
      */
     public String getErrorDescription() {
@@ -185,12 +187,10 @@ public class CollectingErrorEventHandler implements ValidationEventHandler, Erro
         return true;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<SyntaxError> getErrors() {
         return this.errors;
     }
 
-    @java.lang.SuppressWarnings("all")
     public int getStopProcessCount() {
         return this.stopProcessCount;
     }

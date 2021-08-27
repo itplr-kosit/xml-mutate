@@ -20,6 +20,9 @@ import de.kosit.xmlmutate.runner.Services;
 public class DefaultMutationGenerator implements MutationGenerator {
     public static final String NAME = DefaultMutationGenerator.class.getSimpleName();
 
+    public DefaultMutationGenerator() {
+    }
+
     @Override
     public List<Mutation> generateMutations(@Nonnull final MutationConfig config, @Nonnull final MutationContext context) {
         if (config == null) {
@@ -42,9 +45,5 @@ public class DefaultMutationGenerator implements MutationGenerator {
     @Override
     public String getPreferredName() {
         return getNames().stream().findFirst().orElseThrow(IllegalStateException::new);
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public DefaultMutationGenerator() {
     }
 }

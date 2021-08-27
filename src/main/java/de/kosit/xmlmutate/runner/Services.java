@@ -2,6 +2,7 @@
 package de.kosit.xmlmutate.runner;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
+
 import de.init.kosit.commons.ObjectFactory;
 import de.init.kosit.commons.convert.ConversionService;
 import de.init.kosit.commons.schematron.SchematronService;
@@ -18,8 +19,7 @@ import de.kosit.xmlmutate.mutator.MutatorRegistry;
  *
  * @author Andreas Penski
  */
-public class Services {
-    @java.lang.SuppressWarnings("all")
+public final class Services {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Services.class);
     private static final ExecutableRepository xsltRepository;
     private static final ConversionService conversionService;

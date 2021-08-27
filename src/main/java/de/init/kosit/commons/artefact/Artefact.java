@@ -21,27 +21,31 @@ public class Artefact {
      */
     private final String format;
 
-    @java.lang.SuppressWarnings("all")
+    public Artefact(final byte[] content, final String name, final URI uri, final ArtefactType type, final String mimeType, final String format) {
+        this.content = content;
+        this.name = name;
+        this.uri = uri;
+        this.type = type;
+        this.mimeType = mimeType;
+        this.format = format;
+    }
+
     public byte[] getContent() {
         return this.content;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getName() {
         return this.name;
     }
 
-    @java.lang.SuppressWarnings("all")
     public URI getUri() {
         return this.uri;
     }
 
-    @java.lang.SuppressWarnings("all")
     public ArtefactType getType() {
         return this.type;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getMimeType() {
         return this.mimeType;
     }
@@ -51,18 +55,7 @@ public class Artefact {
      * Beispielsweise können unter dem MIME-Type "XML" die Formate WSDL, XML Schema-Definitionen,
      * Genericode etc. bereitgestellt werden.
      */
-    @java.lang.SuppressWarnings("all")
     public String getFormat() {
         return this.format;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public Artefact(final byte[] content, final String name, final URI uri, final ArtefactType type, final String mimeType, final String format) {
-        this.content = content;
-        this.name = name;
-        this.uri = uri;
-        this.type = type;
-        this.mimeType = mimeType;
-        this.format = format;
     }
 }

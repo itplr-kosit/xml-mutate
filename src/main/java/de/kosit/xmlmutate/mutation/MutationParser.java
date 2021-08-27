@@ -46,7 +46,6 @@ import de.kosit.xmlmutate.runner.Services;
  * @author Andreas Penski
  */
 public class MutationParser {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MutationParser.class);
 
 
@@ -61,12 +60,10 @@ public class MutationParser {
             this.expectations.add(new SchematronRuleExpectation(text, ruleName, this.expectedResult));
         }
 
-        @java.lang.SuppressWarnings("all")
         public SchematronRulesParserListener(final ExpectedResult expectedResult) {
             this.expectedResult = expectedResult;
         }
 
-        @java.lang.SuppressWarnings("all")
         List<SchematronRuleExpectation> getExpectations() {
             return this.expectations;
         }
@@ -187,12 +184,10 @@ public class MutationParser {
             return this.mutations == null;
         }
 
-        @java.lang.SuppressWarnings("all")
         public MutationParserListener(final MutationContext context) {
             this.context = context;
         }
 
-        @java.lang.SuppressWarnings("all")
         public List<Mutation> getMutations() {
             return this.mutations;
         }
@@ -242,9 +237,5 @@ public class MutationParser {
         m.setState(State.ERROR);
         m.getMutationErrorContainer().addGlobalErrorMessage(exception);
         return Collections.singletonList(m);
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public MutationParser() {
     }
 }

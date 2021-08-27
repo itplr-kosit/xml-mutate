@@ -15,7 +15,7 @@ import de.init.kosit.commons.artefact.Artefact;
  * @author Andreas Penski
  */
 public abstract class AbstractNormalized {
-    private final Collection<Artefact> references = new ArrayList<>();
+    private final List<Artefact> references = new ArrayList<>();
 
     /**
      * lifert alle Artefacts(main Artefact und alle Referenzen), die zu diesem Model gehören.
@@ -24,9 +24,7 @@ public abstract class AbstractNormalized {
      */
     public Collection<Artefact> getArtefacts() {
         final List<Artefact> a = new ArrayList<>();
-        if (getReferences() != null) {
-            a.addAll(getReferences());
-        }
+        a.addAll(this.references);
         return a;
     }
 
@@ -35,8 +33,8 @@ public abstract class AbstractNormalized {
      *
      * @param reference
      */
-    public void addReference(@Nonnull final Artefact reference) {
-        getReferences().add(reference);
+    public final void addReference(@Nonnull final Artefact reference) {
+       this.references.add(reference);
     }
 
     /**
@@ -48,8 +46,7 @@ public abstract class AbstractNormalized {
         addReference(artefact);
     }
 
-    @java.lang.SuppressWarnings("all")
-    public Collection<Artefact> getReferences() {
+    public final Collection<Artefact> getReferences() {
         return this.references;
     }
 }

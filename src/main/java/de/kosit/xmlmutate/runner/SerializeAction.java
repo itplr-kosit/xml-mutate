@@ -44,7 +44,6 @@ public class SerializeAction implements RunAction {
         }
     }
 
-    @java.lang.SuppressWarnings("all")
     public SerializeAction(final Path targetFolder) {
         this.targetFolder = targetFolder;
     }

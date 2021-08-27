@@ -30,10 +30,8 @@ import net.sf.saxon.s9api.XsltExecutable;
  */
 //@ApplicationScoped
 public class ExecutableRepository {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExecutableRepository.class);
-    //@Inject
-    private Processor processor;
+    private final Processor processor;
     private final Map<URI, XsltExecutable> executables = new HashMap<>();
 
     public ExecutableRepository(final Processor processor) {
@@ -121,9 +119,5 @@ public class ExecutableRepository {
         } catch (final SaxonApiException | IOException e) {
             throw new CommonException(ErrorCode.COMPILE_ERROR, transformationArtefact.getUri());
         }
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public ExecutableRepository() {
     }
 }

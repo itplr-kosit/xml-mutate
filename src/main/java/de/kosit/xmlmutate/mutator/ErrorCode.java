@@ -10,12 +10,10 @@ public enum ErrorCode implements NamedError {
     TRANSFORM_ERROR("Error while transforming: {0}"), WHITESPACE_VARIATION_UNKNOWN("No whitespace mutator variation found with number: {0}"), STRUCTURAL_MISMATCH("Structural mismatch: {0}"), CONFIGURATION_ERRROR("Configuration error: {0}");
     private final String template;
 
-    @java.lang.SuppressWarnings("all")
-    private ErrorCode(final String template) {
+    ErrorCode(final String template) {
         this.template = template;
     }
 
-    @java.lang.SuppressWarnings("all")
     public String getTemplate() {
         return this.template;
     }

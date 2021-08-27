@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Locale;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -18,7 +19,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -36,11 +36,8 @@ import de.init.kosit.commons.SyntaxError;
 /**
  * JAXB Conversion Utility.
  */
-// @ApplicationScoped
 public class ConversionService {
-    @java.lang.SuppressWarnings("all")
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConversionService.class);
-
 
     /**
      * Exception while serializing/deserializing with jaxb.
@@ -71,7 +68,7 @@ public class ConversionService {
     private JAXBContext jaxbContext;
 
     private static <T> QName createQName(final T model) {
-        return new QName(model.getClass().getSimpleName().toLowerCase());
+        return new QName(model.getClass().getSimpleName().toLowerCase(Locale.ROOT));
     }
 
     public ConversionService () {
@@ -229,7 +226,7 @@ public class ConversionService {
             final Marshaller marshaller = getJaxbContext().createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, fragment);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name ());
             if (null == introspector.getElementName(model)) {
                 final JAXBElement jaxbElement = new JAXBElement(createQName(model), model.getClass(), model);
                 marshaller.marshal(jaxbElement, w);
@@ -286,14 +283,5 @@ public class ConversionService {
             error.setMessage(String.format("IOException while reading resource %s", content));
             return new Result<>(Collections.singleton(error));
         }
-    }
-
-    /**
-     * Initializes the context with a specific instance.
-     *
-     * @param context the context
-     */
-    public void initialize(final JAXBContext context) {
-        this.jaxbContext = context;
     }
 }

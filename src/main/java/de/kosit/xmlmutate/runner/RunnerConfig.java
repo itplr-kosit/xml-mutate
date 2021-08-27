@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import javax.xml.validation.Schema;
+
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.report.ReportGenerator;
@@ -86,7 +88,7 @@ public class RunnerConfig {
             return this;
         }
 
-        public Builder saveParsing(boolean saveParsingMode) {
+        public Builder saveParsing(final boolean saveParsingMode) {
             this.config.setSaveParsing(saveParsingMode);
             return this;
         }
@@ -132,62 +134,50 @@ public class RunnerConfig {
     /**
      * Target directory for outputs
      */
-    @java.lang.SuppressWarnings("all")
     public Path getTargetFolder() {
         return this.targetFolder;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<Path> getDocuments() {
         return this.documents;
     }
 
-    @java.lang.SuppressWarnings("all")
     public Schema getSchema() {
         return this.schema;
     }
 
-    @java.lang.SuppressWarnings("all")
     public ReportGenerator getReportGenerator() {
         return this.reportGenerator;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<RunAction> getActions() {
         return this.actions;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<Schematron> getSchematronRules() {
         return this.schematronRules;
     }
 
-    @java.lang.SuppressWarnings("all")
     public List<NamedTemplate> getTemplates() {
         return this.templates;
     }
 
-    @java.lang.SuppressWarnings("all")
     public ExecutorService getExecutorService() {
         return this.executorService;
     }
 
-    @java.lang.SuppressWarnings("all")
     public FailureMode getFailureMode() {
         return this.failureMode;
     }
 
-    @java.lang.SuppressWarnings("all")
     public SavingMode getSavingMode() {
         return this.savingMode;
     }
 
-    @java.lang.SuppressWarnings("all")
     public boolean isSaveParsing() {
         return this.saveParsing;
     }
 
-    @java.lang.SuppressWarnings("all")
     public boolean isIgnoreSchemaInvalidity() {
         return this.ignoreSchemaInvalidity;
     }
@@ -195,62 +185,50 @@ public class RunnerConfig {
     /**
      * Target directory for outputs
      */
-    @java.lang.SuppressWarnings("all")
     public void setTargetFolder(final Path targetFolder) {
         this.targetFolder = targetFolder;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setDocuments(final List<Path> documents) {
         this.documents = documents;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSchema(final Schema schema) {
         this.schema = schema;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setReportGenerator(final ReportGenerator reportGenerator) {
         this.reportGenerator = reportGenerator;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setActions(final List<RunAction> actions) {
         this.actions = actions;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSchematronRules(final List<Schematron> schematronRules) {
         this.schematronRules = schematronRules;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setTemplates(final List<NamedTemplate> templates) {
         this.templates = templates;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setExecutorService(final ExecutorService executorService) {
         this.executorService = executorService;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setFailureMode(final FailureMode failureMode) {
         this.failureMode = failureMode;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSavingMode(final SavingMode savingMode) {
         this.savingMode = savingMode;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setSaveParsing(final boolean saveParsing) {
         this.saveParsing = saveParsing;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setIgnoreSchemaInvalidity(final boolean ignoreSchemaInvalidity) {
         this.ignoreSchemaInvalidity = ignoreSchemaInvalidity;
     }

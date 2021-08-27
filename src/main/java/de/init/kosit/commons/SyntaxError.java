@@ -5,15 +5,55 @@ import org.slf4j.Logger;
 
 /**
  * Simple Hilfsklasse zum Weiterreichen von Syntax-Fehlern.
- * 
+ *
  * @author Andreas Penski (]init[ AG)
  */
-public class SyntaxError {
+public final class SyntaxError {
     private Severity severity;
     private String message;
     private String source;
     private int rowNumber;
     private int columnNumber;
+
+    public Severity getSeverity() {
+        return this.severity;
+    }
+
+    public void setSeverity(final Severity severity) {
+        this.severity = severity;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(final String message) {
+        this.message = message;
+    }
+
+    public String getSource() {
+        return this.source;
+    }
+
+    public void setSource(final String source) {
+        this.source = source;
+    }
+
+    public int getRowNumber() {
+        return this.rowNumber;
+    }
+
+    public void setRowNumber(final int rowNumber) {
+        this.rowNumber = rowNumber;
+    }
+
+    public int getColumnNumber() {
+        return this.columnNumber;
+    }
+
+    public void setColumnNumber(final int columnNumber) {
+        this.columnNumber = columnNumber;
+    }
 
     public void log(final Logger logger) {
         final String msgTemplate = "{} in {} at row {} at pos {}";
@@ -28,55 +68,5 @@ public class SyntaxError {
     @Override
     public String toString() {
         return getSeverity().name() + " " + getMessage() + " At row " + getRowNumber() + " at pos " + getColumnNumber();
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public Severity getSeverity() {
-        return this.severity;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public String getMessage() {
-        return this.message;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public String getSource() {
-        return this.source;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public int getRowNumber() {
-        return this.rowNumber;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public int getColumnNumber() {
-        return this.columnNumber;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public void setSeverity(final Severity severity) {
-        this.severity = severity;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public void setMessage(final String message) {
-        this.message = message;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public void setSource(final String source) {
-        this.source = source;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public void setRowNumber(final int rowNumber) {
-        this.rowNumber = rowNumber;
-    }
-
-    @java.lang.SuppressWarnings("all")
-    public void setColumnNumber(final int columnNumber) {
-        this.columnNumber = columnNumber;
     }
 }
