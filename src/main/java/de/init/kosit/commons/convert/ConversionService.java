@@ -18,6 +18,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
