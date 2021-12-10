@@ -11,7 +11,7 @@ You need Maven > 3.x and JDK > 1.8
 
 Get source code:
 ```
-git clone https://github.com/itplr-kosit/xml-mutate .
+git clone https://github.com/itplr-kosit/xml-mutate 
 ```
 
 Build jar:
