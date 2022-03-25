@@ -2,7 +2,7 @@
 
 A declarative **XML** instance **Muta**te and **Te**st tool.
 
-Note: GitHub is just a mirror repository. Contact https://twitter.com/renzokott 
+Note: GitHub is just a mirror repository of https://projekte.kosit.org/kosit/xml-mutate
 
 
 ## Build
