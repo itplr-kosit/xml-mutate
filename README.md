@@ -2,9 +2,11 @@
 
 A declarative **XML** instance **Muta**te and **Te**st tool.
 
-If you think you have found a bug, please file an issue in the [Validator Configuration BIS Issue Tracker](https://projekte.kosit.org/kosit/xml-mutate/-/issues).
+If you think you have found a bug, please [contact us](https://www.xoev.de/xrechnung-16828).
 
-You can find packaged releases on our [GitLab project](https://projekte.kosit.org/kosit/xml-mutate/-/releases).
+Existing issues can be found at [our issue tracker](https://projekte.kosit.org/kosit/xml-mutate/-/issues).
+
+You can find packaged releases on [our GitLab project](https://projekte.kosit.org/kosit/xml-mutate/-/releases).
 
 
 ## Build
