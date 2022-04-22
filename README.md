@@ -2,7 +2,9 @@
 
 A declarative **XML** instance **Muta**te and **Te**st tool.
 
-Note: GitHub is just a mirror repository of https://projekte.kosit.org/kosit/xml-mutate
+If you think you have found a bug, please file an issue in the [Validator Configuration BIS Issue Tracker](https://projekte.kosit.org/kosit/xml-mutate/-/issues).
+
+You can find packaged releases on our [GitLab project](https://projekte.kosit.org/kosit/xml-mutate/-/releases).
 
 
 ## Build
