@@ -77,7 +77,7 @@ public class MutationParser {
         @Override
         public void exitMutator(final MutatorContext ctx) {
             if (ctx.name() != null) {
-                this.config.setMutatorName(unquote(ctx.name().getText()));
+                this.config.setMutatorName(StringUtils.deleteWhitespace(unquote(ctx.name().getText())));
             }
         }
 
