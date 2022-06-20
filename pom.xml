@@ -13,11 +13,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- Own properties -->
-        <log4j.version>2.15.0</log4j.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <saxon-he.version>9.8.0-11</saxon-he.version>
-        <antlr.version>4.5.1-1</antlr.version>
-        <picocli.version>4.0.1</picocli.version>
+        <log4j.version>2.12.0</log4j.version>
+        <slf4j.version>1.7.27</slf4j.version>
+        <saxon-he.version>9.9.1-8</saxon-he.version>
+        <!-- 4.9.2 does not work -->
+        <antlr.version>4.5.1</antlr.version>
+        <picocli.version>4.6.1</picocli.version>
+
         <!-- Due to a memory leak in Surefire 2.20 and issues running on Java 9,
             the junit-platform-surefire-provider currently only works with Surefire 2.19.1. -->
         <mvn.surefire.version>2.19.1</mvn.surefire.version>
@@ -27,15 +29,12 @@
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>project.local</id>
-            <name>project</name>
-            <url>file:${project.basedir}/libs</url>
-        </repository>
-    </repositories>
-
     <dependencies>
+        <dependency>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+          <version>3.0.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -49,37 +48,14 @@
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
             <version>${saxon-he.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-        </dependency>
-        <dependency>
-            <groupId>de.init.kosit.commons</groupId>
-            <artifactId>kosit-commons</artifactId>
-            <version>1.1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
+            <version>4.4</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
@@ -89,7 +65,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.8.1</version>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
@@ -101,11 +77,6 @@
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>${picocli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
         </dependency>
 
 
@@ -122,11 +93,23 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.2</version>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.1.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.11.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <resources>
@@ -136,7 +119,7 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
+              <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr.version}</version>
@@ -218,6 +201,55 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.14.0</version>
+                <executions>
+                    <execution>
+                        <id>svrl</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <extension>true</extension>
+                            <schemaDirectory>src/main/xsd</schemaDirectory>
+                            <bindingDirectory>src/main/xsd</bindingDirectory>
+                            <generateDirectory>${project.build.directory}/generated-sources/svrl</generateDirectory>
+                            <packageLevelAnnotations>false</packageLevelAnnotations>
+                            <markGenerated>true</markGenerated>
+                            <addCompileSourceRoot>true</addCompileSourceRoot>
+                            <args>
+                                <arg>-Xinheritance</arg>
+                            </args>
+                            <plugins>
+                                <plugin>
+                                    <groupId>org.jvnet.jaxb2_commons</groupId>
+                                    <artifactId>jaxb2-basics</artifactId>
+                                    <version>0.11.1</version>
+                                </plugin>
+                            </plugins>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <extension>true</extension>
+                            <schemaDirectory>src/test/resources/sample-model</schemaDirectory>
+                            <bindingDirectory>src/test/resources</bindingDirectory>
+                            <generateDirectory>${project.build.directory}/generated-test-sources/test-samples</generateDirectory>
+                            <packageLevelAnnotations>false</packageLevelAnnotations>
+                            <markGenerated>true</markGenerated>
+                            <addCompileSourceRoot>false</addCompileSourceRoot>
+                            <addTestCompileSourceRoot>true</addTestCompileSourceRoot>
+                        </configuration>
+                    </execution>
+
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

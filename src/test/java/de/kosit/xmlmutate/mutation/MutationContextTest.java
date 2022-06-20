@@ -1,7 +1,18 @@
 package de.kosit.xmlmutate.mutation;
 
-import com.google.common.base.Charsets;
-import de.init.kosit.commons.ObjectFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.function.BiConsumer;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -9,20 +20,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Paths;
-import java.util.function.BiConsumer;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import de.init.kosit.commons.ObjectFactory;
 
 /**
  * It tests the parser functionalities
- * 
+ *
  * @author Andreas Penski
  */
 public class MutationContextTest {
@@ -189,7 +191,7 @@ public class MutationContextTest {
     private static String serialize(final Document doc) throws Exception {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final Transformer transformer = ObjectFactory.createTransformer(true);
-        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, Charsets.UTF_8)));
+        transformer.transform(new DOMSource(doc), new StreamResult(new OutputStreamWriter(out, StandardCharsets.UTF_8)));
         out.close();
         return new String(out.toByteArray());
     }

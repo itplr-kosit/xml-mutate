@@ -65,13 +65,13 @@ keyword: schemaKeyword | schematronKeyword | idKeyword | tagKeyword;
 schemaKeyword: 'schema-' assertion;
 
 schematronKeyword:
-	'schematron-' assertion ((EQUALITY_OPERATOR schematronText) | '-' entirity);
+	'schematron-' assertion ((EQUALITY_OPERATOR schematronText) | '-' entirety);
 
 schematronText: STRING_LITERAL;
 
 assertion: 'valid' | 'invalid';
 
-entirity: 'all' | 'none';
+entirety: 'all' | 'none';
 
 property: identifier EQUALITY_OPERATOR value;
 

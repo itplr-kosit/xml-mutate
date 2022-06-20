@@ -29,31 +29,36 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import de.init.kosit.commons.ObjectFactory;
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.TestResource.TransformResource;
 
 /**
  * Tests various inputs for {@link de.kosit.xmlmutate.mutator.TransformationMutator}.
- * 
+ *
  * @author Andreas Penski
  */
 public class TransformationMutatorCompleteTest extends CompleteRun {
 
     /**
      * An implementation for traversing nodes using xpath and other access functionality mainly for testing documents
-     * 
+     *
      */
-    @RequiredArgsConstructor
-    @Getter
+    // @RequiredArgsConstructor
+//@Getter
     private static class NodeWithContext {
 
         private static final XPathFactory factory = XPathFactory.newInstance();
 
         private final Node node;
+
+        public NodeWithContext (final Node n) {
+          this.node = n;
+        }
+
+        public Node getNode () {
+          return this.node;
+        }
 
         public Stream<NodeWithContext> streamNodes(final String xpath) throws XPathExpressionException {
             return streamContextual(evaluateNodes(xpath));
