@@ -9,7 +9,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- JAXB properties -->
+        <jaxb-api.version>2.3.3</jaxb-api.version>
+        <jaxb.version>2.3.7</jaxb.version>
+        <jvnet.jaxb2.version>0.15.2</jvnet.jaxb2.version>
+        <jvnet.jaxb2.basics.version>0.12.0</jvnet.jaxb2.basics.version>
         <!-- mvn compiler plugin propoerties -->
+        <maven.compiler.version>3.10.1</maven.compiler.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- Own properties -->
@@ -103,13 +109,13 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>2.3.2</version>
+            <version>${jaxb-api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.3.3</version>
+            <version>${jaxb.version}</version>
         </dependency>
 
         <dependency>
@@ -149,9 +155,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
-
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
@@ -219,7 +224,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.15.2</version>
+                <version>${jvnet.jaxb2.version}</version>
                 <executions>
                     <execution>
                         <id>svrl</id>
@@ -241,7 +246,7 @@
                                 <plugin>
                                     <groupId>org.jvnet.jaxb2_commons</groupId>
                                     <artifactId>jaxb2-basics</artifactId>
-                                    <version>0.11.1</version>
+                                    <version>${jvnet.jaxb2.basics.version}</version>
                                 </plugin>
                             </plugins>
                         </configuration>
