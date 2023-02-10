@@ -10,8 +10,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- mvn compiler plugin propoerties -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <!-- Own properties -->
         <log4j.version>2.12.0</log4j.version>
         <slf4j.version>1.7.27</slf4j.version>
@@ -28,8 +28,15 @@
         <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
-
+    
     <dependencies>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
         <dependency>
           <groupId>com.google.code.findbugs</groupId>
           <artifactId>jsr305</artifactId>
@@ -213,6 +220,13 @@
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.14.0</version>
+                <dependencies>
+					<dependency>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-runtime</artifactId>
+						<version>2.3.3</version>
+					</dependency>
+				</dependencies>
                 <executions>
                     <execution>
                         <id>svrl</id>
