@@ -5,7 +5,6 @@ import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.runner.*;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
@@ -42,8 +41,9 @@ import java.util.stream.Stream;
  */
 @Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
         separator = " ")
-@Slf4j
 public class XmlMutate implements Callable<Integer> {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlMutate.class);
 
     @Option(names = {"-o", "--target"}, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
@@ -84,6 +84,9 @@ public class XmlMutate implements Callable<Integer> {
 
     @Option(names = {"-lf", "--logfile"}, paramLabel = "LOGFILE", description = "An input configuration log file")
     private Path logInputFile;
+
+    @Option(names = {"-sm", "--saving-mode"}, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
+    private SavingMode savingMode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
     private List<Path> documents;

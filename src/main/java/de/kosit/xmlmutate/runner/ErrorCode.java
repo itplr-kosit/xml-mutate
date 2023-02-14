@@ -23,6 +23,8 @@ public enum ErrorCode implements NamedError {
 
     SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation assert for {0}"),
 
+    SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY("Failed expectation"),
+
     ACTION_RUNNER_ERROR("Error running action {0} in mutation {1} "),
 
     ID_ALREADY_DECLARED("Mutation instruction id was already declared"),
