@@ -62,7 +62,8 @@ public class SchematronCompiler {
     public List<String> extractRulesIds(final URI compiledSchematron) {
         log.debug("Extracting ids of schematron rules at {}", compiledSchematron.toString());
         final List<String> rulesIds = new ArrayList<>();
-        System.setProperty("javax.xml.xpath.XPathFactory:" + NamespaceConstant.OBJECT_MODEL_SAXON, "net.sf.saxon.xpath.XPathFactoryImpl");
+        System.setProperty("javax.xml.xpath.XPathFactory:" + NamespaceConstant.OBJECT_MODEL_SAXON,
+                "net.sf.saxon.xpath.XPathFactoryImpl");
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         XPath xPath = null;
         try {
@@ -70,14 +71,15 @@ public class SchematronCompiler {
         } catch (final XPathFactoryConfigurationException e) {
             throw new IllegalArgumentException("Can not use saxon for xpath2" + e.getLocalizedMessage());
         }
-        final String expression = "//*[local-name() = \'template\']/*:choose/*:otherwise/*:failed-assert/*:attribute[@name = \'id\']/text()";
+        final String expression = "//*:failed-assert/@id";
         Document document;
         NodeList rules;
         try {
             document = factory.newDocumentBuilder().parse(new File(compiledSchematron));
             rules = (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
         } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
-            throw new IllegalArgumentException("Ids of schematron rules could not be extracted. " + e.getLocalizedMessage());
+            throw new IllegalArgumentException(
+                    "Ids of schematron rules could not be extracted. " + e.getLocalizedMessage());
         }
         for (int i = 0; i < rules.getLength(); i++) {
             final String value = rules.item(i).getNodeValue();
@@ -91,7 +93,8 @@ public class SchematronCompiler {
      * Method that compiles a sch file into a xsl file using the ISO schematron
      * implementations and going through the 3 stages: include, abstract and compile
      *
-     * @param target         - the RunnerConfig-Target location for all xslt documents
+     * @param target         - the RunnerConfig-Target location for all xslt
+     *                       documents
      * @param schematronFile - the URI of the schematron file to be compiled
      * @return the URI of the compiled schematron
      */
@@ -114,7 +117,8 @@ public class SchematronCompiler {
         // Stage 3: compile sch to xsl/xslt
         final Source generatedXsltSource = runStage(3, compiler, sourceStage3, ISO_SCHEMATRON_COMPILE);
         // Generate file output
-        final File outputFile = createFileOutput(generatedXsltSource, FilenameUtils.getBaseName(schematronFile.getPath()), target);
+        final File outputFile = createFileOutput(generatedXsltSource,
+                FilenameUtils.getBaseName(schematronFile.getPath()), target);
         log.debug("Schematron compilation completed");
         log.debug("XSLT location: {}", outputFile.getPath());
         return outputFile.toURI();
@@ -132,7 +136,8 @@ public class SchematronCompiler {
                 });
             }
             log.info("Path of file to read: " + path);
-            final Xslt30Transformer transformer = compiler.compile(new StreamSource(this.getClass().getResourceAsStream(path))).load30();
+            final Xslt30Transformer transformer = compiler
+                    .compile(new StreamSource(this.getClass().getResourceAsStream(path))).load30();
             transformer.applyTemplates(source, destStage);
         } catch (final SaxonApiException e) {
             throw new IllegalArgumentException(runnr + ". Run: Schematron file could not be compiled");
