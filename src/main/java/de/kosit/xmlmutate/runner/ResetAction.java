@@ -1,10 +1,13 @@
 package de.kosit.xmlmutate.runner;
 
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import org.w3c.dom.*;
-
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
 import java.util.stream.IntStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This action recovers the original state of {@link Document} after the mutation
@@ -15,7 +18,7 @@ class ResetAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
-        final MutationContext context = mutation.getContext();
+        final MutationDocumentContext context = mutation.getContext();
         final Node parent = context.getPi().getParentNode();
         if (parent == null || context.getTarget() == null) {
             throw new MutationException(ErrorCode.RESET_NULL);
@@ -33,7 +36,7 @@ class ResetAction implements RunAction {
         }
     }
 
-    private void resetRootNode(final MutationContext context) {
+    private void resetRootNode(final MutationDocumentContext context) {
         // root node requires different handling
         final Element root = context.getDocument().getDocumentElement();
 

@@ -1,5 +1,12 @@
 package de.kosit.xmlmutate;
 
+import de.init.kosit.commons.ObjectFactory;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.SavingMode;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -14,26 +21,16 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
-
-import de.init.kosit.commons.ObjectFactory;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.FailureMode;
-import de.kosit.xmlmutate.runner.RunnerConfig;
-import de.kosit.xmlmutate.runner.SavingMode;
 
 /**
  * Some helper function for testing.
@@ -58,7 +55,7 @@ public class TestHelper {
      *
      * @return the context
      */
-    public static MutationContext createContext(final Path documentPath) {
+    public static MutationDocumentContext createContext(final Path documentPath) {
         return createContext(NOOP, documentPath);
     }
 
@@ -67,7 +64,7 @@ public class TestHelper {
      *
      * @return the context
      */
-    public static MutationContext createContext() {
+    public static MutationDocumentContext createContext() {
         return createContext(DOCUMENT_PATH);
     }
 
@@ -78,9 +75,9 @@ public class TestHelper {
      * @param documentPath the path
      * @return a dummy context
      */
-    public static MutationContext createContext(final Document doc, final Path documentPath) {
+    public static MutationDocumentContext createContext(final Document doc, final Path documentPath) {
         final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", "mutator=noop");
-        return new MutationContext(pi, documentPath);
+        return new MutationDocumentContext(pi, documentPath);
     }
 
     /**
@@ -89,11 +86,11 @@ public class TestHelper {
      * @param consumer a consumer for manipulating the target element
      * @return the context
      */
-    public static MutationContext createContext(final Consumer<Element> consumer) {
+    public static MutationDocumentContext createContext(final Consumer<Element> consumer) {
         return createContext("mutator=noop", DOCUMENT_PATH, consumer);
     }
 
-    public static MutationContext createContext(final Consumer<Element> consumer, final Path documentPath) {
+    public static MutationDocumentContext createContext(final Consumer<Element> consumer, final Path documentPath) {
         return createContext("mutator=noop", documentPath, consumer);
     }
 
@@ -103,7 +100,7 @@ public class TestHelper {
      * @param piString a configuration for the PI
      * @return the context
      */
-    public static MutationContext createContext(final String piString) {
+    public static MutationDocumentContext createContext(final String piString) {
         return createContext(piString, DOCUMENT_PATH, d -> {});
     }
 
@@ -114,7 +111,7 @@ public class TestHelper {
      * @param consumer a consumer for manipulating the target element
      * @return the context
      */
-    public static MutationContext createContext(final String piString, final Consumer<Element> consumer) {
+    public static MutationDocumentContext createContext(final String piString, final Consumer<Element> consumer) {
         return createContext(piString, DOCUMENT_PATH, consumer);
     }
 
@@ -126,7 +123,7 @@ public class TestHelper {
      * @param documentPath the path to the root document
      * @return the context
      */
-    public static MutationContext createContext(final String piString, final Path documentPath, final Consumer<Element> consumer) {
+    public static MutationDocumentContext createContext(final String piString, final Path documentPath, final Consumer<Element> consumer) {
         final Document doc = de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument();
         final Element root = doc.createElement("root");
         doc.appendChild(root);
@@ -135,7 +132,7 @@ public class TestHelper {
         final Element target = doc.createElement("target");
         root.appendChild(target);
         consumer.accept(target);
-        return new MutationContext(pi, documentPath, SavingMode.SINGLE);
+        return new MutationDocumentContext(pi, documentPath, SavingMode.SINGLE);
     }
 
     /**
@@ -143,7 +140,7 @@ public class TestHelper {
      *
      * @return the context
      */
-    public static MutationContext createRootContext() {
+    public static MutationDocumentContext createRootContext() {
         return createRootContext("mutator=noop", NOOP);
     }
 
@@ -153,7 +150,7 @@ public class TestHelper {
      * @param piString the pi string
      * @return the context
      */
-    public static MutationContext createRootContext(final String piString) {
+    public static MutationDocumentContext createRootContext(final String piString) {
         return createRootContext(piString, NOOP);
     }
 
@@ -164,14 +161,14 @@ public class TestHelper {
      * @param consumer consumer for manipulating the target node
      * @return the context
      */
-    public static MutationContext createRootContext(final String piString, final Consumer<Element> consumer) {
+    public static MutationDocumentContext createRootContext(final String piString, final Consumer<Element> consumer) {
         final Document doc = de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument();
         final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", piString);
         doc.appendChild(pi);
         final Element root = doc.createElement("root");
         doc.appendChild(root);
         consumer.accept(root);
-        return new MutationContext(pi, Paths.get("Dummy.xml"));
+        return new MutationDocumentContext(pi, Paths.get("Dummy.xml"));
     }
 
     /**

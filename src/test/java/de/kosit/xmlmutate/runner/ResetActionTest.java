@@ -1,16 +1,16 @@
 package de.kosit.xmlmutate.runner;
 
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.TestHelper.createRootContext;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static de.kosit.xmlmutate.TestHelper.createRootContext;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * It tests the reset action of a document.
@@ -58,7 +58,7 @@ public class ResetActionTest {
     @Test
     public void testResetRootNode() {
         final Mutation mutation = new Mutation(createRootContext(), RandomStringUtils.randomAlphanumeric(5));
-        final MutationContext ctx = mutation.getContext();
+        final MutationDocumentContext ctx = mutation.getContext();
         ctx.getTarget().appendChild(ctx.getDocument().createElement("someNewElement"));
         ((Element) ctx.getTarget()).setAttribute("att", "value");
         this.action.run(mutation);

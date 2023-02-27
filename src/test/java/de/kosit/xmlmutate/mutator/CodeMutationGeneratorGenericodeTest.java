@@ -5,16 +5,14 @@ import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import de.kosit.xmlmutate.runner.MutationException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.MutationException;
 
 /**
  * Tests the genericode based codelists with {@link CodeMutationGenerator}s.
@@ -46,10 +44,8 @@ public class CodeMutationGeneratorGenericodeTest {
     @Test
     public void testEmptyConfig() {
         final MutationConfig config = createConfig().add("genericode", "");
-        assertThrows(MutationException.class, () -> {
-            this.generator.generateMutations(config, createContext());
-
-        });
+        assertThrows(MutationException.class, () ->
+            this.generator.generateMutations(config, createContext()));
     }
 
     @Test
@@ -57,9 +53,8 @@ public class CodeMutationGeneratorGenericodeTest {
         final MutationConfig config = createConfig();
         config.add("genericode", TEST_ROOT.resolve("genericode/geschlecht.xml"));
         config.add("codeKey", "code");
-        assertThrows(MutationException.class, () -> {
-            this.generator.generateMutations(config, createContext());
-        });
+        assertThrows(MutationException.class, () ->
+            this.generator.generateMutations(config, createContext()));
     }
 
     @Test
@@ -76,7 +71,7 @@ public class CodeMutationGeneratorGenericodeTest {
         final MutationConfig config = createConfig();
         config.add("genericode", "genericode/example2.xml");
         config.add("codeKey", "Schlüssel");
-        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final MutationDocumentContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
         final List<Mutation> mutations = this.generator.generateMutations(config, context);
         assertThat(mutations).hasSize(4);
     }
@@ -86,7 +81,7 @@ public class CodeMutationGeneratorGenericodeTest {
         final MutationConfig config = createConfig();
         config.add("genericode", "src/test/resources/genericode/example2.xml");
         config.add("codeKey", "Schlüssel");
-        final MutationContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
+        final MutationDocumentContext context = createContext(Paths.get("src/test/resources/Dummy.xml"));
         final List<Mutation> mutations = this.generator.generateMutations(config, context);
         assertThat(mutations).hasSize(4);
     }

@@ -4,6 +4,12 @@ package de.kosit.xmlmutate.mutator;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.trim;
 
+import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import de.kosit.xmlmutate.mutation.MutationGenerator;
+import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.Services;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -16,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,19 +29,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.mutation.MutationGenerator;
-import de.kosit.xmlmutate.runner.MutationException;
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Generator for Mutation having a defined vlaue from a list of values.
@@ -98,7 +95,7 @@ public class CodeMutationGenerator implements MutationGenerator {
     private static final String SEPARATOR = "separator";
 
     @Override
-    public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
+    public List<Mutation> generateMutations(final MutationConfig config, final MutationDocumentContext context) {
         final List<Mutation> list = new ArrayList<>();
         if (config.getProperties().get(PROP_VALUES) != null) {
             list.addAll(generateSimpleCodes(config, context));
@@ -112,13 +109,13 @@ public class CodeMutationGenerator implements MutationGenerator {
         return list;
     }
 
-    private Collection<Mutation> generateGenericodeCodes(final MutationConfig config, final MutationContext context) {
+    private Collection<Mutation> generateGenericodeCodes(final MutationConfig config, final MutationDocumentContext context) {
         final URI uri = resolveCodelistURI(context, config.getStringProperty(PROP_GENERICODE));
         final String codeKey = config.getStringProperty(PROP_CODE_KEY);
         return CodeFactory.resolveCodes(uri, defaultIfBlank(codeKey, "code")).stream().map(c -> createMutation(config, context, c.getCode())).collect(Collectors.toList());
     }
 
-    private URI resolveCodelistURI(final MutationContext context, final String stringProperty) {
+    private URI resolveCodelistURI(final MutationDocumentContext context, final String stringProperty) {
         URI result = URI.create(stringProperty);
         if (result.getScheme() == null) {
             final Path relative2Document = context.getDocumentPath().resolve("../" + stringProperty).toAbsolutePath().normalize();
@@ -134,12 +131,12 @@ public class CodeMutationGenerator implements MutationGenerator {
         return result;
     }
 
-    private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationContext context) {
+    private Collection<Mutation> generateSimpleCodes(final MutationConfig config, final MutationDocumentContext context) {
         final String separator = config.getProperties().get(SEPARATOR) != null ? config.getProperties().get(SEPARATOR).toString() : DEFAULT_SEPARATOR;
         return config.resolveList(PROP_VALUES).stream().flatMap(e -> Arrays.stream(e.toString().split(separator)).filter(StringUtils::isNotEmpty).map(s -> createMutation(config, context, s))).collect(Collectors.toList());
     }
 
-    private Mutation createMutation(final MutationConfig config, final MutationContext context, final String code) {
+    private Mutation createMutation(final MutationConfig config, final MutationDocumentContext context, final String code) {
         final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
         final MutationConfig cloned = config.cloneConfig();
         cloned.add(CodeMutator.INTERNAL_PROP_VALUE, trim(code));
