@@ -23,6 +23,12 @@ public class CodeMutationGeneratorGenericodeTest {
 
     private static final URI TEST_ROOT = Paths.get("src/test/resources").toUri();
 
+    /**
+     * "https://www.xrepository.de/api/xrepository/urn:de:xauslaender:codelist:geschlecht_2/genericode"
+     */
+    private static final String XREPOSITORY_DE_XAUSLAENDER_CODELIST_GESCHLECHT_2_GENERICODE =
+        "src/test/resources/genericode/CL_XA_Geschlecht.xml";
+
     private final CodeMutationGenerator generator = new CodeMutationGenerator();
 
     @Test
@@ -60,9 +66,11 @@ public class CodeMutationGeneratorGenericodeTest {
     @Test
     public void testLoadRemoteCodeliste() {
         final MutationConfig config = createConfig();
-        config.add("genericode", "https://www.xrepository.de/api/xrepository/urn:de:xauslaender:codelist:geschlecht_2/genericode");
+        config.add("genericode", XREPOSITORY_DE_XAUSLAENDER_CODELIST_GESCHLECHT_2_GENERICODE);
         config.add("codeKey", "Schlüssel");
+
         final List<Mutation> mutations = this.generator.generateMutations(config, createContext());
+
         assertThat(mutations).hasSize(4);
     }
 
