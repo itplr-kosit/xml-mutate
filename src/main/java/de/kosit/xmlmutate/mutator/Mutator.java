@@ -1,9 +1,8 @@
 package de.kosit.xmlmutate.mutator;
 
-import java.util.List;
-
 import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import java.util.List;
 
 /**
  * A mutator mutates a document based on the provided configuration. Implementation of this interface are used by the
@@ -33,6 +32,6 @@ public interface Mutator {
      * @param context the context of the mutation e.g. target element
      * @param config the configuration to use
      */
-    void mutate(MutationContext context, MutationConfig config);
+    void mutate(MutationDocumentContext context, MutationConfig config);
 
 }

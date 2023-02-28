@@ -7,22 +7,19 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import de.kosit.xmlmutate.runner.MutationException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.collections4.map.HashedMap;
 import org.junit.jupiter.api.Test;
-
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
-import de.kosit.xmlmutate.runner.MutationException;
 
 /**
  * Tests {@link TransformationMutator}.
@@ -36,9 +33,7 @@ public class TransformationMutatorTest {
     @Test
     public void simple() throws Exception {
         final String rand = randomAlphanumeric(6);
-        final MutationContext context = createContext(e -> {
-            e.setTextContent(rand);
-        });
+        final MutationDocumentContext context = createContext(e -> e.setTextContent(rand));
         final MutationConfig config = createConfig().add(TransformationMutator.TEMPLATE_PARAM, loadTemplate());
         this.mutator.mutate(context, config);
         assertThat(context.getTarget()).hasNodeName("transformed");
@@ -49,9 +44,7 @@ public class TransformationMutatorTest {
     @Test
     public void simpleWithParameter() throws Exception {
         final String rand = randomAlphanumeric(6);
-        final MutationContext context = createContext(e -> {
-            e.setTextContent(rand);
-        });
+        final MutationDocumentContext context = createContext(e -> e.setTextContent(rand));
         final Map<String, String> parameters = new HashedMap<>();
         final String randParamValue = randomAlphanumeric(6);
         parameters.put("someParameter", randParamValue);
@@ -67,9 +60,7 @@ public class TransformationMutatorTest {
     @Test
     public void simpleWithUnknownParameter() throws Exception {
         final String rand = randomAlphanumeric(6);
-        final MutationContext context = createContext(e -> {
-            e.setTextContent(rand);
-        });
+        final MutationDocumentContext context = createContext(e -> e.setTextContent(rand));
         final Map<String, String> parameters = new HashedMap<>();
         final String randParamValue = randomAlphanumeric(6);
         parameters.put("unknown", randParamValue);
@@ -84,15 +75,10 @@ public class TransformationMutatorTest {
     @Test
     public void simpleWithMissingRequiredParameter() throws Exception {
         final String rand = randomAlphanumeric(6);
-        final MutationContext context = createContext(e -> {
-            e.setTextContent(rand);
-        });
+        final MutationDocumentContext context = createContext(e -> e.setTextContent(rand));
         final MutationConfig config = createConfig().add(TransformationMutator.TEMPLATE_PARAM, loadTemplate(Objects
                 .requireNonNull(TransformationMutatorTest.class.getClassLoader().getResource("transform/simpleWithRequiredParam.xsl"))));
-        assertThrows(MutationException.class, () -> {
-            this.mutator.mutate(context, config);
-
-        });
+        assertThrows(MutationException.class, () -> this.mutator.mutate(context, config));
 
     }
 

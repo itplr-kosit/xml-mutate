@@ -1,24 +1,22 @@
 package de.kosit.xmlmutate.mutator;
 
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
 import de.kosit.xmlmutate.mutation.MutationGenerator;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.runner.TemplateRepository;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Generator for generating mutations for the {@link TransformationMutator}.
@@ -43,7 +41,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
     }
 
     @Override
-    public List<Mutation> generateMutations(final MutationConfig config, final MutationContext context) {
+    public List<Mutation> generateMutations(final MutationConfig config, final MutationDocumentContext context) {
         final String templateConfig = config.getStringProperty(PROP_NAME);
 
         final Mutator mutator = Services.getRegistry().getMutator(config.getMutatorName());
@@ -59,7 +57,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
         return Collections.singletonList(m);
     }
 
-    private String assertAndResolveName(final String template, final MutationContext context) {
+    private String assertAndResolveName(final String template, final MutationDocumentContext context) {
         final String finalName;
         if (isNotBlank(template)) {
             if (this.repository.exists(template)) {
@@ -73,7 +71,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
         return finalName;
     }
 
-    private String registerTemplateViaPath(final String template, final MutationContext context) {
+    private String registerTemplateViaPath(final String template, final MutationDocumentContext context) {
         final String rel2doc = resolveRelative(template, context.getDocumentPath().getParent());
         return isNotBlank(rel2doc) ? rel2doc
                 : resolveRelative(template, /** cwd */
@@ -99,7 +97,7 @@ public class TransformationMutationGenerator implements MutationGenerator {
 
     @Override
     public List<String> getNames() {
-        return Arrays.asList("xslt");
+        return Collections.singletonList("xslt");
     }
 
     @Override

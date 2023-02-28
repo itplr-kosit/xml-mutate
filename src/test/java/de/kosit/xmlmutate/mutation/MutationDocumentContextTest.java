@@ -3,16 +3,15 @@ package de.kosit.xmlmutate.mutation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.init.kosit.commons.ObjectFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.function.BiConsumer;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -20,19 +19,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
-import de.init.kosit.commons.ObjectFactory;
-
 /**
  * It tests the parser functionalities
  *
  * @author Andreas Penski
  */
-public class MutationContextTest {
+public class MutationDocumentContextTest {
 
     @Test
     @DisplayName("Test Simple Context")
     public void testSimple() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(pi);
@@ -46,7 +43,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test Root Context")
     public void testRootContext() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.getParentNode().insertBefore(pi, root);
@@ -60,7 +57,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test no following sibling")
     public void testNoFollowingSibling() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(inner);
@@ -72,7 +69,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test whitespace between")
     public void testWhitespaceBetween() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(pi);
@@ -88,7 +85,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test comments between")
     public void testCommentsBetween() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(pi);
@@ -104,7 +101,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test specific Target")
     public void testSetSpecificTarget() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(pi);
@@ -121,7 +118,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test get parent ")
     public void testGetParent() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(pi);
@@ -134,7 +131,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test get parent of root ")
     public void testGetParentRoot() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             doc.insertBefore(pi, root);
@@ -146,7 +143,7 @@ public class MutationContextTest {
     @Test
     @DisplayName("Test get parent deeply ")
     public void testGetParentDeep() {
-        final MutationContext context = createContext((root, pi) -> {
+        final MutationDocumentContext context = createContext((root, pi) -> {
             final Document doc = root.getOwnerDocument();
             final Element inner = doc.createElement("inner");
             root.appendChild(doc.createComment("c"));
@@ -165,27 +162,27 @@ public class MutationContextTest {
 
     @Test
     public void testNullInitialisation() {
-        assertThrows(NullPointerException.class, () -> {
-            new MutationContext(null, Paths.get("dummy.xml"));
-        });
+        assertThrows(NullPointerException.class,
+            () -> new MutationDocumentContext(null, Paths.get("dummy.xml")));
 
         assertThrows(IllegalArgumentException.class, () -> {
             final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
-            new MutationContext(doc.createProcessingInstruction("test", "test"), null);
+            new MutationDocumentContext(
+                doc.createProcessingInstruction("test", "test"), null);
         });
     }
 
-    private MutationContext createContext(final BiConsumer<Element, ProcessingInstruction> consumer) {
+    private MutationDocumentContext createContext(final BiConsumer<Element, ProcessingInstruction> consumer) {
         return createContext("remove schema-valid", consumer);
     }
 
-    private MutationContext createContext(final String piString, final BiConsumer<Element, ProcessingInstruction> consumer) {
+    private MutationDocumentContext createContext(final String piString, final BiConsumer<Element, ProcessingInstruction> consumer) {
         final Document doc = ObjectFactory.createDocumentBuilder(false).newDocument();
         final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", piString);
         final Element root = doc.createElement("root");
         doc.appendChild(root);
         consumer.accept(root, pi);
-        return new MutationContext(pi, Paths.get("dummy.xml"));
+        return new MutationDocumentContext(pi, Paths.get("dummy.xml"));
     }
 
     private static String serialize(final Document doc) throws Exception {

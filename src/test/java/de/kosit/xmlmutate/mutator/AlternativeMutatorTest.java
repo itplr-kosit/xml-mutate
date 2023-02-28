@@ -5,17 +5,16 @@ import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.kosit.xmlmutate.TestHelper;
+import de.kosit.xmlmutate.mutation.MutationConfig;
+import de.kosit.xmlmutate.mutation.MutationDocumentContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.w3c.dom.Comment;
-
-import de.kosit.xmlmutate.TestHelper;
-import de.kosit.xmlmutate.mutation.MutationConfig;
-import de.kosit.xmlmutate.mutation.MutationContext;
 import org.w3c.dom.Node;
 
 /**
- * Tests for {@liink AlternativeMutator}.
+ * Tests for {@link AlternativeMutator}.
  *
  * @author Andreas Penski
  */
@@ -27,7 +26,7 @@ public class AlternativeMutatorTest {
 
     @Test
     public void testSimple() {
-        final MutationContext context = createContext(target -> {
+        final MutationDocumentContext context = createContext(target -> {
             final Comment sub = target.getOwnerDocument().createComment("<some>xml</some>");
             target.appendChild(sub);
         });
@@ -40,7 +39,7 @@ public class AlternativeMutatorTest {
 
     @Test
     public void testMultipleNodes() {
-        final MutationContext context = createContext(target -> {
+        final MutationDocumentContext context = createContext(target -> {
             final Comment sub = target.getOwnerDocument().createComment("<some>xml</some><with>2nodes</with>");
             target.appendChild(sub);
         });
@@ -55,7 +54,7 @@ public class AlternativeMutatorTest {
 
     @Test
     public void testMultipleComments() {
-        final MutationContext context = createContext(target -> {
+        final MutationDocumentContext context = createContext(target -> {
             final Comment comment1 = target.getOwnerDocument().createComment("<some>xml</some><with>2nodes</with>");
             final Comment comment2 = target.getOwnerDocument().createComment("<some>xml</some>");
             target.appendChild(comment1);
@@ -74,7 +73,7 @@ public class AlternativeMutatorTest {
 
     @Test
     public void testWrongConfiguration() {
-        final MutationContext context = createContext();
+        final MutationDocumentContext context = createContext();
         final MutationConfig config = createConfig();
         Executable executable = () -> mutator.mutate(context, config);
         assertThrows(IllegalArgumentException.class, executable);

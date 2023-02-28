@@ -2,7 +2,6 @@ package de.kosit.xmlmutate.mutation;
 
 import de.kosit.xmlmutate.mutator.DefaultMutationGenerator;
 import de.kosit.xmlmutate.mutator.Mutator;
-
 import java.util.List;
 
 /**
@@ -28,10 +27,10 @@ public interface MutationGenerator {
      * Generates one or more mutations
      *
      * @param config  the configuration from {@link org.w3c.dom.ProcessingInstruction}
-     * @param context the {@link MutationContext} within a document
+     * @param context the {@link MutationDocumentContext} within a document
      * @return list with the mutations to be processed
      */
-    List<Mutation> generateMutations(MutationConfig config, MutationContext context);
+    List<Mutation> generateMutations(MutationConfig config, MutationDocumentContext context);
 
     /**
      * The generator names or the assignation to a concrete one
