@@ -1,16 +1,13 @@
 package de.kosit.xmlmutate;
 
+import de.kosit.xmlmutate.runner.Services;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.validation.Schema;
-
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Static access to named resources for testing.
@@ -55,6 +52,12 @@ public class TestResource {
         }
     }
 
+    public static class UblResources {
+        public static final URI ROOT = TEST_ROOT.resolve("ubl-en16931/");
+        public static final URI XSL = ROOT.resolve("EN16931-UBL-validation.xsl");
+        public static final URI XML = ROOT.resolve("schema-generated-instance.xml");
+    }
+
     public static class TransformResource {
 
         public static final URI ROOT = TEST_ROOT.resolve("transform/");
@@ -81,7 +84,7 @@ public class TestResource {
     public static List<Path> asPath(final URI uri, final URI... uris) {
         final List<Path> result = new ArrayList<>();
         result.add(asPath(uri));
-        result.addAll(Stream.of(uris).map(TestResource::asPath).collect(Collectors.toList()));
+        result.addAll(Stream.of(uris).map(TestResource::asPath).toList());
         return result;
     }
 
