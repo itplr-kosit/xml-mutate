@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ubl:Invoice
+  xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+  xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+  xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"
+  xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+>
+  <ext:UBLExtensions>
+    <ext:UBLExtension>
+      <ext:ExtensionContent>
+        <xades:SignedDataObjectProperties />
+      </ext:ExtensionContent>
+    </ext:UBLExtension>
+    <ext:UBLExtension>
+      <ext:ExtensionContent>
+        <xades:SignedDataObjectProperties />
+      </ext:ExtensionContent>
+    </ext:UBLExtension>
+  </ext:UBLExtensions>
+
+  <cbc:ID>A unique identification of the Invoice.</cbc:ID>
+  <cbc:UBLVersionID>UBLVersionID0</cbc:UBLVersionID>
+  <cbc:CustomizationID schemeID="a scheme id"
+    >CustomizationID0</cbc:CustomizationID>
+
+  <cbc:ProfileID schemeID="not allowed">ProfileID0</cbc:ProfileID>
+  <cbc:ProfileExecutionID>ProfileExecutionID0</cbc:ProfileExecutionID>
+
+  <cbc:ID schemeID="not allowed">ID0</cbc:ID>
+  <cbc:CopyIndicator>false</cbc:CopyIndicator>
+  <cbc:UUID>UUID0</cbc:UUID>
+
+  <?xmute mutator="empty" schematron-invalid="ubl:BR-03" description="IssueDate must have a value" ?>
+  <cbc:IssueDate></cbc:IssueDate>
+  <cbc:IssueTime>01:01:01.001</cbc:IssueTime>
+  <cbc:DueDate>2006-05-04</cbc:DueDate>
+
+  <cbc:InvoiceTypeCode>InvoiceTypeCode0</cbc:InvoiceTypeCode>
+  <cbc:Note>Note0</cbc:Note>
+  <cbc:Note>Note1</cbc:Note>
+  <cbc:Note>Note2</cbc:Note>
+  <cbc:Note>Note3</cbc:Note>
+  <cbc:Note>Note4</cbc:Note>
+  <cbc:TaxPointDate>2006-05-04</cbc:TaxPointDate>
+</ubl:Invoice>

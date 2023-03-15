@@ -1,34 +1,44 @@
 package de.kosit.xmlmutate.schematron;
 
+import static de.kosit.xmlmutate.TestHelper.createContext;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import de.kosit.xmlmutate.TestHelper;
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
+import de.kosit.xmlmutate.mutation.Mutation.State;
 import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationResult;
+import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.runner.FailureMode;
+import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.ValidateAction;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static de.kosit.xmlmutate.TestHelper.createContext;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A test class for all relevant combinations concerning schematron rules being declared or not
@@ -38,6 +48,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Victor del Campo
  */
 public class SchematronValidationTest {
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    @Test
+    @DisplayName("XSL rule evaluating with runtime exception should evaluate mutator to failed status with global error message")
+    public void shouldParseXmuteEmptyOnTargetAlreadyHavingNoValue() {
+        final URI uri = TestResource.UblResources.XML;
+        final List<Schematron> schematronRules = getUblInvoiceAllowanceChargeAmountSchematronRules();
+        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(uri,
+            schematronRules, FailureMode.FAIL_AT_END);
+        final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
+
+        final RunnerResult result = runner.run();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getResult()).isNotNull();
+        assertThat(result.getResult()).hasSize(1);
+        final List<Mutation> mutationResult = result.getResult().get(0).getValue();
+        assertThat(mutationResult).isNotNull().hasSize(1);
+        assertThat(mutationResult.get(0)).isNotNull();
+        assertThat(mutationResult.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutationResult.get(0).getState()).isEqualTo(State.ERROR);
+        assertThat(mutationResult.get(0).getResult()).isNotNull();
+        assertThat(mutationResult.get(0).getResult().getSchematronValidationState()).isEqualTo(
+            ValidationState.UNPROCESSED);
+        assertThat(mutationResult.get(0).getResult().getSchematronExpectationMatches()).isEmpty();
+
+        assertThat(mutationResult.get(0).getMutationErrorContainer()).isNotNull();
+        final List<Exception> mutationResultErrorMessages = mutationResult.get(0).getMutationErrorContainer().getGlobalErrorMessages();
+        assertThat(mutationResultErrorMessages).isNotNull().hasSize(1);
+        assertThat(mutationResultErrorMessages.get(0)).isNotNull();
+        assertThat(mutationResultErrorMessages.get(0).getMessage()).isEqualTo("Structural mismatch: Nothing found to empty");
+        assertThat(mutationResultErrorMessages.get(0)).isInstanceOf(
+            MutationException.class);
+        assertThat(((MutationException) mutationResultErrorMessages.get(0)).getErrors()).isNotEmpty();
+        assertThat(((MutationException) mutationResultErrorMessages.get(0)).getErrors()).hasSize(1);
+    }
+
+    private List<Schematron> getUblInvoiceAllowanceChargeAmountSchematronRules() {
+        final List<Schematron> schematronList = new ArrayList<>();
+        final URI uri = TestResource.UblResources.XSL;
+        final List<String> list = Arrays.asList("BR-41", "BR-42");
+        final Schematron schematron = new Schematron("schematron", uri, list);
+        schematronList.add(schematron);
+        return schematronList;
+    }
 
     @Test
     @DisplayName("Test with a DECLARED rule that is known, failed and failed-expected")

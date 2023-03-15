@@ -215,6 +215,15 @@ public class TestHelper {
                 .useTransformations(new ArrayList<>()).withFailureMode(FailureMode.FAIL_AT_END).build();
     }
 
+    public static RunnerConfig createSchematronRunnerConfig(final URI documentPath, final List<Schematron> schematronRules,
+        final FailureMode failureMode) {
+        final RunnerConfig runnerConfig = RunnerConfig.Builder.forDocuments(getSingleDocument(documentPath))
+            .checkSchematron(schematronRules).targetFolder(createTestTargetFolder("doc/test"))
+            .useTransformations(new ArrayList<>()).withFailureMode(failureMode).build();
+        runnerConfig.setIgnoreSchemaInvalidity(true);
+        return runnerConfig;
+    }
+
     public static RunnerConfig createRunnerConfig(final URI documentPath, final FailureMode failureMode) {
         final RunnerConfig runnerConfig = createRunnerConfig(documentPath);
         runnerConfig.setFailureMode(failureMode);
