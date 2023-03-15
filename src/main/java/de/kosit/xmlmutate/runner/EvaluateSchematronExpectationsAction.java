@@ -1,21 +1,29 @@
 package de.kosit.xmlmutate.runner;
 
+import static de.kosit.xmlmutate.mutation.MutationParser.UNDEFINED_PROCESSING_INSTRUCTION_ID;
+
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
+import de.kosit.xmlmutate.mutation.MutationParser;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import org.w3c.dom.ProcessingInstruction;
 
 
 /**
@@ -31,27 +39,29 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
     public void run(final Mutation mutation) {
         final Pair<SchematronEnterity, ExpectedResult> schematronEnterityExpectation = mutation.getConfiguration().getSchematronEnterityExpectation();
         if (schematronEnterityExpectation == null) {
-            for (final SchematronRuleExpectation e : mutation.getConfiguration().getSchematronExpectations()) {
+            for (final SchematronRuleExpectation expectation : mutation.getConfiguration().getSchematronExpectations()) {
 
-                final boolean unknownRuleName = this.checkeUnkknownRuleNames(e, mutation.getResult().getSchematronResult());
+                final boolean unknownRuleName = this.checkeUnkknownRuleNames(expectation, mutation.getResult().getSchematronResult());
                 if (!unknownRuleName) {
-                    final boolean valid = this.evaluate(e, mutation.getResult(), unknownRuleName);
+                    final boolean valid = this.evaluate(expectation, mutation.getResult(), unknownRuleName);
 
                     if (!valid) {
                         mutation.setState(State.ERROR);
-                        mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION));
+                        mutation.getMutationErrorContainer().addSchematronErrorMessage(
+                            expectation.getRuleName(),
+                                createErrorMessage(expectation.getRuleName(), mutation.getContext().getPi()));
                     }
                     log.trace(
                             "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
-                            e.getRuleName(), e.expectValid(), e.expectInvalid(), valid);
-                    mutation.getResult().getSchematronExpectationMatches().put(e, valid);
+                            expectation.getRuleName(), expectation.expectValid(), expectation.expectInvalid(), valid);
+                    mutation.getResult().getSchematronExpectationMatches().put(expectation, valid);
                 } else {
                     mutation.setState(State.ERROR);
-                    mutation.getMutationErrorContainer().addSchematronErrorMessage(e.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_NOT_EXIST, e.getRuleName(), e.getSource() != null ? e.getSource() : "'no source'"));
+                    mutation.getMutationErrorContainer().addSchematronErrorMessage(expectation.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_NOT_EXIST, expectation.getRuleName(), expectation.getSource() != null ? expectation.getSource() : "'no source'"));
                     log.trace(
                             "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
-                            e.getRuleName(), e.expectValid(), e.expectInvalid(), "unknown");
-                    mutation.getResult().getSchematronExpectationMatches().put(e, false);
+                            expectation.getRuleName(), expectation.expectValid(), expectation.expectInvalid(), "unknown");
+                    mutation.getResult().getSchematronExpectationMatches().put(expectation, false);
                 }
 
             }
@@ -64,13 +74,23 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
     }
 
+    private MutationException createErrorMessage(final String ruleName, final ProcessingInstruction pi) {
+        final String piId = MutationParser.extractProcessingInstructionId(pi);
+        if (UNDEFINED_PROCESSING_INSTRUCTION_ID.equals(piId)) {
+            return new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION, ruleName);
+        }
+        return new MutationException(
+            ErrorCode.SCHEMATRON_RULE_WITH_INSTRUCTION_FAILED_EXPECTATION, ruleName, piId);
+    }
+
     private Map<SchematronRuleExpectation, Boolean> evaluateSchematronEnterity(final Pair<SchematronEnterity, ExpectedResult> schematronEnterityExpectation, final Mutation mutation) {
        final Map<SchematronRuleExpectation, Boolean> expectationsMatches = new HashMap<>();
        final ExpectedResult expectedResult = schematronEnterityExpectation.getValue();
         for (final Map.Entry<Schematron, SchematronOutput> entry : mutation.getResult().getSchematronResult().entrySet()) {
             final List<String> allRules = new SchematronCompiler().extractRulesIds(entry.getKey().getUri());
-            final List<String> failedRules = entry.getValue().getFailedAsserts().stream().map(FailedAssert::getId).collect(Collectors.toList());
-            final List<String> passedRules = allRules.stream().filter(r -> !failedRules.contains(r)).collect(Collectors.toList());
+            final List<String> failedRules = entry.getValue().getFailedAsserts().stream()
+                .map(FailedAssert::getId).toList();
+            final List<String> passedRules = allRules.stream().filter(r -> !failedRules.contains(r)).toList();
             failedRules.forEach(f -> {
                 if (expectationNotMet(schematronEnterityExpectation, true)) {
                     expectationsMatches.put(new SchematronRuleExpectation(entry.getKey().getName(), f, expectedResult), false);
@@ -135,7 +155,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
         // log.debug("Evaluation for {} ", failed.)
         boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();
-        boolean noFailedButExpected = !failed.isPresent() && expectation.expectValid() && !unknownRule;
+        boolean noFailedButExpected = failed.isEmpty() && expectation.expectValid() && !unknownRule;
         log.trace("failedAsExpected={} or  noFailedButExpected={}", failedAsExpected, noFailedButExpected);
         return failedAsExpected || noFailedButExpected;
     }

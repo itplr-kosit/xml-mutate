@@ -2,7 +2,6 @@
 package de.kosit.xmlmutate.runner;
 
 import de.init.kosit.commons.util.NamedError;
-import org.apache.logging.log4j.Level;
 
 /**
  * @author Andreas Penski
@@ -21,7 +20,9 @@ public enum ErrorCode implements NamedError {
 
     SCHEMATRON_RULE_NOT_EXIST("Rule {0} does not exist in schematron {1}"),
 
-    SCHEMATRON_RULE_FAILED_EXPECTATION("Failed expectation assert for {0}"),
+    SCHEMATRON_RULE_FAILED_EXPECTATION("Failed rule {0}"),
+
+    SCHEMATRON_RULE_WITH_INSTRUCTION_FAILED_EXPECTATION("Failed rule {0} instruction {1}"),
 
     SCHEMATRON_RULE_FAILED_EXPECTATION_ENTERITY("Failed expectation"),
 
@@ -41,6 +42,8 @@ private final String template;
     ErrorCode(final String template) {
         this.template = template;
     }
+
+    @Override
     public String getTemplate() {
         return this.template;
     }
