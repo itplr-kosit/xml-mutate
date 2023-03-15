@@ -1,5 +1,6 @@
 package de.kosit.xmlmutate;
 
+import de.kosit.xmlmutate.runner.Services;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -7,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.validation.Schema;
-
-import de.kosit.xmlmutate.runner.Services;
 
 /**
  * Static access to named resources for testing.
@@ -36,6 +34,8 @@ public class TestResource {
         public static final URI ACTION_ERROR_1ST_MUTATION = ROOT.resolve("book_action_error_1st_mutation.xml");
 
         public static final URI ACTION_ERROR_2ND_MUTATION = ROOT.resolve("book_action_error_2nd_mutation.xml");
+
+        public static final URI ACTION_ERROR_3RD_MUTATION = ROOT.resolve("book_action_error_3rd_mutation.xml");
 
         public static final URI PARSER_ERROR_1ST_MUTATION = ROOT.resolve("book_parsing_error_1st_mutation.xml");
 

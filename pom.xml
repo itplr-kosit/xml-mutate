@@ -42,8 +42,8 @@
         <mvn.surefire.version>2.19.1</mvn.surefire.version>
         <mvn.surefire.junit.platform.provider>1.1.0</mvn.surefire.junit.platform.provider>
 
-        <mvn.junit.engine.version>5.1.0</mvn.junit.engine.version>
-        <assertj.core.version>3.22.0</assertj.core.version>
+        <mvn.junit.engine.version>5.9.2</mvn.junit.engine.version>
+        <assertj.core.version>3.24.2</assertj.core.version>
         <mvn.exec.version>1.6.0</mvn.exec.version>
     </properties>
     

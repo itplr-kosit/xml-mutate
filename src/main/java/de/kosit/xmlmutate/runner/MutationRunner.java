@@ -121,6 +121,7 @@ public class MutationRunner {
         log.info("Running mutation {}", mutation.getIdentifier());
         this.configuration.getActions().forEach(a -> {
             if (mutation.isErroneous() && mutation.isSchemaValid() && !(a instanceof ResetAction) && !(a instanceof MarkMutationAction.RemoveCommentAction)) {
+                log.warn("Skipping running the {} with erroneous mutation id = {}.", a.getClass().getSimpleName(), mutation.getIdentifier());
                 return;
             }
             try {
@@ -139,8 +140,7 @@ public class MutationRunner {
         final List<Mutation> all = new ArrayList<>();
         final TreeWalker piWalker = ((DocumentTraversal) origin).createTreeWalker(origin, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
         final List<String> alreadyDeclaredIds = new ArrayList<>();
-        boolean stopParsing = false;
-        while (piWalker.nextNode() != null && !stopParsing) {
+        while (piWalker.nextNode() != null) {
             final ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
             if (pi.getTarget().equals("xmute")) {
                 pi.setData(StringUtils.normalizeSpace(pi.getData()));
@@ -156,12 +156,24 @@ public class MutationRunner {
                         mutations.forEach(e -> e.getMutationErrorContainer().addGlobalErrorMessage(new MutationException(ErrorCode.ID_ALREADY_DECLARED)));
                     }
                 }
-                // If Mode FAIL_FAST, stop process with first error mutation
-                stopParsing = mutations.stream().anyMatch(this::checkIfStopProcess);
                 all.addAll(mutations);
+                // If Mode FAIL_FAST, stop process with first error mutation
+                if (mutations.stream().anyMatch(this::checkIfStopProcess)) {
+                    log.warn("Invalid mutation definition identified id = {}. Stop parsing any further mutations within {}.",
+                        findFirstFailedMutationId(mutations), documentPath);
+                    return all;
+                }
             }
         }
         return all;
+    }
+
+    private String findFirstFailedMutationId(List<Mutation> mutations) {
+        return mutations.stream()
+            .filter(this::checkIfStopProcess)
+            .findFirst()
+            .map(Mutation::getIdentifier)
+            .orElse("unknown");
     }
 
     private void checkSchemaSchematronDeclarations(final List<Mutation> mutations) {
