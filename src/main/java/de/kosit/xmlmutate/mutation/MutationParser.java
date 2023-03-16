@@ -22,11 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -39,7 +35,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.w3c.dom.ProcessingInstruction;
 
 /**
  * Parser for the evaluation of
@@ -50,10 +45,6 @@ import org.w3c.dom.ProcessingInstruction;
  */
 public class MutationParser {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MutationParser.class);
-
-    public static final String UNDEFINED_PROCESSING_INSTRUCTION_ID = "UNDEFINED";
-    private static final String MORE_THEN_ONE_SPACE = "\\s+";
-    private static final String PROCESSING_INSTRUCTION_IDENTIFIER_KEY = "id";
 
     public static class SchematronRulesParserListener extends de.kosit.xmlmutate.mutation.parser.MutationBaseListener {
         private final ExpectedResult expectedResult;
@@ -206,28 +197,6 @@ public class MutationParser {
         @Override
         public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String msg, final RecognitionException e) {
             throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
-        }
-    }
-
-    public static String extractProcessingInstructionId(ProcessingInstruction pi) {
-        if (pi ==null || StringUtils.isBlank(pi.getData())) {
-            log.warn("Mutator Processing Instruction is UNDEFINED.");
-            return UNDEFINED_PROCESSING_INSTRUCTION_ID;
-        }
-        Pattern pattern = Pattern.compile(
-            "\" ? (" + PROCESSING_INSTRUCTION_IDENTIFIER_KEY + ") ?(=) ?\"");
-        String instruction = pi.getData().replaceAll(MORE_THEN_ONE_SPACE, StringUtils.SPACE).trim();
-        Matcher matcher = pattern.matcher(instruction);
-        Optional<String> matchedIdentifierFragment = matcher.results().map(MatchResult::group).findFirst();
-        try {
-            return matchedIdentifierFragment
-                .map(idStr -> instruction.substring(instruction.indexOf(idStr) + idStr.length()))
-                .map(idStrValue -> idStrValue.substring(0, idStrValue.indexOf("\"")))
-                .map(String::trim)
-                .orElse(UNDEFINED_PROCESSING_INSTRUCTION_ID);
-        } catch (IndexOutOfBoundsException ex) {
-            log.trace("Could not extract Processing Instruction Identifier", ex);
-            return UNDEFINED_PROCESSING_INSTRUCTION_ID;
         }
     }
 

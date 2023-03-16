@@ -1,13 +1,10 @@
 package de.kosit.xmlmutate.runner;
 
-import static de.kosit.xmlmutate.mutation.MutationParser.UNDEFINED_PROCESSING_INSTRUCTION_ID;
-
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
-import de.kosit.xmlmutate.mutation.MutationParser;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.Schematron;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
@@ -18,12 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.ProcessingInstruction;
 
 
 /**
@@ -47,9 +44,10 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
                     if (!valid) {
                         mutation.setState(State.ERROR);
+                        final MutationException processingException = createErrorMessage(
+                            expectation.getRuleName(), mutation.getConfiguration().getMutationId());
                         mutation.getMutationErrorContainer().addSchematronErrorMessage(
-                            expectation.getRuleName(),
-                                createErrorMessage(expectation.getRuleName(), mutation.getContext().getPi()));
+                            expectation.getRuleName(), processingException);
                     }
                     log.trace(
                             "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
@@ -74,13 +72,12 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
     }
 
-    private MutationException createErrorMessage(final String ruleName, final ProcessingInstruction pi) {
-        final String piId = MutationParser.extractProcessingInstructionId(pi);
-        if (UNDEFINED_PROCESSING_INSTRUCTION_ID.equals(piId)) {
+    private MutationException createErrorMessage(final String ruleName, final String processingInstructionId) {
+        if (StringUtils.isBlank(processingInstructionId)) {
             return new MutationException(ErrorCode.SCHEMATRON_RULE_FAILED_EXPECTATION, ruleName);
         }
         return new MutationException(
-            ErrorCode.SCHEMATRON_RULE_WITH_INSTRUCTION_FAILED_EXPECTATION, ruleName, piId);
+            ErrorCode.SCHEMATRON_RULE_WITH_INSTRUCTION_FAILED_EXPECTATION, ruleName, processingInstructionId);
     }
 
     private Map<SchematronRuleExpectation, Boolean> evaluateSchematronEnterity(final Pair<SchematronEnterity, ExpectedResult> schematronEnterityExpectation, final Mutation mutation) {
