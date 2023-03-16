@@ -54,6 +54,20 @@ public class TestResource {
         }
     }
 
+    public static class EformWrongRuleResources {
+        public static final URI ROOT = TEST_ROOT.resolve("eform-wrong-rule/");
+        public static final URI XSL_EFORM = ROOT.resolve("eform-sch-rules.xsl");
+        public static final URI XML_WITH_WRONG_SCH_RULE_REF =
+            ROOT.resolve("eform-with-wrong-sch-rule-ref.xml");
+    }
+
+    public static class EformWithSchematronFailures {
+        public static final URI ROOT = TEST_ROOT.resolve("eform-with-schematron-failures/");
+        public static final URI XSL_EFORM = ROOT.resolve("eform-sch-rules.xsl");
+        public static final URI XML_WITH_FAILING_SCHEMATRON_RULES =
+            ROOT.resolve("eform-with-sch-failures.xml");
+    }
+
     public static class UblResources {
         public static final URI ROOT = TEST_ROOT.resolve("ubl-en16931/");
         public static final URI XSL = ROOT.resolve("EN16931-UBL-validation.xsl");

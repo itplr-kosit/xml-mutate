@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.kosit.xmlmutate.TestHelper;
 import de.kosit.xmlmutate.TestResource;
+import de.kosit.xmlmutate.TestResource.EformWithSchematronFailures;
+import de.kosit.xmlmutate.TestResource.EformWrongRuleResources;
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
@@ -14,6 +16,8 @@ import de.kosit.xmlmutate.mutation.MutationConfig;
 import de.kosit.xmlmutate.mutation.MutationResult;
 import de.kosit.xmlmutate.mutation.MutationResult.ValidationState;
 import de.kosit.xmlmutate.mutation.Schematron;
+import de.kosit.xmlmutate.report.ReportGenerator;
+import de.kosit.xmlmutate.report.TextReportGenerator;
 import de.kosit.xmlmutate.runner.FailureMode;
 import de.kosit.xmlmutate.runner.MutationException;
 import de.kosit.xmlmutate.runner.MutationRunner;
@@ -21,12 +25,14 @@ import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.ValidateAction;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.xml.parsers.DocumentBuilder;
@@ -50,6 +56,78 @@ import org.xml.sax.SAXException;
 public class SchematronValidationTest {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    @Test
+    @DisplayName("It is expected to log details if original XML document has "
+        + "any schematron errors without any mutators applied.")
+    public void shouldWarnRegardingFailingSchematronAssertOnOriginalXmlDocument() {
+        final URI testXmlResource = EformWithSchematronFailures.XML_WITH_FAILING_SCHEMATRON_RULES;
+        List<Schematron> knownSchematronRules = getEformTransformedToXslSchematronForInvalidEform();
+        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+            knownSchematronRules, FailureMode.FAIL_AT_END);
+        final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
+
+        RunnerResult result = runner.run();
+
+        ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
+        List<Pair<Path, List<Mutation>>> resultList = result.getResult();
+        reportGenerator.generate(resultList, FailureMode.FAIL_AT_END);
+        assertThat(resultList)
+            .isNotNull()
+            .hasSize(1);
+        assertThat(resultList.get(0)).isNotNull();
+        assertThat(resultList.get(0).getValue())
+            .isNotNull()
+            .hasSize(1);
+        assertThat(resultList.get(0).getValue().get(0))
+            .isNotNull();
+        assertThat(resultList.get(0).getValue().get(0).getContext())
+            .isNotNull();
+        assertThat(resultList.get(0).getValue().get(0).getContext().getSchematronFailures())
+            .isNotNull()
+            .isNotEmpty()
+            .hasSize(1);
+        assertThat(resultList.get(0).getValue().get(0).getContext().getSchematronFailures())
+            .containsEntry("CR-DE-BT-510-Organization-Company",
+                Set.of("/Q{urn:oasis:names:specification:ubl:schema:xsd:ContractAwardNotice-2}ContractAwardNotice[1]/Q{urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2}UBLExtensions[1]/Q{urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2}UBLExtension[1]/Q{urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2}ExtensionContent[1]/Q{http://data.europa.eu/p27/eforms-ubl-extensions/1}EformsExtension[1]/Q{http://data.europa.eu/p27/eforms-ubl-extension-aggregate-components/1}Organizations[1]/Q{http://data.europa.eu/p27/eforms-ubl-extension-aggregate-components/1}Organization[2]/Q{http://data.europa.eu/p27/eforms-ubl-extension-aggregate-components/1}Company[1]"));
+    }
+
+    @Test
+    @DisplayName("Assuming that XML without any mutators applied is correct and schematron rule assertion"
+        + "fails that is not defined by specific mutator - then unexpected assertion failure must be"
+        + "explicitly logged.")
+    public void shouldWarnRegardingFailingSchematronAssertWhenItIsNotExpected() {
+        final URI testXmlResource = TestResource.EformWrongRuleResources.XML_WITH_WRONG_SCH_RULE_REF;
+        List<Schematron> knownSchematronRules = getEformTransformedToXslSchematron_BT510_UBO_Rules();
+        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+            knownSchematronRules, FailureMode.FAIL_AT_END);
+        final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
+
+        RunnerResult result = runner.run();
+
+        ReportGenerator reportGenerator = new TextReportGenerator(new PrintWriter(System.out));
+        List<Pair<Path, List<Mutation>>> resultList = result.getResult();
+        reportGenerator.generate(resultList, FailureMode.FAIL_AT_END);
+        assertThat(resultList).isNotNull();
+    }
+
+    private List<Schematron> getEformTransformedToXslSchematron_BT510_UBO_Rules() {
+        final List<Schematron> schematronList = new ArrayList<>();
+        final URI uri = EformWrongRuleResources.XSL_EFORM;
+        final List<String> list = Arrays.asList("CR-DE-BT-510-UBO", "CR-DE-BT-510-Organization-Company");
+        final Schematron schematron = new Schematron("efde", uri, list);
+        schematronList.add(schematron);
+        return schematronList;
+    }
+
+    private List<Schematron> getEformTransformedToXslSchematronForInvalidEform() {
+        final List<Schematron> schematronList = new ArrayList<>();
+        final URI uri = EformWithSchematronFailures.XSL_EFORM;
+        final List<String> list = Arrays.asList("CR-DE-BT-510-UBO", "CR-DE-BT-510-Organization-Company");
+        final Schematron schematron = new Schematron("efde", uri, list);
+        schematronList.add(schematron);
+        return schematronList;
+    }
 
     @Test
     @DisplayName("XSL rule evaluating with runtime exception should evaluate mutator to failed status with global error message")
