@@ -3,6 +3,7 @@ package de.kosit.xmlmutate.mutation;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import de.kosit.xmlmutate.expectation.ExpectedResult;
 import de.kosit.xmlmutate.expectation.SchematronEnterity;
@@ -12,9 +13,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * It tests the basic parser functions
@@ -51,7 +56,7 @@ public class MutationParserTest {
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getConfiguration().getProperties()).hasSize(3);
-        assertThat(mutations.get(0).getConfiguration().getProperties().get("test2")).isEqualTo("value value");
+        assertThat(mutations.get(0).getConfiguration().getProperties()).containsEntry("test2", "value value");
     }
 
     @Test
@@ -80,7 +85,7 @@ public class MutationParserTest {
         assertValid(mutations);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getConfiguration().getProperties()).hasSize(1);
-        assertThat(mutations.get(0).getConfiguration().getProperties().get("key")).isEqualTo("val1,val2");
+        assertThat(mutations.get(0).getConfiguration().getProperties()).containsEntry("key", "val1,val2");
     }
 
     @Test
@@ -101,7 +106,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "No valid mutator found for unknown"))).isTrue();
     }
 
@@ -112,7 +117,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "mismatched input 'schema-' expecting 'mutator'"))).isTrue();
     }
 
@@ -123,7 +128,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "missing {'valid', 'invalid'} at 'val'"))).isTrue();
     }
 
@@ -137,7 +142,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(
                 e -> StringUtils.containsIgnoreCase(e.getMessage(), "No mutation can be found for dummy.xml. Is PI last element?")))
                 .isTrue();
@@ -150,7 +155,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.CREATED);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isEqualTo(0);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isEmpty();
         assertThat(Collections.disjoint(mutations.get(0).getConfiguration().getTagNames(), Arrays.asList("tag1", "tag2"))).isFalse();
     }
 
@@ -164,7 +169,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "Mutation instruction id can not be empty"))).isTrue();
     }
 
@@ -178,7 +183,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "Mutation instruction tag can not be empty"))).isTrue();
     }
 
@@ -192,7 +197,7 @@ public class MutationParserTest {
         final List<Mutation> mutations = this.parser.parse(context);
         assertThat(mutations).hasSize(1);
         assertThat(mutations.get(0).getState()).isEqualTo(State.ERROR);
-        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().size()).isGreaterThanOrEqualTo(1);
+        assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages().stream().anyMatch(e -> StringUtils.containsIgnoreCase(e.getMessage(), "Mutation instruction can only have 1 id"))).isTrue();
     }
 
@@ -234,6 +239,19 @@ public class MutationParserTest {
         assertThat(mutations.get(0).getMutationErrorContainer().getGlobalErrorMessages()).isNotEmpty();
     }
 
+    @ParameterizedTest
+    @MethodSource("expectedIdentifierOutcomeAndProvidedMutatorDefinitions")
+    void shouldExtractCorrectIdentifierBasedOnProvidedMutators(final String expectedId, final String providedMutator) {
+        final MutationDocumentContext context = createContext(providedMutator);
+
+        final List<Mutation> mutations = this.parser.parse(context);
+
+        assertThat(mutations).isNotNull().hasSize(1);
+        assertThat(mutations.get(0)).isNotNull();
+        assertThat(mutations.get(0).getConfiguration()).isNotNull();
+        assertThat(mutations.get(0).getConfiguration().getMutationId()).isEqualTo(expectedId);
+    }
+
     private void assertValid(final List<Mutation> mutations) {
         mutations.forEach(e -> {
             assertThat(e.getContext()).isNotNull();
@@ -242,6 +260,39 @@ public class MutationParserTest {
             assertThat(e.getState()).isEqualTo(State.CREATED);
             assertThat(e.getIdentifier()).isNotNull();
         });
+    }
+
+    private static Stream<Arguments> expectedIdentifierOutcomeAndProvidedMutatorDefinitions() {
+        return Stream.of(
+            arguments("CR-DE-BT-510-UBO-remove",
+                "mutator=\"remove\" schematron-invalid=\"efde:CR-DE-BT-510-UBO\" id=\"CR-DE-BT-510-UBO-remove\" description=\"BT-510 must exist\""),
+            arguments("CR-DE-BT-510-UBO-id",
+                """
+                    mutator="identity"   schematron-valid = "efde:CR-DE-BT-510-UBO"\s
+                                        id= "CR-DE-BT-510-UBO-id"   description ="Valid   BT-510"        
+                    """),
+            arguments(null,
+                """
+                    mutator="identity"   schematron-valid = "efde:CR-DE-BT-510-UBO"\s
+                                         id    = " CR-DE-BT-510-UBO-id  "   description ="Valid   BT-510"        
+                    """),
+            arguments("expected_to_be_found",
+                "mutator=\"remove\" schematron-invalid=\"efde:CR-DE-BT-510-UBO\" id=\"CR-DE-BT-510-UBO-remove\" id=\"expected_to_be_found\" description=\"BT-510 must exist\""
+            ),
+            arguments(null,
+                "mutator=\"remove\" schematron-invalid=\"efde:CR-DE-BT-510-UBO id=\"qqq\" id=\"CR-DE-BT-510-UBO-remove\" id=\"expected_not_to_be_found\" description=\"BT-510 must exist\""),
+            arguments(null,
+                """
+                  mutator="identity"   schematron-valid = "efde:CR-DE-BT-510-UBO"\s
+                                       iddd    = "CR-DE-BT-510-UBO-id"   description ="Valid   BT-510"        
+                  """
+            ),
+            arguments(null,
+                """
+                    mutator="identity"   schematron-valid = "efde:CR-DE-BT-510-UBO"   description ="Valid   BT-510"   
+                    """
+            )
+        );
     }
 
 }
