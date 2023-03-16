@@ -4,6 +4,8 @@ package de.kosit.xmlmutate.mutation;
 import de.kosit.xmlmutate.runner.DocumentParser;
 import de.kosit.xmlmutate.runner.SavingMode;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -20,6 +22,8 @@ public class MutationDocumentContext {
     private final Path documentPath;
     private final ProcessingInstruction pi;
     private final DocumentFragment originalFragment;
+
+    private final Map<String, Set<String>> schematronFailures;
     private Node specificTarget;
     private SavingMode savingMode;
 
@@ -30,16 +34,7 @@ public class MutationDocumentContext {
      * @param path name of the mutation
      */
     public MutationDocumentContext(@Nonnull final ProcessingInstruction pi, @Nonnull final Path path) {
-        if (pi == null) {
-            throw new java.lang.NullPointerException("pi is marked non-null but is null");
-        }
-        if (path == null) {
-            throw new IllegalArgumentException("Valid path must be specified");
-        }
-        this.pi = pi;
-        this.documentPath = path;
-        this.originalFragment = createFragment();
-        this.savingMode = SavingMode.SINGLE;
+        this(pi, path, SavingMode.SINGLE);
     }
 
     /**
@@ -49,6 +44,11 @@ public class MutationDocumentContext {
      * @param path name of the mutation
      */
     public MutationDocumentContext(@Nonnull final ProcessingInstruction pi, @Nonnull final Path path, final SavingMode savingMode) {
+        this(pi, path, savingMode, Map.of());
+    }
+
+    public MutationDocumentContext(@Nonnull final ProcessingInstruction pi, @Nonnull final Path path,
+        final SavingMode savingMode, final Map<String, Set<String>> schematronFailures) {
         if (pi == null) {
             throw new java.lang.NullPointerException("pi is marked non-null but is null");
         }
@@ -59,6 +59,7 @@ public class MutationDocumentContext {
         this.documentPath = path;
         this.originalFragment = createFragment();
         this.savingMode = savingMode;
+        this.schematronFailures = schematronFailures;
     }
 
     /**
@@ -157,7 +158,8 @@ public class MutationDocumentContext {
      */
     public Element getParentElement() {
         final Node parentNode = getPi().getParentNode();
-        return parentNode instanceof Element ? (Element) parentNode : null;
+
+        return parentNode instanceof Element element ? element : null;
     }
 
     /**
@@ -191,5 +193,9 @@ public class MutationDocumentContext {
 
     public void setSavingMode(final SavingMode savingMode) {
         this.savingMode = savingMode;
+    }
+
+    public Map<String, Set<String>> getSchematronFailures() {
+        return schematronFailures;
     }
 }

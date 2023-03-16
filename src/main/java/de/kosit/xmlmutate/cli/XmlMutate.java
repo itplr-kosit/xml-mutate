@@ -3,8 +3,34 @@ package de.kosit.xmlmutate.cli;
 
 import de.kosit.xmlmutate.mutation.NamedTemplate;
 import de.kosit.xmlmutate.mutation.Schematron;
-import de.kosit.xmlmutate.runner.*;
+import de.kosit.xmlmutate.runner.ErrorCode;
+import de.kosit.xmlmutate.runner.FailureMode;
+import de.kosit.xmlmutate.runner.LogLevel;
+import de.kosit.xmlmutate.runner.MutationException;
+import de.kosit.xmlmutate.runner.MutationRunner;
+import de.kosit.xmlmutate.runner.RunMode;
+import de.kosit.xmlmutate.runner.RunnerConfig;
+import de.kosit.xmlmutate.runner.RunnerResult;
+import de.kosit.xmlmutate.runner.SavingMode;
+import de.kosit.xmlmutate.runner.Services;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Stream;
+import javax.xml.validation.Schema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
@@ -17,21 +43,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParseResult;
-
-import javax.xml.validation.Schema;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Base class for command line interface.
@@ -52,14 +63,14 @@ public class XmlMutate implements Callable<Integer> {
     private Path schemaLocation;
 
     @Option(names = {"-s", "--schematron"}, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
-    private final Map<String, Path> schematrons = new HashMap<String, Path>();
+    private final Map<String, Path> schematrons = new HashMap<>();
 
     @Option(names = {"-m", "--mode"}, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
     @Option(names = {"-t", "--transformations"}, paramLabel = "MAP",
             description = "Named transformations used for the Transformation-Mutator")
-    private final Map<String, Path> transformations = new HashMap<String, Path>();
+    private final Map<String, Path> transformations = new HashMap<>();
 
     @Option(names = {"-ff", "--fail-fast"}, description = "The run failure control mode for fail fast")
     private boolean failfast;
@@ -78,6 +89,11 @@ public class XmlMutate implements Callable<Integer> {
             description = "Enables the save parsing mode, which does not providing line number information, but is more robust",
             defaultValue = "false")
     private boolean saveParsingMode;
+
+    @Option(names = {"--saveSvrl"},
+        description = "Enables the save SVRL report mode, which persists XML schematron validation result into the '--target' folder.",
+        defaultValue = "false")
+    private boolean saveSvrlMode;
 
     @Option(names = {"-l", "--log"}, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
     private LogLevel logLevel;
@@ -160,7 +176,17 @@ public class XmlMutate implements Callable<Integer> {
         if (Files.exists(this.target) && !Files.isWritable(this.target)) {
             throw new IllegalArgumentException("Target folder is not writable");
         }
-        return RunnerConfig.Builder.forDocuments(prepareDocuments()).targetFolder(this.target).checkSchematron(prepareSchematron()).checkSchema(prepareSchema()).useTransformations(prepareTransformations()).withFailureMode(getFailureMode()).withSavingMode(this.savingMode).withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity).saveParsing(this.saveParsingMode).build();
+        return RunnerConfig.Builder.forDocuments(prepareDocuments())
+            .targetFolder(this.target)
+            .checkSchematron(prepareSchematron())
+            .checkSchema(prepareSchema())
+            .useTransformations(prepareTransformations())
+            .withFailureMode(getFailureMode())
+            .withSavingMode(this.savingMode)
+            .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
+            .saveParsing(this.saveParsingMode)
+            .saveSvrl(this.saveSvrlMode)
+            .build();
     }
 
     private FailureMode getFailureMode() {
@@ -174,7 +200,7 @@ public class XmlMutate implements Callable<Integer> {
         } else if (countActive == 0) {
             return FailureMode.FAIL_AT_END;
         } else {
-            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList()).get(0);
+            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList().get(0);
         }
     }
 
@@ -184,7 +210,7 @@ public class XmlMutate implements Callable<Integer> {
                 return new NamedTemplate(e.getKey(), e.getValue().toUri());
             }
             throw new IllegalArgumentException(String.format("Provided template \'%s\' does not exist or is not readable", e.getValue()));
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     private Schema prepareSchema() {
@@ -205,18 +231,18 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).collect(Collectors.toList());
+        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).toList();
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
             throw new IllegalArgumentException(MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
-        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml")).collect(Collectors.toList());
+        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml")).toList();
     }
 
     private Stream<Path> expandDirectories(final Path path) {
         try {
             if (!Files.exists(path)) {
-                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath().toString());
+                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath());
             }
             if (Files.isDirectory(path)) {
                 return Files.walk(path);
