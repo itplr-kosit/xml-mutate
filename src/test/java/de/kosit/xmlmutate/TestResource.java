@@ -68,6 +68,12 @@ public class TestResource {
             ROOT.resolve("eform-with-sch-failures.xml");
     }
 
+    public static class EformWithSchematronRuleFailureAndTheRuleInMutator {
+        public static final URI ROOT = TEST_ROOT.resolve("eform-with-failing-sch-rule-and-mutator-with-the-rule/");
+        public static final URI XSL = ROOT.resolve("can_eforms_de.xsl");
+        public static final URI XML = ROOT.resolve("can_eform_multiple_ubo.xml");
+    }
+
     public static class UblResources {
         public static final URI ROOT = TEST_ROOT.resolve("ubl-en16931/");
         public static final URI XSL = ROOT.resolve("EN16931-UBL-validation.xsl");

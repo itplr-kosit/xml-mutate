@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
@@ -39,13 +40,16 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
             for (final SchematronRuleExpectation expectation : mutation.getConfiguration().getSchematronExpectations()) {
 
                 final boolean unknownRuleName = this.checkeUnkknownRuleNames(expectation, mutation.getResult().getSchematronResult());
+                final String piId = StringUtils.isBlank(mutation.getConfiguration().getMutationId()) ?
+                    StringUtils.EMPTY : mutation.getConfiguration().getMutationId();
                 if (!unknownRuleName) {
-                    final boolean valid = this.evaluate(expectation, mutation.getResult(), unknownRuleName);
+                    final boolean valid = this.evaluate(expectation, mutation.getResult(),
+                        mutation.getContext().getSchematronFailures(), piId, unknownRuleName);
 
                     if (!valid) {
                         mutation.setState(State.ERROR);
                         final MutationException processingException = createErrorMessage(
-                            expectation.getRuleName(), mutation.getConfiguration().getMutationId());
+                            expectation.getRuleName(), piId);
                         mutation.getMutationErrorContainer().addSchematronErrorMessage(
                             expectation.getRuleName(), processingException);
                     }
@@ -137,24 +141,91 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
     }
 
     // Evalutes if result matches expectation
-    private boolean evaluate(final SchematronRuleExpectation expectation, MutationResult result, final boolean unknownRule) {
+    private boolean evaluate(final SchematronRuleExpectation expectation, MutationResult result,
+        final Map<String, Set<String>> baseXmlSchematronFailures, final String processingInstructionId,
+        final boolean unknownRule) {
         final Collection<SchematronOutput> targets;
         if (expectation.getSource() != null) {
             final Optional<SchematronOutput> schematronResult = result.getSchematronResult(expectation.getSource());
-
             targets = schematronResult.map(Collections::singletonList).orElseGet(ArrayList::new);
         } else {
             targets = result.getSchematronResult().values();
         }
-        // get all failed assertions of schematron which matches the given expection
+
+        if (baseXmlSchematronFailures.containsKey(expectation.getRuleName())) {
+            log.error("Schematron rule {} has failed without any mutations. "
+                    + "Processing instruction {} evaluation may be incorrect.",
+                expectation.getRuleName(), processingInstructionId);
+        }
+        List<FailedAssert> actuallyFailed = filterOutFailuresFoundInOriginalXml(baseXmlSchematronFailures, targets);
+        List<FailedAssert> failuresNotDefinedByMutator = findFailuresNotDefinedByMutator(actuallyFailed, expectation.getRuleName());
+        if (!failuresNotDefinedByMutator.isEmpty()) {
+            log.error("Processing instruction {} has unexpected schematron assertion(-s) failures: {}",
+                processingInstructionId, failuresNotDefinedByMutator.stream().map(FailedAssert::getId).toList());
+        }
+        List<FailedAssert> failuresDefinedByMutator = findFailuresDefinedByMutator(actuallyFailed, expectation.getRuleName());
+        if (failuresDefinedByMutator.size() > 1) {
+            log.error("Processing instruction {} has more then one schematron rule {} failed in svrl report. Picking very first one.",
+                processingInstructionId, expectation.getRuleName());
+        }
+
+        // TODO commented-out to not exclude failures that occured in original XML without mutations
+//        final Optional<FailedAssert> failed = actuallyFailed.stream().findFirst();
+
         final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
                 .flatMap(List::stream).peek(f -> {
                 }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
-        // log.debug("Evaluation for {} ", failed.)
+
         boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();
         boolean noFailedButExpected = failed.isEmpty() && expectation.expectValid() && !unknownRule;
         log.trace("failedAsExpected={} or  noFailedButExpected={}", failedAsExpected, noFailedButExpected);
+
         return failedAsExpected || noFailedButExpected;
+    }
+
+    private List<FailedAssert> findFailuresDefinedByMutator(List<FailedAssert> actuallyFailed, String ruleName) {
+        return actuallyFailed.stream()
+            .filter(failedAssert -> StringUtils.equals(failedAssert.getId(), ruleName))
+            .toList();
+    }
+
+    /**
+     * Return unexpected schematron failures.
+     *
+     * @param actuallyFailed schematron assertion failures from svrl with mutation applied
+     *                       without any assertion failures from original XML document
+     *                       schematron validation without any mutations applied.
+     * @param ruleName schematron rule unique identifier from mutator definition
+     *
+     * @return unexpected failures that didn't happen while testing the original XML document
+     * without mutators and were not expected by mutator.
+     */
+    private List<FailedAssert> findFailuresNotDefinedByMutator(List<FailedAssert> actuallyFailed, String ruleName) {
+        return actuallyFailed.stream()
+            .filter(failedAssert -> !StringUtils.equals(failedAssert.getId(), ruleName))
+            .toList();
+    }
+
+    /**
+     * Schematron assertion failures from svrl of mutated XML without any assertion failures of
+     * the XML without any mutations applied.
+     *
+     * @param baseXmlSchematronFailures original XML document without nay mutations
+     *                                  schematron assertion failures from svrl report
+     * @param targets schematron assertion failures from svrl report of XML document
+     *                with mutation applied
+     * @return {@code targets} without {@code baseXmlSchematronFailures}
+     */
+    private List<FailedAssert> filterOutFailuresFoundInOriginalXml(Map<String, Set<String>> baseXmlSchematronFailures,
+        Collection<SchematronOutput> targets) {
+        return targets.stream()
+            .map(SchematronOutput::getFailedAsserts)
+            .flatMap(List::stream)
+            .filter(failedAssert -> !baseXmlSchematronFailures.containsKey(failedAssert.getId()) ||
+                baseXmlSchematronFailures.containsKey(failedAssert.getId()) &&
+                    baseXmlSchematronFailures.get(failedAssert.getId()).stream()
+                        .noneMatch(xpath -> StringUtils.equals(xpath, failedAssert.getLocation()))
+            ).toList();
     }
 
     // xmute mutator = "noop" schematron-invalid="UBL-CR-001"
