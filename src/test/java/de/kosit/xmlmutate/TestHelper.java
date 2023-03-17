@@ -219,7 +219,7 @@ public class TestHelper {
         final FailureMode failureMode) {
         final RunnerConfig runnerConfig = RunnerConfig.Builder.forDocuments(getSingleDocument(documentPath))
             .checkSchematron(schematronRules).targetFolder(createTestTargetFolder("doc/test"))
-            .useTransformations(new ArrayList<>()).withFailureMode(failureMode).build();
+            .useTransformations(new ArrayList<>()).withFailureMode(failureMode).saveSvrl(true).build();
         runnerConfig.setIgnoreSchemaInvalidity(true);
         return runnerConfig;
     }
