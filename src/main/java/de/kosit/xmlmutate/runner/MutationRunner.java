@@ -102,10 +102,8 @@ public class MutationRunner {
     Future<Pair<Path, List<Mutation>>> process(final Path path) {
         return this.executorService.submit(() -> {
             final Document xmlDocument = DocumentParser.readDocument(path, this.configuration.isSaveParsing());
-            final Map<String, XdmDestination> schematronResult = validateDocumentWithSchematron(path);
-            writeSvrlOutputToFile(schematronResult);
-            final List<Mutation> mutations = parseMutations(xmlDocument, path,
-                findXmlSchematronValidationFailures(schematronResult.values()));
+            Map<String, Set<String>> xmlSchematronValidationFailures = runSchematronValidationWithoutMutations(path);
+            final List<Mutation> mutations = parseMutations(xmlDocument, path, xmlSchematronValidationFailures);
             // If there is only mutation with an error, we dont need to process it
             if (mutations.size() == 1 && mutations.stream().anyMatch(Mutation::isErroneousOrContainsErrorMessages)) {
                 return new ImmutablePair<>(path, mutations);
@@ -120,6 +118,18 @@ public class MutationRunner {
                 return new ImmutablePair<>(path, mutationsProcessed);
             }
         });
+    }
+
+    private Map<String, Set<String>> runSchematronValidationWithoutMutations(Path path) {
+        try {
+            final Map<String, XdmDestination> schematronResult = validateDocumentWithSchematron(path);
+            writeSvrlOutputToFile(schematronResult);
+            return findXmlSchematronValidationFailures(schematronResult.values());
+        } catch (Exception e) {
+            log.error(String.format("Failed to generate SVRL report on target: %s", path.toString()), e);
+            log.error("It is assumed that testing XML(-s) do not have any schematron errors without any mutations applied.");
+            return Map.of();
+        }
     }
 
     private void writeSvrlOutputToFile(Map<String, XdmDestination> schematronResult) {
@@ -222,8 +232,9 @@ public class MutationRunner {
                 all.addAll(mutations);
                 // If Mode FAIL_FAST, stop process with first error mutation
                 if (mutations.stream().anyMatch(this::checkIfStopProcess)) {
+                    String failedMutationId = findFirstFailedMutationId(mutations);
                     log.warn("Invalid mutation definition identified id = {}. Stop parsing any further mutations within {}.",
-                        findFirstFailedMutationId(mutations), documentPath);
+                        failedMutationId, documentPath);
                     return all;
                 }
             }
