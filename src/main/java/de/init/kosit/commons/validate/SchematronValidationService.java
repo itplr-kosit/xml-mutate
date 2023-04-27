@@ -29,6 +29,7 @@ public class SchematronValidationService {
   private static final String FAILURE_NODE_NAME = "failed-assert";
   private static final String SCHEMATRON_RULE_ID_ATTR = "id";
   private static final String RULE_EVALUATION_XPATH_ATTR = "location";
+  private static final String UNIDENTIFIED_SCHEMATRON_RULE = "UNIDENTIFIED";
 
   public XdmDestination validate(final URI xmlDocumentUri, final Schematron schematron) {
     try {
@@ -64,10 +65,16 @@ public class SchematronValidationService {
     return StreamSupport.stream(findXdmChildNodes(rootNode).spliterator(), false)
         .filter(xdmNode -> xdmNode.getNodeName() != null)
         .filter(xdmNode -> StringUtils.equals(FAILURE_NODE_NAME, xdmNode.getNodeName().getLocalName()))
-        .collect(groupingBy(xdmNode -> xdmNode.attribute(SCHEMATRON_RULE_ID_ATTR), mapping(
+        .collect(groupingBy(this::findSchematronRuleCode, mapping(
             xdmNode -> xdmNode.attribute(RULE_EVALUATION_XPATH_ATTR), toSet()
             ))
         );
+  }
+
+  private String findSchematronRuleCode(XdmNode xdmNode) {
+    return xdmNode.attribute(SCHEMATRON_RULE_ID_ATTR) == null
+        ? UNIDENTIFIED_SCHEMATRON_RULE
+        : xdmNode.attribute(SCHEMATRON_RULE_ID_ATTR);
   }
 
   private Iterable<XdmNode> findXdmChildNodes(XdmNode rootNode) {
