@@ -509,7 +509,7 @@ public class TextReportGenerator extends BaseReportGenerator {
             noMutationError.add("No mutations found within this file");
             this.writer.write(noMutationError.render());
         } else {
-            final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15), new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3), new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3), new ColumnDefinition("Exp", 18, 1000), new ColumnDefinition("Error Message", 40), new ColumnDefinition("Description", 15, 10));
+            final Grid grid = new Grid(new ColumnDefinition("#", 3), new ColumnDefinition("Mutation", 15), new ColumnDefinition("Line", 4), new ColumnDefinition("Exp"), new ColumnDefinition("XSD", 3), new ColumnDefinition("Exp", 3), new ColumnDefinition("Sch", 3), new ColumnDefinition("Exp", 18, 1000), new ColumnDefinition("Message", 40), new ColumnDefinition("Description", 15, 10));
             IntStream.range(0, mutations.size()).forEach(i -> this.generateMutationReportLine(grid, mutations.get(i), i));
             this.writer.write(grid.print());
             final long failureCount = countFailures(mutations);
@@ -565,17 +565,8 @@ public class TextReportGenerator extends BaseReportGenerator {
         grid.addCell(createSchematronValidationCell(isSchematronProcessed, isSchematronValid));
         grid.addCell(expectationCells.get(0));
         // Create first error message
-        if (allErrors.isEmpty()) {
-            grid.addCell("");
-        } else {
-            grid.addCell(allErrors.get(0));
-        }
-        final Object description = mutation.getConfiguration().getProperties().get("description");
-        if (description != null) {
-            grid.addCell(description);
-        } else {
-            grid.addCell(EMPTY);
-        }
+        addErrorMessageCell(grid, allErrors);
+        addDescriptionCell(grid, mutation.getConfiguration().getProperties());
         // Rest of error messages and failed schematron rules (if they exist)
         for (int i = 1; i < (Math.min(allErrors.size(), 6)); i++) {
             grid.addCell(EMPTY);
@@ -596,6 +587,23 @@ public class TextReportGenerator extends BaseReportGenerator {
                 grid.addCell(allErrors.get(i));
             }
             grid.addCell(EMPTY);
+        }
+    }
+
+    private void addDescriptionCell(Grid grid, Map<String, Object> mutationConfigProperties) {
+        final Object description = mutationConfigProperties.get("description");
+        if (description != null) {
+            grid.addCell(description);
+        } else {
+            grid.addCell(EMPTY);
+        }
+    }
+
+    private void addErrorMessageCell(Grid grid, List<String> allErrors) {
+        if (allErrors.isEmpty()) {
+            grid.addCell("");
+        } else {
+            grid.addCell(allErrors.get(0));
         }
     }
 

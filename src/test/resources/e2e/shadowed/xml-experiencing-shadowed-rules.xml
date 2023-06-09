@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <?xmute mutator="identity" schematron-valid="efde:bookWithPageCount" id="bookWithPageCount-id-1" description="Valid bookWithPageCount"?>
+  <book code="ABCD" pagecount="213">
+    <subbook>subbook1</subbook>    
+  </book>
+  <?xmute mutator="identity" schematron-valid="efde:magazineWithArticleCount" id="magazineWithArticleCount-id-1" description="Valid magazineWithArticleCount"?>
+  <magazine code="EFGH" articlecount="6">
+
+  </magazine>
+
+  <!-- Invalid entries: -->
+  <!--<?xmute mutator="identity" schematron-invalid="efde:bookWithPageCount" id="bookWithPageCount-id-2" description="Book Page Count Is Mandatory"?>-->
+<!--  <book code="ABCD">
+    <subbook code="A">subbook1</subbook>
+  </book>-->
+<!--  <?xmute mutator="identity" schematron-invalid="efde:magazineWithArticleCount" id="magazineWithArticleCount-id-2" description="Magazine Article Count Is Mandatory"?>
+  <?xmute mutator="identity" schematron-invalid="efde:anyWithCodeLength" id="anyWithCodeLength-id-1" description="Code length invalid"?>-->
+<!--  <magazine code="EFGHX">
+    
+  </magazine>-->
+</data>

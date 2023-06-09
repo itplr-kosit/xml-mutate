@@ -39,15 +39,14 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
         if (schematronEnterityExpectation == null) {
             for (final SchematronRuleExpectation expectation : mutation.getConfiguration().getSchematronExpectations()) {
 
-                final boolean unknownRuleName = this.checkeUnkknownRuleNames(expectation, mutation.getResult().getSchematronResult());
+                final boolean unknownRuleName = ifMutationHasRulesNotDefinedInSchematron(expectation, mutation.getResult().getSchematronResult());
                 final String piId = StringUtils.isBlank(mutation.getConfiguration().getMutationId()) ?
                     StringUtils.EMPTY : mutation.getConfiguration().getMutationId();
                 if (!unknownRuleName) {
-                    final boolean valid = this.evaluate(expectation, mutation.getResult(),
+                    final boolean valid = evaluate(expectation, mutation.getResult(),
                         mutation.getContext().getSchematronFailures(), piId, unknownRuleName);
 
                     if (!valid) {
-                        mutation.setState(State.ERROR);
                         final MutationException processingException = createErrorMessage(
                             expectation.getRuleName(), piId);
                         mutation.getMutationErrorContainer().addSchematronErrorMessage(
@@ -60,6 +59,7 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 } else {
                     mutation.setState(State.ERROR);
                     mutation.getMutationErrorContainer().addSchematronErrorMessage(expectation.getRuleName(), new MutationException(ErrorCode.SCHEMATRON_RULE_NOT_EXIST, expectation.getRuleName(), expectation.getSource() != null ? expectation.getSource() : "'no source'"));
+                    log.debug("mutator={} has rule={} which is not defined in schematron", piId, expectation.getRuleName());
                     log.trace(
                             "mutator={} rule={} mustPass={} mustFail={} evaluatedValid={}", mutation.getMutator().getNames(),
                             expectation.getRuleName(), expectation.expectValid(), expectation.expectInvalid(), "unknown");
@@ -126,18 +126,9 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
         return !expectationMet;
     }
 
-    private boolean checkeUnkknownRuleNames(SchematronRuleExpectation e, Map<Schematron, SchematronOutput> schematronResult) {
-        if (!schematronResult.isEmpty()) {
-            boolean unknownRule = true;
-            for (final Schematron schematron : schematronResult.keySet()) {
-                if (unknownRule) {
-                    unknownRule = !schematron.hasRule(e);
-                }
-            }
-            return unknownRule;
-        } else {
-            return false;
-        }
+    private boolean ifMutationHasRulesNotDefinedInSchematron(SchematronRuleExpectation expectation,
+        Map<Schematron, SchematronOutput> schematronResult) {
+        return schematronResult.keySet().stream().anyMatch(schematron -> !schematron.hasRule(expectation));
     }
 
     // Evalutes if result matches expectation
@@ -169,12 +160,8 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
                 processingInstructionId, expectation.getRuleName());
         }
 
-        // TODO commented-out to not exclude failures that occured in original XML without mutations
-//        final Optional<FailedAssert> failed = actuallyFailed.stream().findFirst();
-
         final Optional<FailedAssert> failed = targets.stream().map(SchematronOutput::getFailedAsserts)
-                .flatMap(List::stream).peek(f -> {
-                }).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
+                .flatMap(List::stream).filter(f -> f.getId().equals(expectation.getRuleName())).findFirst();
 
         boolean failedAsExpected = failed.isPresent() && expectation.expectInvalid();
         boolean noFailedButExpected = failed.isEmpty() && expectation.expectValid() && !unknownRule;

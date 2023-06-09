@@ -74,10 +74,38 @@ public class TestResource {
         public static final URI XML = ROOT.resolve("can_eform_multiple_ubo.xml");
     }
 
+    public static class EformWithAlternativeMutator {
+        public static final URI ROOT = TEST_ROOT.resolve("eform-with-alternative-mutator/");
+        public static final URI XSL = ROOT.resolve("eforms-de-schematron-validator-0.5.0.xsl");
+        public static final URI XML = ROOT.resolve("eforms_CAN_E4_max-DE_valid_BT-556.xml");
+    }
+
     public static class UblResources {
         public static final URI ROOT = TEST_ROOT.resolve("ubl-en16931/");
         public static final URI XSL = ROOT.resolve("EN16931-UBL-validation.xsl");
         public static final URI XML = ROOT.resolve("schema-generated-instance.xml");
+    }
+
+    public static class E2ESchematronWithShadowedRules {
+        public static final URI ROOT = TEST_ROOT.resolve("e2e/shadowed/");
+        public static final URI XSL_SCHEMATRON = ROOT.resolve("schematron-with-shadowed-rules.xsl");
+        public static final URI XML_HAPPY_PATH =
+            ROOT.resolve("xml-happy-path.xml");
+        public static final URI XML_MAGAZINE_FAILURE_SHADOWED =
+            ROOT.resolve("xml-magazine-failure-shadowed.xml");
+        public static final URI XML_MAGAZINE_FAILURE_SHADOWED_INVALID =
+            ROOT.resolve("xml-magazine-failure-shadowed-invalid.xml");
+        public static final URI XML_MULTIPLE_XPATHS_ONE_FAILS =
+            ROOT.resolve("xml-multiple-xpats-one-fails.xml");
+        public static final URI XML =
+            ROOT.resolve("xml-experiencing-shadowed-rules.xml");
+    }
+
+    public static class E2ESchematronWithoutAnyShadowedRules {
+        public static final URI ROOT = TEST_ROOT.resolve("e2e/no-shadowed/");
+        public static final URI XSL_SCHEMATRON = ROOT.resolve("schematron-rules.xsl");
+        public static final URI XML_SHADOWING_SOLVED = ROOT.resolve("xml-shadowing-solved.xml");
+        public static final URI XML_WITH_INVALID_MUTATOR = ROOT.resolve("xml-with-invalid-mutator.xml");
     }
 
     public static class TransformResource {
