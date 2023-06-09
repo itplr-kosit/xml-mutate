@@ -30,6 +30,7 @@ public class SchematronValidationService {
   private static final String SCHEMATRON_RULE_ID_ATTR = "id";
   private static final String RULE_EVALUATION_XPATH_ATTR = "location";
   private static final String UNIDENTIFIED_SCHEMATRON_RULE = "UNIDENTIFIED";
+  private static final String SHADOWED_BY_PRECEDING_RULE = "shadowed by preceding rule";
 
   public XdmDestination validate(final URI xmlDocumentUri, final Schematron schematron) {
     try {
@@ -37,11 +38,19 @@ public class SchematronValidationService {
       applyDocumentToBeTested(xmlDocumentUri, transformer);
       XdmDestination validationResultDestination = applySvrlResultDestination(transformer);
       runSchematronValidation(transformer);
+      logIfAnyShadowedRulesAreSuspected(xmlDocumentUri, validationResultDestination);
       return validationResultDestination;
     } catch (SaxonApiException e) {
       log.error("Could not validate XML {} without any mutators using schematron {}",
           xmlDocumentUri, schematron.getUri(), e);
       return new XdmDestination();
+    }
+  }
+
+  private void logIfAnyShadowedRulesAreSuspected(URI xmlDocumentUri, XdmDestination validationResultDestination) {
+    if (validationResultDestination.getXdmNode() != null &&
+        validationResultDestination.getXdmNode().toString().contains(SHADOWED_BY_PRECEDING_RULE)) {
+      log.error("Schematron {} contains shadowed rules! Mutation evaluations may be incorrect.", xmlDocumentUri.getPath());
     }
   }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+  <?xmute mutator="identity" schematron-valid="efde:bookWithPageCount" id="bookWithPageCount-id-1" description="Valid bookWithPageCount"?>
+  <book code="ABCD" pagecount="213">
+    <subbook>subbook1</subbook>
+  </book>
+  <?xmute mutator="identity" schematron-valid="efde:magazineWithArticleCount" id="magazineWithArticleCount-id-1" description="Valid magazineWithArticleCount"?>
+  <magazine code="EFGH" articlecount="6">
+  </magazine>
+
+  <?xmute mutator="identity" schematron-invalid="efde:anyWithCodeLength" id="anyWithCodeLength-id-1" description="Code length invalid"?>
+  <any code="ABCDE">
+    <sub code="A">subbook1</sub>
+  </any>
+</data>
