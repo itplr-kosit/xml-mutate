@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.mutator;
 
 import static de.kosit.xmlmutate.TestHelper.createConfig;
 import static de.kosit.xmlmutate.TestHelper.createContext;
+import static de.kosit.xmlmutate.TestHelper.createRootCommentContext;
 import static de.kosit.xmlmutate.mutator.AlternativeMutator.ALT_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -22,7 +23,7 @@ public class AlternativeGeneratorTest {
 
     @Test
     public void simpleTest() {
-        MutationDocumentContext context = createContext(node -> {
+        MutationDocumentContext context = createRootCommentContext("mutator=alternative", node -> {
             Comment comment = node.getOwnerDocument().createComment("some text");
             node.appendChild(comment);
         });
@@ -40,7 +41,7 @@ public class AlternativeGeneratorTest {
 
     @Test
     public void multipleMutationsTests() {
-        MutationDocumentContext context = createContext(node -> {
+        MutationDocumentContext context = createRootCommentContext("mutator=alternative", node -> {
             Document document = node.getOwnerDocument();
             node.appendChild(document.createComment("some text"));
             node.appendChild(document.createComment("some more text"));

@@ -171,6 +171,15 @@ public class TestHelper {
         return new MutationDocumentContext(pi, Paths.get("Dummy.xml"));
     }
 
+    public static MutationDocumentContext createRootCommentContext(final String piString, final Consumer<Element> consumer) {
+        final Document doc = de.init.kosit.commons.ObjectFactory.createDocumentBuilder(false).newDocument();
+        final Element root = doc.createElement("root");
+        doc.appendChild(root);
+        final ProcessingInstruction pi = doc.createProcessingInstruction("xmute", piString);
+        root.appendChild(pi);
+        consumer.accept(root);
+        return new MutationDocumentContext(pi, Paths.get("DummyWithProcessingComment.xml"));
+    }
     /**
      * Create an empty {@link MutationConfig}.
      *
