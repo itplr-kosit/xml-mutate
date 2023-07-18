@@ -4,6 +4,8 @@ package de.kosit.xmlmutate.mutation;
 import de.kosit.xmlmutate.runner.DocumentParser;
 import de.kosit.xmlmutate.runner.SavingMode;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -26,6 +28,8 @@ public class MutationDocumentContext {
     private final Map<String, Set<String>> schematronFailures;
     private Node specificTarget;
     private SavingMode savingMode;
+
+    private List<Node> mutatedTargets;
 
     /**
      * Constructor.
@@ -132,6 +136,19 @@ public class MutationDocumentContext {
         return null;
     }
 
+    public List<Node> findTargets(final short nodeType) {
+        Node sibling = this.pi;
+        List<Node> result = new ArrayList<>();
+        while ((sibling = sibling.getNextSibling()) != null) {
+            if (sibling.getNodeType() == nodeType) {
+                result.add(sibling);
+            } else {
+                return result;
+            }
+        }
+        return result;
+    }
+
     private DocumentFragment createFragment() {
         final DocumentFragment fragment = this.pi.getOwnerDocument().createDocumentFragment();
         final Node targetElement = getTarget();
@@ -197,5 +214,13 @@ public class MutationDocumentContext {
 
     public Map<String, Set<String>> getSchematronFailures() {
         return schematronFailures;
+    }
+
+    public List<Node> getMutatedTargets() {
+        return mutatedTargets;
+    }
+
+    public void setMutatedTargets(List<Node> mutatedTargets) {
+        this.mutatedTargets = mutatedTargets;
     }
 }

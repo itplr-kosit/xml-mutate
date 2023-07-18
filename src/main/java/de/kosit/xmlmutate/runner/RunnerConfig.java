@@ -103,6 +103,7 @@ public class RunnerConfig {
             this.config.getActions().add(new ValidateAction(this.config.getSchema(), this.config.getSchematronRules(), this.config.getTargetFolder()));
             this.config.getActions().add(new EvaluateSchematronExpectationsAction());
             this.config.getActions().add(new ResetAction());
+            this.config.getActions().add(new ResetUncommentAction());
             this.config.getActions().add(new RemoveCommentAction());
             if (this.config.getExecutorService() == null) {
                 this.config.setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));

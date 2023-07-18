@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.runner;
 
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.MutationDocumentContext;
+import de.kosit.xmlmutate.mutator.AlternativeMutator;
 import java.util.stream.IntStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -18,6 +19,9 @@ class ResetAction implements RunAction {
 
     @Override
     public void run(final Mutation mutation) {
+        if (mutation.getMutator() instanceof AlternativeMutator) {
+            return;
+        }
         final MutationDocumentContext context = mutation.getContext();
         final Node parent = context.getPi().getParentNode();
         if (parent == null || context.getTarget() == null) {

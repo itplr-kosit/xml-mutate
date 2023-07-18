@@ -10,9 +10,13 @@ import de.kosit.xmlmutate.runner.DocumentParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.collections4.CollectionUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
@@ -27,17 +31,18 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
     @Override
     public List<Mutation> generateMutations(final MutationConfig config, final MutationDocumentContext context) {
         final List<Mutation> l = new ArrayList<>();
-        final long count = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).count();
+        final long count = context.findTargets(Node.COMMENT_NODE).size();
         IntStream.range(0, (int) count).forEach(c -> {
             final MutationConfig newConfig = config.cloneConfig().add(ALT_KEY, c);
-            // final MutationDocumentContext context, final String identifier, MutationConfig
-            // configuration
-            final Mutation m = new Mutation(context.cloneContext(), Long.toString(c), newConfig);
-
+            final Mutation m = createMutation(newConfig, context, Long.toString(c));
             l.add(m);
-
         });
         return l;
+    }
+
+    private Mutation createMutation(final MutationConfig config, final MutationDocumentContext context, final String identifier) {
+        final Mutator mutator = MutatorRegistry.getInstance().getMutator(getPreferredName());
+        return new Mutation(context.cloneContext(), identifier, config, mutator);
     }
 
     @Override
@@ -47,21 +52,42 @@ public class AlternativeMutator extends BaseMutator implements MutationGenerator
 
     @Override
     public void mutate(final MutationDocumentContext context, final MutationConfig config) {
-        final List<Node> comments = stream(context.getTarget().getChildNodes(), Node.COMMENT_NODE).collect(Collectors.toList());
+        final List<Node> comments = context.findTargets(Node.COMMENT_NODE);
         if (config.getProperties().get(ALT_KEY) == null || !isNumeric(config.getStringProperty(ALT_KEY))) {
             throw new IllegalArgumentException("No comment index configured");
         }
-        final int index = Integer.parseInt(config.getStringProperty(ALT_KEY));
-        if (index >= comments.size() || index < 0) {
+        final int index = (Integer)config.getProperties().get(ALT_KEY);
+        if (CollectionUtils.isEmpty(comments) || index >= comments.size() || index < 0) {
             throw new IllegalArgumentException("No comment for index " + index);
         }
-        final Node commentToUncomment = comments.get(index);
-        final Document parsedFragment = DocumentParser.readDocument("<root>" + commentToUncomment.getTextContent() + "</root>", true);
-        stream(parsedFragment.getDocumentElement().getChildNodes()).forEach(node -> {
-            final Node newNode = context.getDocument().importNode(node, true);
-            context.getTarget().insertBefore(newNode, commentToUncomment);
-        });
-        context.getTarget().removeChild(commentToUncomment);
 
+        final Node elementToUncomment = comments.get(index);
+        final String namespaces = retrieveNamespaces(context.getDocument().getDocumentElement().getAttributes());
+        final Document wrappedUncommentedDoc = DocumentParser.readDocument("<root " + namespaces + " >" + elementToUncomment.getTextContent() + "</root>", true);
+        final Node importedUncommentedElement = context.getDocument().importNode(wrappedUncommentedDoc.getDocumentElement(), true);
+
+        List<Node> addedNodes = findNodesToBeInserted(importedUncommentedElement);
+        addedNodes.forEach(node -> context.getParentElement().insertBefore(node, elementToUncomment));
+        context.setMutatedTargets(addedNodes);
     }
+
+    private List<Node> findNodesToBeInserted(Node importedUncommentedElement) {
+        List<Node> addedNodes = new ArrayList<>();
+        Node child = importedUncommentedElement.getFirstChild();
+        addedNodes.add(child);
+        for (Node n = child.getNextSibling(); n != null; n = n.getNextSibling()) {
+            if (n instanceof Element) {
+                addedNodes.add(n);
+            }
+        }
+        return addedNodes;
+    }
+
+    private String retrieveNamespaces(NamedNodeMap attributes) {
+        return IntStream.range(0, attributes.getLength())
+            .mapToObj(attributes::item)
+            .map(Objects::toString)
+            .collect(Collectors.joining(System.lineSeparator()));
+    }
+
 }
