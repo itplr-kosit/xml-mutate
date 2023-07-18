@@ -121,14 +121,27 @@ public class MutationRunner {
     }
 
     private Map<String, Set<String>> runSchematronValidationWithoutMutations(Path path) {
+        log.debug("{} -> Started schematron validation before applying any mutations...", path.getFileName());
+        Map<String, Set<String>> validationFailures = Map.of();
         try {
             final Map<String, XdmDestination> schematronResult = validateDocumentWithSchematron(path);
             writeSvrlOutputToFile(schematronResult);
-            return findXmlSchematronValidationFailures(schematronResult.values());
+            validationFailures = findXmlSchematronValidationFailures(
+                schematronResult.values());
+            return validationFailures;
         } catch (Exception e) {
-            log.error(String.format("Failed to generate SVRL report on target: %s", path.toString()), e);
-            log.error("It is assumed that testing XML(-s) do not have any schematron errors without any mutations applied.");
+            log.error(String.format("Failed to generate SVRL report on target: %s", path.getFileName()), e);
+            log.error("It is assumed that {} doesn't have any schematron errors without any mutations applied.",
+                path.getFileName());
             return Map.of();
+        } finally {
+            if (validationFailures.isEmpty()) {
+                log.debug("No any schematron failures found");
+            } else {
+                log.debug("{} Schematron rules failed: {}", validationFailures.keySet().size(), validationFailures.keySet());
+                log.trace("XPath failures by schematron code: {}", validationFailures);
+            }
+            log.debug("{} -> Finished schematron validation before applying any mutations.", path.getFileName());
         }
     }
 
