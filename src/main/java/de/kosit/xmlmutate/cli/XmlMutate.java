@@ -13,7 +13,10 @@ import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.SavingMode;
 import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.schematron.ISOSchematronCompiler;
+import de.kosit.xmlmutate.schematron.SchXsltSchematronCompiler;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,58 +53,61 @@ import picocli.CommandLine.ParseResult;
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true,
-        separator = " ")
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
 public class XmlMutate implements Callable<Integer> {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlMutate.class);
 
-    @Option(names = {"-o", "--target"}, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+    @Option(names = { "-o",
+            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
     private Path target;
 
-    @Option(names = {"-x", "--schema", "--xsd"}, paramLabel = "*.xsd", description = "The XML Schema file for validation")
+    @Option(names = { "-x", "--schema",
+            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
     private Path schemaLocation;
 
-    @Option(names = {"-s", "--schematron"}, paramLabel = "MAP", description = "Compiled schematron file(s) for validation")
-    private final Map<String, Path> schematrons = new HashMap<>();
+    @Option(names = { "-s",
+            "--schematron" }, paramLabel = "name=file", description = "Schematron file(s) for validation: Name is a symbolic name and file the local file path to the Schematron file")
+    private final Map<String, Path> schematronSourcePaths = new HashMap<>();
 
-    @Option(names = {"-m", "--mode"}, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+    @Option(names = { "-m",
+            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
     private RunMode mode;
 
-    @Option(names = {"-t", "--transformations"}, paramLabel = "MAP",
-            description = "Named transformations used for the Transformation-Mutator")
+    @Option(names = { "-t",
+            "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
     private final Map<String, Path> transformations = new HashMap<>();
 
-    @Option(names = {"-ff", "--fail-fast"}, description = "The run failure control mode for fail fast")
+    @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
     private boolean failfast;
 
-    @Option(names = {"-fae", "--fail-at-end"}, description = "The run failure control mode for fail at end")
+    @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
     private boolean failatend;
 
-    @Option(names = {"-fn", "--fail-never"}, description = "The run failure control mode for fail never")
+    @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
     private boolean failnever;
 
-    @Option(names = {"-isi", "--ignore-schema-invalidity"},
-            description = "If set, whenever an original document is not schema valid, it wont stop the programm")
+    @Option(names = { "-isi",
+            "--ignore-schema-invalidity" }, description = "If set, whenever an original document is not schema valid, it wont stop the programm")
     private boolean ignoreSchemaInvalidity;
 
-    @Option(names = {"--saveParsing"},
-            description = "Enables the save parsing mode, which does not providing line number information, but is more robust",
-            defaultValue = "false")
+    @Option(names = {
+            "--saveParsing" }, description = "Enables the save parsing mode, which does not providing line number information, but is more robust", defaultValue = "false")
     private boolean saveParsingMode;
 
-    @Option(names = {"--saveSvrl"},
-        description = "Enables the save SVRL report mode, which persists XML schematron validation result into the '--target' folder.",
-        defaultValue = "false")
+    @Option(names = {
+            "--saveSvrl" }, description = "Enables the save SVRL report mode, which persists XML schematron validation result into the '--target' folder.", defaultValue = "false")
     private boolean saveSvrlMode;
 
-    @Option(names = {"-l", "--log"}, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
+    @Option(names = { "-l",
+            "--log" }, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
     private LogLevel logLevel;
 
-    @Option(names = {"-lf", "--logfile"}, paramLabel = "LOGFILE", description = "An input configuration log file")
+    @Option(names = { "-lf", "--logfile" }, paramLabel = "LOGFILE", description = "An input configuration log file")
     private Path logInputFile;
 
-    @Option(names = {"-sm", "--saving-mode"}, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
+    @Option(names = { "-sm",
+            "--saving-mode" }, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
     private SavingMode savingMode;
 
     @Parameters(arity = "1..*", description = "Documents to mutate")
@@ -134,6 +140,7 @@ public class XmlMutate implements Callable<Integer> {
         }
         // make sure to have a new line at the end of processing
         System.out.println("\n");
+        System.out.println("with exit code=" + i + "\n");
         System.exit(i);
     }
 
@@ -177,16 +184,16 @@ public class XmlMutate implements Callable<Integer> {
             throw new IllegalArgumentException("Target folder is not writable");
         }
         return RunnerConfig.Builder.forDocuments(prepareDocuments())
-            .targetFolder(this.target)
-            .checkSchematron(prepareSchematron())
-            .checkSchema(prepareSchema())
-            .useTransformations(prepareTransformations())
-            .withFailureMode(getFailureMode())
-            .withSavingMode(this.savingMode)
-            .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
-            .saveParsing(this.saveParsingMode)
-            .saveSvrl(this.saveSvrlMode)
-            .build();
+                .targetFolder(this.target)
+                .checkSchematron(prepareSchematron())
+                .checkSchema(prepareSchema())
+                .useTransformations(prepareTransformations())
+                .withFailureMode(getFailureMode())
+                .withSavingMode(this.savingMode)
+                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
+                .saveParsing(this.saveParsingMode)
+                .saveSvrl(this.saveSvrlMode)
+                .build();
     }
 
     private FailureMode getFailureMode() {
@@ -200,7 +207,8 @@ public class XmlMutate implements Callable<Integer> {
         } else if (countActive == 0) {
             return FailureMode.FAIL_AT_END;
         } else {
-            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList().get(0);
+            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList()
+                    .get(0);
         }
     }
 
@@ -209,7 +217,8 @@ public class XmlMutate implements Callable<Integer> {
             if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
                 return new NamedTemplate(e.getKey(), e.getValue().toUri());
             }
-            throw new IllegalArgumentException(String.format("Provided template \'%s\' does not exist or is not readable", e.getValue()));
+            throw new IllegalArgumentException(
+                    String.format("Provided template \'%s\' does not exist or is not readable", e.getValue()));
         }).toList();
     }
 
@@ -221,11 +230,12 @@ public class XmlMutate implements Callable<Integer> {
     }
 
     private List<Schematron> prepareSchematron() {
-        final SchematronCompiler compiler = new SchematronCompiler();
+        final SchematronCompiler compiler = new SchXsltSchematronCompiler();
         final List<Schematron> schematronList = new ArrayList<>();
-        for (final Map.Entry<String, Path> entry : this.schematrons.entrySet()) {
+        for (final Map.Entry<String, Path> entry : this.schematronSourcePaths.entrySet()) {
             final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
-            schematronList.add(new Schematron(entry.getKey(), compiledSchematron, compiler.extractRulesIds(compiledSchematron)));
+            schematronList.add(
+                    new Schematron(entry.getKey(), compiledSchematron, compiler.extractRuleIds()));
         }
         return schematronList;
     }
@@ -234,9 +244,11 @@ public class XmlMutate implements Callable<Integer> {
         final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).toList();
         if (available.size() < this.documents.size()) {
             this.documents.removeAll(available);
-            throw new IllegalArgumentException(MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
+            throw new IllegalArgumentException(
+                    MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
         }
-        return available.stream().flatMap(this::expandDirectories).filter(e -> e.getFileName().toString().endsWith(".xml")).toList();
+        return available.stream().flatMap(this::expandDirectories)
+                .filter(e -> e.getFileName().toString().endsWith(".xml")).toList();
     }
 
     private Stream<Path> expandDirectories(final Path path) {
