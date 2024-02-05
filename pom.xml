@@ -21,7 +21,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <!-- Own properties -->
-        <log4j.version>2.12.0</log4j.version>
+        <log4j.version>2.12.4</log4j.version>
         <slf4j.version>1.7.27</slf4j.version>
         <saxon-he.version>9.9.1-8</saxon-he.version>
         <jansi.version>2.4.0</jansi.version>
