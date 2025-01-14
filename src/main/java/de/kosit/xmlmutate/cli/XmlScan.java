@@ -63,6 +63,8 @@ public class XmlScan implements Callable<Integer> {
         xmlDocument, NodeFilter.SHOW_PROCESSING_INSTRUCTION, null, true);
 
     StringBuilder report = new StringBuilder();
+    report.append("\n-------------------------------------------------\n");
+    report.append("File: ").append(path.toString()).append("\n");
     while (piWalker.nextNode() != null) {
       ProcessingInstruction pi = (ProcessingInstruction) piWalker.getCurrentNode();
 
@@ -76,7 +78,7 @@ public class XmlScan implements Callable<Integer> {
 
         String rule = determineRule(schematronValid, schematronInvalid);
         String status = (schematronInvalid != null) ? "invalid" : "valid";
-        report.append(buildReport(path, rule, status, mutator, values, pi));
+        report.append(buildReport(rule, status, mutator, values, pi));
       }
     }
     return report;
@@ -110,18 +112,16 @@ public class XmlScan implements Callable<Integer> {
     }
   }
 
-  private StringBuilder buildReport(Path path, String rule, String status, String mutator,
+  private StringBuilder buildReport(String rule, String status, String mutator,
       String values, ProcessingInstruction pi) {
     StringBuilder report = new StringBuilder();
-    report.append("\n");
-    report.append("File: ").append(path.toString()).append("\n");
-    report.append("Rule: ").append(rule).append("\n");
-    report.append("Expectations: ").append(status).append("\n");
-    report.append("Mutation: ").append(mutator).append("\n");
+    report.append("\t").append("Rule: ").append(rule).append("\n");
+    report.append("\t\t").append("Expectations: ").append(status).append("\n");
+    report.append("\t\t").append("Mutation: ").append(mutator).append("\n");
 
     if (values != null) {
-      report.append("   Mutation Parameters:\n");
-      report.append("     Values: ").append(values).append("\n");
+      report.append("\t\t\t").append("Mutation Parameters:\n");
+      report.append("\t\t\t\t").append(" Values: ").append(values).append("\n");
     }
 
     if (snippets) {
@@ -142,7 +142,7 @@ public class XmlScan implements Callable<Integer> {
 
         if (textValue != null && !textValue.trim().isEmpty()) {
           String tag = "<" + tagName + ">" + textValue + "</" + tagName + ">";
-          report.append(tag).append("\n");
+          report.append("\t").append(tag).append("\n\n");
         }
       }
     }
