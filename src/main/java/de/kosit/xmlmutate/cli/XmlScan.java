@@ -137,6 +137,7 @@ public class XmlScan implements Callable<Integer> {
       Node sibling = nextNode.getNextSibling();
 
       if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+        // for Renzo to check printing snippets
         String tagName = sibling.getNodeName();
         String textValue = sibling.getTextContent();
 
