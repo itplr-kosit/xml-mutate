@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.cli;
 
 import de.kosit.xmlmutate.runner.DocumentParser;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
@@ -20,19 +27,18 @@ import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 
-@Command(description = "XMl-Scan: Scan for schematron rules.", name = "XML Scan", mixinStandardHelpOptions = true, separator = " ")
+@Command(description = "XMl-Scan: Scan for schematron rules.", name = "scan", mixinStandardHelpOptions = true, separator = " ")
 public class XmlScan implements Callable<Integer> {
 
-  @Option(names = "--scan", description = "Enables scan mode", defaultValue = "false")
-  private boolean scan;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlScan.class);
 
   @Option(names = "--snippets", description = "Shows xml snippets", defaultValue = "false")
   private boolean snippets;
 
-  @Parameters(arity = "1..*", description = "Documents to scan for schematron rules")
-  private List<Path> documents;
+  @ParentCommand
+  private XmlMutate xmlMutate;
 
   @Override
   public Integer call() throws Exception {
@@ -44,8 +50,7 @@ public class XmlScan implements Callable<Integer> {
   }
 
   private void process(ExecutorService executorService) {
-    XmlCommonProcessing xmlCommonProcessing = new XmlCommonProcessing();
-    List<Path> processedDocs = xmlCommonProcessing.prepareDocuments(this.documents);
+    List<Path> processedDocs = xmlMutate.prepareDocuments();
 
     List<Future<StringBuilder>> futureList = processedDocs.stream()
         .map(path -> executorService.submit(() -> processDocument(path))).toList();
@@ -132,21 +137,27 @@ public class XmlScan implements Callable<Integer> {
   }
 
   private void appendXmlSnippet(StringBuilder report, ProcessingInstruction pi) {
-    Node nextNode = pi.getNextSibling();
-    if (nextNode != null && nextNode.getNextSibling() != null) {
-      Node sibling = nextNode.getNextSibling();
+    Node sibling = pi.getNextSibling();
+    while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) {
+      sibling = sibling.getNextSibling();
 
       if (sibling.getNodeType() == Node.ELEMENT_NODE) {
-        // for Renzo to check printing snippets
-        String tagName = sibling.getNodeName();
-        String textValue = sibling.getTextContent();
-
-        if (textValue != null && !textValue.trim().isEmpty()) {
-          String tag = "<" + tagName + ">" + textValue + "</" + tagName + ">";
-          report.append("\t").append(tag).append("\n\n");
-        }
+        appendSibling(report, sibling);
+        break;
       }
     }
+  }
+  private void appendSibling(StringBuilder report, Node sibling) {
+    StringWriter sw = new StringWriter();
+    try {
+      Transformer t = TransformerFactory.newInstance().newTransformer();
+      t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      t.setOutputProperty(OutputKeys.INDENT, "yes");
+      t.transform(new DOMSource(sibling), new StreamResult(sw));
+    } catch (TransformerException te) {
+      log.error(te.getMessage(), te);
+    }
+    report.append("\t").append(sw).append("\n");
   }
 
   private StringBuilder awaitTermination(final Future<StringBuilder> pairFuture) {
