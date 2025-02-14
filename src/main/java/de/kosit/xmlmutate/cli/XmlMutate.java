@@ -112,6 +112,9 @@ public class XmlMutate implements Callable<Integer> {
   @Parameters(arity = "1..*", description = "Documents to mutate")
   List<Path> documents;
 
+  final ExecutorService executor = Executors.newFixedThreadPool(
+      Runtime.getRuntime().availableProcessors());
+
   static class LogLevelConverter implements CommandLine.ITypeConverter<LogLevel> {
     @Override
     public LogLevel convert(final String value) {
@@ -149,7 +152,6 @@ public class XmlMutate implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     configureLogging();
-    final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
     final RunnerResult result = runner.run();
     executor.shutdown();

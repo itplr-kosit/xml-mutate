@@ -8,7 +8,7 @@ import de.kosit.xmlmutate.mutation.MutationResult;
  * @author Victor del Campo
  */
 public enum ExpectedResult {
-    FAIL, PASS;
+    FAIL, PASS, UNDEFINED;
 
     /**
      * Given a validation state, it evaluates if it corresponds to the expectation result
