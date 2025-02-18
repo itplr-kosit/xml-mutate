@@ -192,9 +192,9 @@ public class PiDataParser {
 
                     switch (c) {
                         case '=':
-                            log.trace("ParserState=VALUE_START but found equal sign");
+                            log.trace("ParserState=VALUE_START but found another equal sign");
                             context.parsingStatus.add(new ParsingOperationStatus(OperationStatus.ERROR,
-                                    "Illegal equal sign between key name and value", "idx=" + context.idx,
+                                    "Illegal additional equal sign between key name and value", "idx=" + context.idx,
                                     "Properties must be key=\"value\"."));
                             context.nextState(ParserState.ERROR);
                             return;
