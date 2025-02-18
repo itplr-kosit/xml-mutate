@@ -1,5 +1,6 @@
-# FSM State machine
-When parsing an XML document, the parser encounters the xmute element, which brings us to the START state, the initial state of the state machine. If the string being processed is null or empty, the process ends by transitioning to the END state. If it is not, the machine transitions to the next state, KEY_START.
+# Fintite State Machine Parser for Processing Instrction Data
+
+When parsing an XML document, the parser encounters the Processing Instruction named "xmute" it calls the PiDataParser to parse the data content. In case data exists the FSMs initial state is `START`. If the string being processed is null or empty, the process ends by transitioning to the END state. If it is not, the machine transitions to the next state, KEY_START.
 
 In this state, it checks whether the current character is a whitespace character. If it is, the machine looks for the next non-whitespace character and transitions to the KEY state (this also happens if the current character is not a whitespace).
 
