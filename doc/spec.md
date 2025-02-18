@@ -99,16 +99,16 @@ If you add the --snippets option, you will get in the result the snippets of the
 
 Scanning is implemented using FSH state machine which is described in state_machine.md
 
-Instruction for running scan:
+Example command for running scan:
 ```shell
 java -jar target/xml-mutate-1.0-SNAPSHOT.jar \
-  C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml C:\KoSIT\eforms_CN_E3_max-DE.xml \
+   ./eforms_CN_E3_max-DE_valid_codelists.xml ./forms_CN_E3_max-DE.xml \
   scan \
   --snippets
 ```
-Example of result:
+Example result:
 
-Without snippet:
+Without snippet(s):
 ```
 File: C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml
 	Rule: efde:CL-DE-BT-11
@@ -117,7 +117,9 @@ File: C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml
 			Mutation Parameters: 
 				Values: not-valid-code, kbeh
 ```
-With snippet
+
+With snippet(s):
+
 ```
 File: C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml
     Rule: efde:CL-DE-BT-11

@@ -39,6 +39,7 @@ public class XmlScan implements Callable<Integer> {
   XmlMutate xmlMutate;
 
   private final MutatorInstructionParser parser = new MutatorInstructionParser();
+  private String SPACER = " "; //default indent cahracter is simple whitespace
 
   @Override
   public Integer call() throws Exception {
@@ -107,7 +108,7 @@ public class XmlScan implements Callable<Integer> {
 
       DomFragment fragment = i.getTargetFragment();
       if (snippets) {
-        report.append("\t").append(XmlMutateUtil.printToString(fragment.getContentNode())).append("\n");
+        report.append(SPACER).append(XmlMutateUtil.printToString(fragment.getContentNode())).append("\n");
       }
 
     });
@@ -126,16 +127,16 @@ public class XmlScan implements Callable<Integer> {
 
   private StringBuilder buildReport(String rule, String status, String mutator, String values) {
     StringBuilder report = new StringBuilder()
-        .append("\t").append(ResultKeys.RULE).append(ResultKeys.COLON).append(rule).append("\n")
-        .append("\t\t").append(ResultKeys.EXPECTATIONS).append(ResultKeys.COLON).append(status)
+        .append(SPACER).append(ResultKeys.RULE).append(ResultKeys.COLON).append(rule).append("\n")
+        .append(SPACER + SPACER).append(ResultKeys.EXPECTATIONS).append(ResultKeys.COLON).append(status)
         .append("\n")
-        .append("\t\t").append(ResultKeys.MUTATION).append(ResultKeys.COLON).append(mutator)
+        .append(SPACER + SPACER).append(ResultKeys.MUTATION).append(ResultKeys.COLON).append(mutator)
         .append("\n");
 
     if (values != null && !values.isEmpty()) {
-      report.append("\t\t\t").append(ResultKeys.MUTATION_PARAMETERS).append(ResultKeys.COLON)
+      report.append(SPACER + SPACER = SPACER).append(ResultKeys.MUTATION_PARAMETERS).append(ResultKeys.COLON)
           .append("\n")
-          .append("\t\t\t\t").append(ResultKeys.VALUES).append(ResultKeys.COLON).append(values)
+          .append(SPACER + SPACER + SPACER + SPACER).append(ResultKeys.VALUES).append(ResultKeys.COLON).append(values)
           .append("\n");
     }
     return report;
