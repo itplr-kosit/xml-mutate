@@ -20,6 +20,8 @@ public class TestResource {
 
         public static final URI ROOT = TEST_ROOT.resolve("book/");
 
+        public static final URI SCAN_ROOT = TEST_ROOT.resolve("scan/");
+
         public static final URI SCHEMA = ROOT.resolve("book.xsd");
 
         public static final URI XSL = ROOT.resolve("book.xsl");
@@ -48,6 +50,8 @@ public class TestResource {
         public static final URI SCHEMATRON_BOOK2_FAILED = ROOT.resolve("book_with_failed_Book-2.xml");
         public static final URI SCHEMATRON_BOOK2_PASSED = ROOT.resolve("book_with_passed_Book-2.xml");
         public static final URI SCHEMATRON_BOOK1_BOOK2_FAILED = ROOT.resolve("book_with_failed_Book-1_and_Book-2.xml");
+
+        public static final URI SCAN = SCAN_ROOT.resolve("eforms_CN_E3_max-DE_valid_codelists.xml");
 
         public static Schema getSchema() {
             return Services.getSchemaRepository().createSchema(SCHEMA);

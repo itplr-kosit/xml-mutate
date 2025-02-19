@@ -13,10 +13,8 @@ import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.SavingMode;
 import de.kosit.xmlmutate.runner.Services;
-import de.kosit.xmlmutate.schematron.ISOSchematronCompiler;
 import de.kosit.xmlmutate.schematron.SchXsltSchematronCompiler;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,221 +51,224 @@ import picocli.CommandLine.ParseResult;
  * @author Andreas Penski
  * @author Renzo Kottmann
  */
-@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ")
+@Command(description = "XMl-MutaTE: XML Mutation and Test Management tool.", name = "XML Mutate", mixinStandardHelpOptions = true, separator = " ",
+subcommands = XmlScan.class)
 public class XmlMutate implements Callable<Integer> {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlMutate.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(XmlMutate.class);
 
-    @Option(names = { "-o",
-            "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
-    private Path target;
+  @Option(names = { "-o",
+      "--target" }, description = "The target folder, where artifacts are generated.", defaultValue = "target")
+  private Path target;
 
-    @Option(names = { "-x", "--schema",
-            "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
-    private Path schemaLocation;
+  @Option(names = { "-x", "--schema",
+      "--xsd" }, paramLabel = "*.xsd", description = "The XML Schema file for validation")
+  private Path schemaLocation;
 
-    @Option(names = { "-s",
-            "--schematron" }, paramLabel = "name=file", description = "Schematron file(s) for validation: Name is a symbolic name and file the local file path to the Schematron file")
-    private final Map<String, Path> schematronSourcePaths = new HashMap<>();
+  @Option(names = { "-s",
+      "--schematron" }, paramLabel = "name=file", description = "Schematron file(s) for validation: Name is a symbolic name and file the local file path to the Schematron file")
+  private final Map<String, Path> schematronSourcePaths = new HashMap<>();
 
-    @Option(names = { "-m",
-            "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
-    private RunMode mode;
+  @Option(names = { "-m",
+      "--mode" }, paramLabel = "MODE", description = "The actual processing mode", defaultValue = "ALL")
+  private RunMode mode;
 
-    @Option(names = { "-t",
-            "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
-    private final Map<String, Path> transformations = new HashMap<>();
+  @Option(names = { "-t",
+      "--transformations" }, paramLabel = "MAP", description = "Named transformations used for the Transformation-Mutator")
+  private final Map<String, Path> transformations = new HashMap<>();
 
-    @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
-    private boolean failfast;
+  @Option(names = { "-ff", "--fail-fast" }, description = "The run failure control mode for fail fast")
+  private boolean failfast;
 
-    @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
-    private boolean failatend;
+  @Option(names = { "-fae", "--fail-at-end" }, description = "The run failure control mode for fail at end")
+  private boolean failatend;
 
-    @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
-    private boolean failnever;
+  @Option(names = { "-fn", "--fail-never" }, description = "The run failure control mode for fail never")
+  private boolean failnever;
 
-    @Option(names = { "-isi",
-            "--ignore-schema-invalidity" }, description = "If set, whenever an original document is not schema valid, it wont stop the programm")
-    private boolean ignoreSchemaInvalidity;
+  @Option(names = { "-isi",
+      "--ignore-schema-invalidity" }, description = "If set, whenever an original document is not schema valid, it wont stop the programm")
+  private boolean ignoreSchemaInvalidity;
 
-    @Option(names = {
-            "--saveParsing" }, description = "Enables the save parsing mode, which does not providing line number information, but is more robust", defaultValue = "false")
-    private boolean saveParsingMode;
+  @Option(names = {
+      "--saveParsing" }, description = "Enables the save parsing mode, which does not providing line number information, but is more robust", defaultValue = "false")
+  private boolean saveParsingMode;
 
-    @Option(names = {
-            "--saveSvrl" }, description = "Enables the save SVRL report mode, which persists XML schematron validation result into the '--target' folder.", defaultValue = "false")
-    private boolean saveSvrlMode;
+  @Option(names = {
+      "--saveSvrl" }, description = "Enables the save SVRL report mode, which persists XML schematron validation result into the '--target' folder.", defaultValue = "false")
+  private boolean saveSvrlMode;
 
-    @Option(names = { "-l",
-            "--log" }, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
-    private LogLevel logLevel;
+  @Option(names = { "-l",
+      "--log" }, paramLabel = "LOGLEVEL", description = "The actual log level", defaultValue = "WARN", converter = LogLevelConverter.class)
+  private LogLevel logLevel;
 
-    @Option(names = { "-lf", "--logfile" }, paramLabel = "LOGFILE", description = "An input configuration log file")
-    private Path logInputFile;
+  @Option(names = { "-lf", "--logfile" }, paramLabel = "LOGFILE", description = "An input configuration log file")
+  private Path logInputFile;
 
-    @Option(names = { "-sm",
-            "--saving-mode" }, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
-    private SavingMode savingMode;
+  @Option(names = { "-sm",
+      "--saving-mode" }, paramLabel = "SAVING_MODE", description = "How result mutations are saved into the target directory", defaultValue = "SINGLE")
+  private SavingMode savingMode;
 
-    @Parameters(arity = "1..*", description = "Documents to mutate")
-    private List<Path> documents;
+  @Parameters(arity = "1..*", description = "Documents to mutate")
+  List<Path> documents;
 
-    static class LogLevelConverter implements CommandLine.ITypeConverter<LogLevel> {
-        @Override
-        public LogLevel convert(final String value) {
-            try {
-                return LogLevel.valueOf(value.toUpperCase());
-            } catch (final IllegalArgumentException e) {
-                throw new MutationException(ErrorCode.LOGLEVEL_WRONG, value);
-            }
-        }
-    }
+  final ExecutorService executor = Executors.newFixedThreadPool(
+      Runtime.getRuntime().availableProcessors());
 
-    public static void main(final String[] args) {
-
-        AnsiConsole.systemInstall();
-        int i = -1;
-        try {
-            final CommandLine commandLine = new CommandLine(new XmlMutate());
-            commandLine.setExecutionExceptionHandler(XmlMutate::logExecutionException);
-            commandLine.registerConverter(LogLevel.class, new LogLevelConverter());
-            i = commandLine.execute(args);
-        } catch (final Exception e) {
-            System.err.print(e.getMessage());
-            System.err.print(";");
-            System.err.println("Exit with code=" + i);
-        }
-        // make sure to have a new line at the end of processing
-        System.out.println("\n");
-        System.out.println("with exit code=" + i + "\n");
-        System.exit(i);
-    }
-
-    /**
-     * The actual method to call run method on MutationRunner
-     */
+  static class LogLevelConverter implements CommandLine.ITypeConverter<LogLevel> {
     @Override
-    public Integer call() throws Exception {
-        configureLogging();
-        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
-        final RunnerResult result = runner.run();
-        executor.shutdown();
-        return result.isErrorPresent() ? 1 : 0;
+    public LogLevel convert(final String value) {
+      try {
+        return LogLevel.valueOf(value.toUpperCase());
+      } catch (final IllegalArgumentException e) {
+        throw new MutationException(ErrorCode.LOGLEVEL_WRONG, value);
+      }
     }
+  }
 
-    private void configureLogging() {
-        if (logInputFile != null) {
-            try {
-                final LoggerContext loggerContext = LoggerContext.getContext(false);
-                final InputStream inputStream = new FileInputStream(logInputFile.toFile());
-                final ConfigurationSource source = new ConfigurationSource(inputStream);
-                final XmlConfigurationFactory xmlConfigurationFactory = new XmlConfigurationFactory();
-                final Configuration newConfiguration = xmlConfigurationFactory.getConfiguration(loggerContext, source);
-                loggerContext.setConfiguration(newConfiguration);
-            } catch (final IOException ex) {
-                log.error(ex.getMessage(), ex);
-            }
-        } else {
-            Configurator.setAllLevels(LogManager.getRootLogger().getName(), this.logLevel.level);
-        }
+  public static void main(final String[] args) {
+
+    AnsiConsole.systemInstall();
+    int i = -1;
+    try {
+      final CommandLine commandLine = new CommandLine(new XmlMutate());
+      commandLine.setExecutionExceptionHandler(XmlMutate::logExecutionException);
+      commandLine.registerConverter(LogLevel.class, new LogLevelConverter());
+      i = commandLine.execute(args);
+    } catch (final Exception e) {
+      System.err.print(e.getMessage());
+      System.err.print(";");
+      System.err.println("Exit with code=" + i);
     }
+    // make sure to have a new line at the end of processing
+    System.out.println("\n");
+    System.out.println("with exit code=" + i + "\n");
+    System.exit(i);
+  }
 
-    /**
-     * Prepares a {@link RunnerConfig configuration} for the {@link MutationRunner}.
-     */
-    private RunnerConfig prepareConfig() throws IOException {
-        Files.createDirectories(this.target);
-        // target folder
-        if (Files.exists(this.target) && !Files.isWritable(this.target)) {
-            throw new IllegalArgumentException("Target folder is not writable");
-        }
-        return RunnerConfig.Builder.forDocuments(prepareDocuments())
-                .targetFolder(this.target)
-                .checkSchematron(prepareSchematron())
-                .checkSchema(prepareSchema())
-                .useTransformations(prepareTransformations())
-                .withFailureMode(getFailureMode())
-                .withSavingMode(this.savingMode)
-                .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
-                .saveParsing(this.saveParsingMode)
-                .saveSvrl(this.saveSvrlMode)
-                .build();
-    }
+  /**
+   * The actual method to call run method on MutationRunner
+   */
+  @Override
+  public Integer call() throws Exception {
+    configureLogging();
+    final MutationRunner runner = new MutationRunner(prepareConfig(), executor);
+    final RunnerResult result = runner.run();
+    executor.shutdown();
+    return result.isErrorPresent() ? 1 : 0;
+  }
 
-    private FailureMode getFailureMode() {
-        final EnumMap<FailureMode, Boolean> modeActivations = new EnumMap<>(FailureMode.class);
-        modeActivations.put(FailureMode.FAIL_FAST, this.failfast);
-        modeActivations.put(FailureMode.FAIL_AT_END, this.failatend);
-        modeActivations.put(FailureMode.FAIL_NEVER, this.failnever);
-        final long countActive = modeActivations.values().stream().filter(b -> b).count();
-        if (countActive > 1) {
-            throw new IllegalArgumentException("Only one failure mode is allowed");
-        } else if (countActive == 0) {
-            return FailureMode.FAIL_AT_END;
-        } else {
-            return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList()
-                    .get(0);
-        }
-    }
-
-    private List<NamedTemplate> prepareTransformations() {
-        return this.transformations.entrySet().stream().map(e -> {
-            if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
-                return new NamedTemplate(e.getKey(), e.getValue().toUri());
-            }
-            throw new IllegalArgumentException(
-                    String.format("Provided template \'%s\' does not exist or is not readable", e.getValue()));
-        }).toList();
-    }
-
-    private Schema prepareSchema() {
-        if (this.schemaLocation != null) {
-            return Services.getSchemaRepository().createSchema(this.schemaLocation.toUri());
-        }
-        return null;
-    }
-
-    private List<Schematron> prepareSchematron() {
-        final SchematronCompiler compiler = new SchXsltSchematronCompiler();
-        final List<Schematron> schematronList = new ArrayList<>();
-        for (final Map.Entry<String, Path> entry : this.schematronSourcePaths.entrySet()) {
-            final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
-            schematronList.add(
-                    new Schematron(entry.getKey(), compiledSchematron, compiler.extractRuleIds()));
-        }
-        return schematronList;
-    }
-
-    private List<Path> prepareDocuments() {
-        final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).toList();
-        if (available.size() < this.documents.size()) {
-            this.documents.removeAll(available);
-            throw new IllegalArgumentException(
-                    MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
-        }
-        return available.stream().flatMap(this::expandDirectories)
-                .filter(e -> e.getFileName().toString().endsWith(".xml")).toList();
-    }
-
-    private Stream<Path> expandDirectories(final Path path) {
-        try {
-            if (!Files.exists(path)) {
-                throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath());
-            }
-            if (Files.isDirectory(path)) {
-                return Files.walk(path);
-            }
-            return Stream.of(path);
-        } catch (final IOException e) {
-            throw new IllegalArgumentException("Error looking for input documents", e);
-        }
-    }
-
-    private static int logExecutionException(final Exception ex, final CommandLine cli, final ParseResult parseResult) {
-        System.err.println(ex.getMessage());
+  private void configureLogging() {
+    if (logInputFile != null) {
+      try {
+        final LoggerContext loggerContext = LoggerContext.getContext(false);
+        final InputStream inputStream = new FileInputStream(logInputFile.toFile());
+        final ConfigurationSource source = new ConfigurationSource(inputStream);
+        final XmlConfigurationFactory xmlConfigurationFactory = new XmlConfigurationFactory();
+        final Configuration newConfiguration = xmlConfigurationFactory.getConfiguration(loggerContext, source);
+        loggerContext.setConfiguration(newConfiguration);
+      } catch (final IOException ex) {
         log.error(ex.getMessage(), ex);
-        return 1;
+      }
+    } else {
+      Configurator.setAllLevels(LogManager.getRootLogger().getName(), this.logLevel.level);
     }
+  }
+
+  /**
+   * Prepares a {@link RunnerConfig configuration} for the {@link MutationRunner}.
+   */
+  private RunnerConfig prepareConfig() throws IOException {
+    Files.createDirectories(this.target);
+    // target folder
+    if (Files.exists(this.target) && !Files.isWritable(this.target)) {
+      throw new IllegalArgumentException("Target folder is not writable");
+    }
+    return RunnerConfig.Builder.forDocuments(prepareDocuments())
+        .targetFolder(this.target)
+        .checkSchematron(prepareSchematron())
+        .checkSchema(prepareSchema())
+        .useTransformations(prepareTransformations())
+        .withFailureMode(getFailureMode())
+        .withSavingMode(this.savingMode)
+        .withIgnoreSchemaInvalidity(this.ignoreSchemaInvalidity)
+        .saveParsing(this.saveParsingMode)
+        .saveSvrl(this.saveSvrlMode)
+        .build();
+  }
+
+  private FailureMode getFailureMode() {
+    final EnumMap<FailureMode, Boolean> modeActivations = new EnumMap<>(FailureMode.class);
+    modeActivations.put(FailureMode.FAIL_FAST, this.failfast);
+    modeActivations.put(FailureMode.FAIL_AT_END, this.failatend);
+    modeActivations.put(FailureMode.FAIL_NEVER, this.failnever);
+    final long countActive = modeActivations.values().stream().filter(b -> b).count();
+    if (countActive > 1) {
+      throw new IllegalArgumentException("Only one failure mode is allowed");
+    } else if (countActive == 0) {
+      return FailureMode.FAIL_AT_END;
+    } else {
+      return modeActivations.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).toList()
+          .get(0);
+    }
+  }
+
+  private List<NamedTemplate> prepareTransformations() {
+    return this.transformations.entrySet().stream().map(e -> {
+      if (Files.exists(e.getValue()) && Files.isReadable(e.getValue())) {
+        return new NamedTemplate(e.getKey(), e.getValue().toUri());
+      }
+      throw new IllegalArgumentException(
+          String.format("Provided template \'%s\' does not exist or is not readable", e.getValue()));
+    }).toList();
+  }
+
+  private Schema prepareSchema() {
+    if (this.schemaLocation != null) {
+      return Services.getSchemaRepository().createSchema(this.schemaLocation.toUri());
+    }
+    return null;
+  }
+
+  private List<Schematron> prepareSchematron() {
+    final SchematronCompiler compiler = new SchXsltSchematronCompiler();
+    final List<Schematron> schematronList = new ArrayList<>();
+    for (final Map.Entry<String, Path> entry : this.schematronSourcePaths.entrySet()) {
+      final URI compiledSchematron = compiler.compile(this.target, entry.getValue().toUri());
+      schematronList.add(
+          new Schematron(entry.getKey(), compiledSchematron, compiler.extractRuleIds()));
+    }
+    return schematronList;
+  }
+
+  List<Path> prepareDocuments() {
+    final List<Path> available = this.documents.stream().filter(Files::exists).filter(Files::isReadable).toList();
+    if (available.size() < this.documents.size()) {
+      this.documents.removeAll(available);
+      throw new IllegalArgumentException(
+          MessageFormat.format("Document {0} does not exist or is not readable", this.documents.get(0)));
+    }
+    return available.stream().flatMap(this::expandDirectories)
+        .filter(e -> e.getFileName().toString().endsWith(".xml")).toList();
+  }
+
+  private Stream<Path> expandDirectories(final Path path) {
+    try {
+      if (!Files.exists(path)) {
+        throw new IllegalArgumentException("Document or directory does not exist: " + path.toAbsolutePath());
+      }
+      if (Files.isDirectory(path)) {
+        return Files.walk(path);
+      }
+      return Stream.of(path);
+    } catch (final IOException e) {
+      throw new IllegalArgumentException("Error looking for input documents", e);
+    }
+  }
+
+  private static int logExecutionException(final Exception ex, final CommandLine cli, final ParseResult parseResult) {
+    System.err.println(ex.getMessage());
+    log.error(ex.getMessage(), ex);
+    return 1;
+  }
 }

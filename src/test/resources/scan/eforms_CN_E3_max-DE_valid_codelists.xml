@@ -1,0 +1,729 @@
+<ContractNotice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+  xmlns="urn:oasis:names:specification:ubl:schema:xsd:ContractNotice-2"
+  xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+  xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+  xmlns:efac="http://data.europa.eu/p27/eforms-ubl-extension-aggregate-components/1"
+  xmlns:efbc="http://data.europa.eu/p27/eforms-ubl-extension-basic-components/1"
+  xmlns:efext="http://data.europa.eu/p27/eforms-ubl-extensions/1">
+  <ext:UBLExtensions>
+    <ext:UBLExtension>
+      <ext:ExtensionContent>
+        <efext:EformsExtension>
+          <efac:NoticeSubType>
+            <cbc:SubTypeCode listName="notice-subtype">E3</cbc:SubTypeCode>
+          </efac:NoticeSubType>
+          <efac:Organizations>
+            <efac:Organization>
+              <efac:Company>
+                <!-- BT-505 (if we are ignoring requirement of having BusinessParty) -->
+                <cbc:WebsiteURI>https://www.vergabe.bremen.de</cbc:WebsiteURI>
+                <!-- BT-509 Remove EndpointID 
+                                <cbc:EndpointID>https://vergabe.bremen.de/NetServer/TenderingProcedureDetails?function=_Details&amp;TenderOID=54321-Tender-16d49431e1c-6a9b536ded516989</cbc:EndpointID>
+                                -->
+                <cac:PartyIdentification>
+                  <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+                </cac:PartyIdentification>
+                <cac:PartyName>
+                  <!-- BT-500 -->
+                  <cbc:Name languageID="DEU">Umweltbetrieb Bremen</cbc:Name>
+                </cac:PartyName>
+                <cac:PostalAddress>
+                  <cbc:StreetName>Willy-Brandt-Platz 7</cbc:StreetName>
+                  <!-- BT-513 -->
+                  <cbc:CityName>Bremen</cbc:CityName>
+                  <!-- BT-512 -->
+                  <cbc:PostalZone>28215</cbc:PostalZone>
+                  <!-- BT-507 -->
+                  <cbc:CountrySubentityCode listName="nuts"
+                    >DE501</cbc:CountrySubentityCode>
+                  <cac:Country>
+                    <!-- BT-514 -->
+                    <cbc:IdentificationCode listName="country"
+                      >DEU</cbc:IdentificationCode>
+                  </cac:Country>
+                </cac:PostalAddress>
+                <cac:PartyLegalEntity>
+                  <!-- BT-501 -->
+                  <cbc:CompanyID schemeID="002">123 456 789</cbc:CompanyID>
+                </cac:PartyLegalEntity>
+                <cac:Contact>
+                  <!-- BT-503 -->
+                  <cbc:Telephone>+49 421 3614168</cbc:Telephone>
+                  <!-- BT-739 -->
+                  <cbc:Telefax>+49 421 36159432</cbc:Telefax>
+                  <!-- BT-506 -->
+                  <cbc:ElectronicMail>vergabestelle@ubbremen.de</cbc:ElectronicMail>
+                </cac:Contact>
+              </efac:Company>
+            </efac:Organization>
+            <efac:Organization>
+              <efac:Company>
+                <!-- Add WebsiteUri. BT-505 -->
+                <cbc:WebsiteURI>https://www.vergabe.bremen.de</cbc:WebsiteURI>
+                <cac:PartyIdentification>
+                  <cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+                </cac:PartyIdentification>
+                <cac:PartyName>
+                  <!-- BT-500 -->
+                  <cbc:Name languageID="DEU"
+                    >Senatorin für Klimaschutz, Umwelt, Mobilität und Stadtentwicklung</cbc:Name>
+                </cac:PartyName>
+                <cac:PostalAddress>
+                  <cbc:StreetName>Contrescarpe 72</cbc:StreetName>
+                  <!-- BT-513 -->
+                  <cbc:CityName>Bremen</cbc:CityName>
+                  <!-- BT-512 -->
+                  <cbc:PostalZone>28195</cbc:PostalZone>
+                  <!-- BT-507 -->
+                  <cbc:CountrySubentityCode listName="nuts"
+                    >DE501</cbc:CountrySubentityCode>
+                  <cac:Country>
+                    <!-- BT-514 -->
+                    <cbc:IdentificationCode listName="country"
+                      >DEU</cbc:IdentificationCode>
+                  </cac:Country>
+                </cac:PostalAddress>
+                <cac:PartyLegalEntity>
+                  <!-- BT-501 -->
+                  <cbc:CompanyID schemeID="002">123 456 789</cbc:CompanyID>
+                </cac:PartyLegalEntity>
+                <!-- Added Contact, Telephone, ElectronicMail, Telefax -->
+                <cac:Contact>
+                  <!-- BT-503 -->
+                  <cbc:Telephone>+49 421 3614168</cbc:Telephone>
+                  <!-- BT-739 -->
+                  <cbc:Telefax>+49 421 36159432</cbc:Telefax>
+                  <!-- BT-506 -->
+                  <cbc:ElectronicMail>vergabestelle@ubbremen.de</cbc:ElectronicMail>
+                </cac:Contact>
+              </efac:Company>
+            </efac:Organization>
+          </efac:Organizations>
+        </efext:EformsExtension>
+      </ext:ExtensionContent>
+    </ext:UBLExtension>
+  </ext:UBLExtensions>
+  <cbc:UBLVersionID>2.3</cbc:UBLVersionID>
+  <cbc:CustomizationID>eforms-de-1.2</cbc:CustomizationID>
+  <cbc:ID schemeName="notice-id">e07fd3cd-a656-4c91-aa6f-9d7d594b1813</cbc:ID>
+  <cbc:ContractFolderID>0f04b626-1f8c-4969-9f91-59d75efca2a8</cbc:ContractFolderID>
+  <cbc:IssueDate>2018-03-15+01:00</cbc:IssueDate>
+  <cbc:IssueTime>00:00:05+01:00</cbc:IssueTime>
+  <cbc:VersionID>01</cbc:VersionID>
+  <!-- BT-738 Add requested publication date (optional in eforms-sdk, mandatory in eforms-de) -->
+  <cbc:RequestedPublicationDate>2018-03-16+01:00</cbc:RequestedPublicationDate>
+  <cbc:RegulatoryDomain>32014L0024</cbc:RegulatoryDomain>
+  <cbc:NoticeTypeCode listName="competition">cn-standard</cbc:NoticeTypeCode>
+  <cbc:NoticeLanguageCode>DEU</cbc:NoticeLanguageCode>
+  <cac:ContractingParty>
+    <cbc:BuyerProfileURI>https://www.vergabe.bremen.de</cbc:BuyerProfileURI>
+    <cac:ContractingPartyType>
+      <!-- BT-740 -->
+      <!--<?xmute mutator="code" values="cont-ent,not-cont-ent" schematron-valid="efde:CL-DE-BT-740" ?>
+      <?xmute mutator="code" values="not-valid-coe" schematron-invalid="efde:CL-DE-BT-740" ?>-->
+      <cbc:PartyTypeCode listName="buyer-contracting-type"
+        >not-cont-ent</cbc:PartyTypeCode>
+    </cac:ContractingPartyType>
+    <cac:ContractingPartyType>
+      <!--BT-11-Procedure-Buyer "Buyer Legal Type", -->
+      <!-- BT-BT-11 buyer-legal-type-->
+      <?xmute mutator="code" values="koerp-oer-bund, anst-oer-bund, stift-oer-bund, koerp-oer-kommun, anst-oer-kommun, stift-oer-kommun, koerp-oer-land, anst-oer-land, stift-oer-land, oberst-bbeh, omu-bbeh-niedrig, omu-bbeh, def-cont, eu-ins-bod-ag, grp-p-aut, int-org, kommun-beh, org-sub, pub-undert, pub-undert-cga, pub-undert-la, pub-undert-ra, oberst-lbeh, omu-lbeh, spec-rights-entity" schematron-valid="efde:CL-DE-BT-11" ?>
+      <?xmute mutator="code" values="not-valid-code, kbeh" schematron-invalid="efde:CL-DE-BT-11" ?>
+      <cbc:PartyTypeCode listName="buyer-legal-type"
+        >def-cont</cbc:PartyTypeCode>
+    </cac:ContractingPartyType>
+    <cac:Party>
+      <cac:PartyIdentification>
+        <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+      </cac:PartyIdentification>
+    </cac:Party>
+  </cac:ContractingParty>
+  <!--<?xmute mutator="identity" schematron-valid="efde:SR-DE-01" id="SR-DE-01-1" description="TenderingTerms"?>
+  <?xmute mutator="remove" schematron-invalid="efde:SR-DE-01" id="SR-DE-01-2" description="TenderingTerms must exist"?>-->
+  <cac:TenderingTerms>
+    <cac:ProcurementLegislationDocumentReference>
+      <!--BT-01 German Laws-->
+     <!-- <?xmute mutator="identity" schematron-valid="efde:CR-BT-01-Germany" id="CR-BT-01-Germany-1" description="cac:ProcurementLegislationDocumentReference/cbc:ID"?>
+      <?xmute mutator="remove" schematron-invalid="efde:CR-BT-01-Germany" id="CR-BT-01-Germany-2" description="cac:ProcurementLegislationDocumentReference/cbc:ID must exist"?>
+      <?xmute mutator="code" values="vsvgv, vob-a-vs, konzvgv, vgv, vob-a-eu, sektvo, other, sgb-vi, vob-a, uvgo, vol-a, svhv" schematron-valid="efde:CL-DE-BT-01" ?>
+      <?xmute mutator="code" values="not-valid-code, sl-other" schematron-invalid="efde:CL-DE-BT-01" ?>-->
+      <cbc:ID>vgv</cbc:ID>
+      <!--BT-09(b)-Procedure "Cross Border Law-->
+      <!-- <cbc:DocumentDescription languageID="DEU"
+        >Deutsches Recht</cbc:DocumentDescription>-->
+    </cac:ProcurementLegislationDocumentReference>
+    <cac:TendererQualificationRequest>
+      <cac:SpecificTendererRequirement>
+        <!-- BT-67-->
+        <!--<?xmute mutator="code" values="bankr-nat,corruption,crime-org,distorsion,envir-law,finan-laund,fraud,human-traffic,insolvency,labour-law,liq-admin,misrepresent,nati-ground,partic-confl,prep-confl,prof-misconduct,sanction,socsec-law,socsec-pay,susp-act,tax-pay,terr-offence" schematron-valid="efde:CL-DE-BT-67" ?>
+        <?xmute mutator="code" values="bankruptcy,not-valid-code,misintpr,cred-arran" schematron-invalid="efde:CL-DE-BT-67" ?>-->
+        <cbc:TendererRequirementTypeCode listName="exclusion-ground"
+          >crime-org</cbc:TendererRequirementTypeCode>
+        <cbc:Description languageID="DEU"
+          >Les critères dexclusion sont...</cbc:Description>
+      </cac:SpecificTendererRequirement>
+    </cac:TendererQualificationRequest>
+    <cac:LotDistribution>
+      <cbc:MaximumLotsAwardedNumeric>4</cbc:MaximumLotsAwardedNumeric>
+      <cbc:MaximumLotsSubmittedNumeric>4</cbc:MaximumLotsSubmittedNumeric>
+    </cac:LotDistribution>
+  </cac:TenderingTerms>
+  <cac:TenderingProcess>
+    <!--BT-105 -->
+    <!--<?xmute mutator="code" values="comp-dial, innovation, neg-w-call, us-neg-w-call, neg-wo-call, us-neg-wo-call, open, us-open, oth-mult, oth-single ,us-free-tw, us-free-no-tw, us-hhr, restricted, us-res-tw, us-res-no-tw" schematron-valid="efde:CL-DE-BT-105" ?>
+    <?xmute mutator="code" values="not-valid-code, us-free" schematron-invalid="efde:CL-DE-BT-105" ?>-->
+    <cbc:ProcedureCode listName="procurement-procedure-type"
+      >open</cbc:ProcedureCode>
+  </cac:TenderingProcess>
+  <cac:ProcurementProject>
+    <cbc:ID schemeName="InternalID">UBB-2019-0035</cbc:ID>
+    <cbc:Name languageID="DEU">Baumpflege Bez. 5</cbc:Name>
+    <cbc:Description languageID="DEU"
+      >Landschaftsbauarbeiten hier Baumpflegemaßnahmen</cbc:Description>
+    <cbc:ProcurementTypeCode listName="contract-nature"
+      >works</cbc:ProcurementTypeCode>
+    <cac:MainCommodityClassification>
+      <cbc:ItemClassificationCode listName="cpv"
+        >45000000</cbc:ItemClassificationCode>
+    </cac:MainCommodityClassification>
+    <cac:RealizedLocation>
+      <cac:Address>
+        <!-- BT-5071 Optional for EForms-sdk 1.5 -->
+        <cbc:CountrySubentityCode listName="nuts"
+          >DE501</cbc:CountrySubentityCode>
+        <cac:Country>
+          <!-- BT-5141 Optional for EForms-sdk 1.5 -->
+          <cbc:IdentificationCode listName="country"
+            >DEU</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:Address>
+    </cac:RealizedLocation>
+  </cac:ProcurementProject>
+  <cac:ProcurementProjectLot>
+    <cbc:ID schemeName="Lot">LOT-0001</cbc:ID>
+    <cac:TenderingTerms>
+      <!-- BT-63 Added VariantConstraintCode -->
+      <cbc:VariantConstraintCode listName="permission"
+        >allowed</cbc:VariantConstraintCode>
+      <!-- BT-769 Added MultipleTendersCode -->
+      <cbc:MultipleTendersCode listName="permission"
+        >allowed</cbc:MultipleTendersCode>
+      <cac:CallForTendersDocumentReference>
+        <cbc:ID>UBB-2019-0035</cbc:ID>
+        <cbc:DocumentType>non-restricted-document</cbc:DocumentType>
+        <!-- BT-708 Added LanguageID -->
+        <cbc:LanguageID>DEU</cbc:LanguageID>
+        <!-- BT-15 -->
+        <cac:Attachment>
+          <cac:ExternalReference>
+            <cbc:URI>https://vergabe.bremen.de/NetServer/TenderingProcedureDetails?function=_Details&amp;TenderOID=54321-Tender-16d49431e1c-6a9b536ded516989</cbc:URI>
+          </cac:ExternalReference>
+        </cac:Attachment>
+      </cac:CallForTendersDocumentReference>
+      <!-- Add TendererQualificationRequest for BT-772 and BT-771 -->
+      <cac:TendererQualificationRequest>
+        <!-- BT-772 Add SpecificTendererRequirement with rest of info -->
+        <cac:SpecificTendererRequirement>
+          <!-- (using eforms-sdk code-list) -->
+          <cbc:TendererRequirementTypeCode listName="reserved-procurement"
+            >none</cbc:TendererRequirementTypeCode>
+          <cbc:Description languageID="DEU"
+            >Some kind of description</cbc:Description>
+        </cac:SpecificTendererRequirement>
+        <!-- BT-771 Add specific tender requirement and description (using eforms-sdk code-list) -->
+        <cac:SpecificTendererRequirement>
+          <!--<?xmute mutator="code" values="late-all, late-some, late-none" schematron-valid="efde:CL-DE-BT-771" ?>
+          <?xmute mutator="code" values="not-valid-code" schematron-invalid="efde:CL-DE-BT-771" ?>-->
+          <cbc:TendererRequirementTypeCode listName="missing-info-submission"
+            >late-none</cbc:TendererRequirementTypeCode>
+          <cbc:Description languageID="DEU"
+            >Some kind of description</cbc:Description>
+        </cac:SpecificTendererRequirement>
+      </cac:TendererQualificationRequest>
+      <cac:TenderRecipientParty>
+        <cbc:EndpointID>https://www.vergabe.bremen.de</cbc:EndpointID>
+        <cac:PartyIdentification>
+          <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+        </cac:PartyIdentification>
+      </cac:TenderRecipientParty>
+      <cac:TenderValidityPeriod>
+        <cbc:DurationMeasure unitCode="MONTH">1</cbc:DurationMeasure>
+      </cac:TenderValidityPeriod>
+      <cac:AppealTerms>
+        <cac:AppealReceiverParty>
+          <cac:PartyIdentification>
+            <cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+          </cac:PartyIdentification>
+        </cac:AppealReceiverParty>
+      </cac:AppealTerms>
+      <cac:Language>
+        <cbc:ID>DEU</cbc:ID>
+      </cac:Language>
+    </cac:TenderingTerms>
+    <cac:TenderingProcess>
+      <!-- BT-17 (Mandatory according to Eforms-sdk 1.5) -->
+      <cbc:SubmissionMethodCode listName="esubmission"
+        >allowed</cbc:SubmissionMethodCode>
+      <cac:TenderSubmissionDeadlinePeriod>
+        <cbc:EndDate>2019-10-15+02:00</cbc:EndDate>
+        <cbc:EndTime>10:00:00+02:00</cbc:EndTime>
+      </cac:TenderSubmissionDeadlinePeriod>
+      <cac:OpenTenderEvent>
+        <cbc:OccurrenceDate>2019-10-15+02:00</cbc:OccurrenceDate>
+        <cbc:OccurrenceTime>10:00:00+02:00</cbc:OccurrenceTime>
+        <cac:OccurenceLocation>
+          <cbc:Description languageID="DEU"
+            >Immobilien Bremen Vergabemanagement</cbc:Description>
+        </cac:OccurenceLocation>
+      </cac:OpenTenderEvent>
+    </cac:TenderingProcess>
+    <cac:ProcurementProject>
+      <cbc:ID schemeName="InternalID">UBB-2019-0035</cbc:ID>
+      <!-- BT-21 -->
+      <cbc:Name languageID="DEU"
+        >Landschaftsbauarbeiten hier Baumpflegemaßnahmen</cbc:Name>
+      <!-- BT-24 -->
+      <cbc:Description languageID="DEU">Los 1 175 Bäume</cbc:Description>
+      <!-- BT-23 (using eforms-sdk code list) -->
+      <cbc:ProcurementTypeCode listName="contract-nature"
+        >services</cbc:ProcurementTypeCode>
+      <!-- BT-726 Add SMESuitableIndicator -->
+      <cbc:SMESuitableIndicator>true</cbc:SMESuitableIndicator>
+
+      <cac:ProcurementAdditionalType>
+        <!-- BT-805-->
+        <!--<?xmute mutator="code" values="emas-com, ene-ef-com, iso-14001-com, iso-14024-com, reg-834-2007-com, kosten-lebenszyklus, other" schematron-valid="efde:CL-DE-BT-805" ?>
+        <?xmute mutator="code" values="not-valid-coe" schematron-invalid="efde:CL-DE-BT-805" ?>-->
+        <cbc:ProcurementTypeCode listName="gpp-criteria"
+          >other</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement" (using eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement") -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+
+      <!-- Adding additional (BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list)) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >supplies</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+
+      <cac:ProcurementAdditionalType>
+        <!-- BT-775 -->
+        <!--<?xmute mutator="code" values="acc-all, et-eq, gen-eq, hum-right, opp, other, iao-core, work-cond" schematron-valid="efde:CL-DE-BT-775" ?>
+        <?xmute mutator="code" values="not-valid-code" schematron-invalid="efde:CL-DE-BT-775" ?>-->
+        <cbc:ProcurementTypeCode listName="social-objective"
+          >acc-all</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+
+      <cac:MainCommodityClassification>
+        <cbc:ItemClassificationCode listName="cpv"
+          >49000000</cbc:ItemClassificationCode>
+      </cac:MainCommodityClassification>
+      <cac:RealizedLocation>
+        <cbc:Description languageID="DEU"
+          >Bremen-Nord lt Straßenliste</cbc:Description>
+        <cac:Address>
+          <!-- BT-5071 Optional for EForms-sdk 1.5 -->
+          <cbc:CountrySubentityCode listName="nuts"
+            >DE501</cbc:CountrySubentityCode>
+          <cac:Country>
+            <!-- BT-5141 Optional for EForms-sdk 1.5 -->
+            <cbc:IdentificationCode listName="country"
+              >DEU</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:Address>
+      </cac:RealizedLocation>
+      <cac:PlannedPeriod>
+        <cbc:StartDate>2019-11-04+01:00</cbc:StartDate>
+        <cbc:EndDate>2019-12-31+01:00</cbc:EndDate>
+      </cac:PlannedPeriod>
+      <cac:ContractExtension>
+        <cbc:OptionsDescription languageID="DEU">Keine</cbc:OptionsDescription>
+      </cac:ContractExtension>
+    </cac:ProcurementProject>
+  </cac:ProcurementProjectLot>
+  <cac:ProcurementProjectLot>
+    <cbc:ID schemeName="Lot">LOT-0002</cbc:ID>
+    <cac:TenderingTerms>
+      <!-- BT-63 Added VariantConstraintCode -->
+      <cbc:VariantConstraintCode listName="permission"
+        >allowed</cbc:VariantConstraintCode>
+      <!-- BT-769 Added MultipleTendersCode -->
+      <cbc:MultipleTendersCode listName="permission"
+        >allowed</cbc:MultipleTendersCode>
+      <cac:CallForTendersDocumentReference>
+        <cbc:ID>UBB-2019-0035</cbc:ID>
+        <cbc:DocumentType>non-restricted-document</cbc:DocumentType>
+        <!-- BT-708 Added LanguageID -->
+        <cbc:LanguageID>DEU</cbc:LanguageID>
+        <!-- BT-15 -->
+        <cac:Attachment>
+          <cac:ExternalReference>
+            <cbc:URI>https://vergabe.bremen.de/NetServer/TenderingProcedureDetails?function=_Details&amp;TenderOID=54321-Tender-16d49431e1c-6a9b536ded516989</cbc:URI>
+          </cac:ExternalReference>
+        </cac:Attachment>
+      </cac:CallForTendersDocumentReference>
+      <cac:TenderRecipientParty>
+        <cbc:EndpointID>https://www.vergabe.bremen.de</cbc:EndpointID>
+        <cac:PartyIdentification>
+          <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+        </cac:PartyIdentification>
+      </cac:TenderRecipientParty>
+      <cac:TenderValidityPeriod>
+        <cbc:DurationMeasure unitCode="MONTH">1</cbc:DurationMeasure>
+      </cac:TenderValidityPeriod>
+      <cac:AppealTerms>
+        <cac:AppealReceiverParty>
+          <cac:PartyIdentification>
+            <cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+          </cac:PartyIdentification>
+        </cac:AppealReceiverParty>
+      </cac:AppealTerms>
+      <!-- BT-97 (Mandatory according to Eforms-sdk 1.5)  -->
+      <cac:Language>
+        <cbc:ID>DEU</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+    </cac:TenderingTerms>
+    <cac:TenderingProcess>
+      <!-- BT-17 (Mandatory according to Eforms-sdk 1.5) -->
+      <cbc:SubmissionMethodCode listName="esubmission"
+        >allowed</cbc:SubmissionMethodCode>
+      <cac:TenderSubmissionDeadlinePeriod>
+        <cbc:EndDate>2019-10-15+02:00</cbc:EndDate>
+        <cbc:EndTime>10:00:00+02:00</cbc:EndTime>
+      </cac:TenderSubmissionDeadlinePeriod>
+      <cac:OpenTenderEvent>
+        <cbc:OccurrenceDate>2019-10-15+02:00</cbc:OccurrenceDate>
+        <cbc:OccurrenceTime>10:00:00+02:00</cbc:OccurrenceTime>
+        <cac:OccurenceLocation>
+          <cbc:Description languageID="DEU"
+            >Immobilien Bremen Vergabemanagement</cbc:Description>
+        </cac:OccurenceLocation>
+      </cac:OpenTenderEvent>
+    </cac:TenderingProcess>
+    <cac:ProcurementProject>
+      <cbc:ID schemeName="InternalID">UBB-2019-0035</cbc:ID>
+      <!-- BT-21 -->
+      <cbc:Name languageID="DEU"
+        >Landschaftsbauarbeiten hier Baumpflegemaßnahmen</cbc:Name>
+      <!-- BT-24 -->
+      <cbc:Description languageID="DEU">Los 2 206 Bäume</cbc:Description>
+      <!-- BT-23 (using eforms-sdk code list) -->
+      <cbc:ProcurementTypeCode listName="contract-nature"
+        >works</cbc:ProcurementTypeCode>
+      <!-- BT-726 Add SMESuitableIndicator -->
+      <cbc:SMESuitableIndicator>true</cbc:SMESuitableIndicator>
+      <!-- BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement" (using eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement") -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list)) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <cac:MainCommodityClassification>
+        <cbc:ItemClassificationCode listName="cpv"
+          >45000000</cbc:ItemClassificationCode>
+      </cac:MainCommodityClassification>
+      <cac:RealizedLocation>
+        <cbc:Description languageID="DEU"
+          >Bremen-Nord lt Straßenliste</cbc:Description>
+        <cac:Address>
+          <!-- BT-5071 Optional for EForms-sdk 1.5 -->
+          <cbc:CountrySubentityCode listName="nuts"
+            >DE501</cbc:CountrySubentityCode>
+          <cac:Country>
+            <!-- BT-5141 Optional for EForms-sdk 1.5 -->
+            <cbc:IdentificationCode listName="country"
+              >DEU</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:Address>
+      </cac:RealizedLocation>
+      <cac:PlannedPeriod>
+        <cbc:StartDate>2019-11-04+01:00</cbc:StartDate>
+        <cbc:EndDate>2019-12-31+01:00</cbc:EndDate>
+      </cac:PlannedPeriod>
+      <cac:ContractExtension>
+        <cbc:OptionsDescription languageID="DEU">Keine</cbc:OptionsDescription>
+      </cac:ContractExtension>
+    </cac:ProcurementProject>
+  </cac:ProcurementProjectLot>
+  <cac:ProcurementProjectLot>
+    <cbc:ID schemeName="Lot">LOT-0003</cbc:ID>
+    <cac:TenderingTerms>
+      <!-- BT-63 Added VariantConstraintCode -->
+      <cbc:VariantConstraintCode listName="permission"
+        >allowed</cbc:VariantConstraintCode>
+      <!-- BT-769 Added MultipleTendersCode -->
+      <cbc:MultipleTendersCode listName="permission"
+        >allowed</cbc:MultipleTendersCode>
+      <cac:CallForTendersDocumentReference>
+        <cbc:ID>UBB-2019-0035</cbc:ID>
+        <cbc:DocumentType>non-restricted-document</cbc:DocumentType>
+        <!-- BT-708 Added LanguageID -->
+        <cbc:LanguageID>DEU</cbc:LanguageID>
+        <cac:Attachment>
+          <cac:ExternalReference>
+            <cbc:URI>https://vergabe.bremen.de/NetServer/TenderingProcedureDetails?function=_Details&amp;TenderOID=54321-Tender-16d49431e1c-6a9b536ded516989</cbc:URI>
+          </cac:ExternalReference>
+        </cac:Attachment>
+      </cac:CallForTendersDocumentReference>
+      <cac:TenderRecipientParty>
+        <cbc:EndpointID>https://www.vergabe.bremen.de</cbc:EndpointID>
+        <cac:PartyIdentification>
+          <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+        </cac:PartyIdentification>
+      </cac:TenderRecipientParty>
+      <cac:TenderValidityPeriod>
+        <cbc:DurationMeasure unitCode="MONTH">1</cbc:DurationMeasure>
+      </cac:TenderValidityPeriod>
+      <cac:AppealTerms>
+        <cac:AppealReceiverParty>
+          <cac:PartyIdentification>
+            <cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+          </cac:PartyIdentification>
+        </cac:AppealReceiverParty>
+      </cac:AppealTerms>
+      <!-- BT-97 (Mandatory according to Eforms-sdk 1.5)  -->
+      <cac:Language>
+        <cbc:ID>DEU</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+    </cac:TenderingTerms>
+    <cac:TenderingProcess>
+      <!-- BT-17 (Mandatory according to Eforms-sdk 1.5) -->
+      <cbc:SubmissionMethodCode listName="esubmission"
+        >allowed</cbc:SubmissionMethodCode>
+      <cac:TenderSubmissionDeadlinePeriod>
+        <cbc:EndDate>2019-10-15+02:00</cbc:EndDate>
+        <cbc:EndTime>10:00:00+02:00</cbc:EndTime>
+      </cac:TenderSubmissionDeadlinePeriod>
+      <cac:OpenTenderEvent>
+        <cbc:OccurrenceDate>2019-10-15+02:00</cbc:OccurrenceDate>
+        <cbc:OccurrenceTime>10:00:00+02:00</cbc:OccurrenceTime>
+        <cac:OccurenceLocation>
+          <cbc:Description languageID="DEU"
+            >Immobilien Bremen Vergabemanagement</cbc:Description>
+        </cac:OccurenceLocation>
+      </cac:OpenTenderEvent>
+    </cac:TenderingProcess>
+    <cac:ProcurementProject>
+      <cbc:ID schemeName="InternalID">UBB-2019-0035</cbc:ID>
+      <!-- BT-21 -->
+      <cbc:Name languageID="DEU"
+        >Landschaftsbauarbeiten hier Baumpflegemaßnahmen</cbc:Name>
+      <!-- BT-24 -->
+      <cbc:Description languageID="DEU">Los 3 205 Bäume</cbc:Description>
+      <!-- BT-23 (using eforms-sdk code list) -->
+      <cbc:ProcurementTypeCode listName="contract-nature"
+        >works</cbc:ProcurementTypeCode>
+      <!-- BT-726 Add SMESuitableIndicator -->
+      <cbc:SMESuitableIndicator>true</cbc:SMESuitableIndicator>
+      <!-- BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement" (using eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement") -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list)) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <cac:MainCommodityClassification>
+        <cbc:ItemClassificationCode listName="cpv"
+          >45000000</cbc:ItemClassificationCode>
+      </cac:MainCommodityClassification>
+      <cac:RealizedLocation>
+        <cbc:Description languageID="DEU"
+          >Bremen-Nord lt Straßenliste</cbc:Description>
+        <cac:Address>
+          <!-- BT-5071 Optional for EForms-sdk 1.5 -->
+          <cbc:CountrySubentityCode listName="nuts"
+            >DE501</cbc:CountrySubentityCode>
+          <cac:Country>
+            <!-- BT-5141 Optional for EForms-sdk 1.5 -->
+            <cbc:IdentificationCode listName="country"
+              >DEU</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:Address>
+      </cac:RealizedLocation>
+      <cac:PlannedPeriod>
+        <cbc:StartDate>2019-11-04+01:00</cbc:StartDate>
+        <cbc:EndDate>2019-12-31+01:00</cbc:EndDate>
+      </cac:PlannedPeriod>
+      <cac:ContractExtension>
+        <cbc:OptionsDescription languageID="DEU">Keine</cbc:OptionsDescription>
+      </cac:ContractExtension>
+    </cac:ProcurementProject>
+  </cac:ProcurementProjectLot>
+  <cac:ProcurementProjectLot>
+    <cbc:ID schemeName="Lot">LOT-0004</cbc:ID>
+    <cac:TenderingTerms>
+      <!-- BT-63 Added VariantConstraintCode -->
+      <cbc:VariantConstraintCode listName="permission"
+        >allowed</cbc:VariantConstraintCode>
+      <!-- BT-769 Added MultipleTendersCode -->
+      <cbc:MultipleTendersCode listName="permission"
+        >allowed</cbc:MultipleTendersCode>
+      <cac:CallForTendersDocumentReference>
+        <cbc:ID>UBB-2019-0035</cbc:ID>
+        <cbc:DocumentType>non-restricted-document</cbc:DocumentType>
+        <!-- BT-708 Added LanguageID -->
+        <cbc:LanguageID>DEU</cbc:LanguageID>
+        <cac:Attachment>
+          <cac:ExternalReference>
+            <cbc:URI>https://vergabe.bremen.de/NetServer/TenderingProcedureDetails?function=_Details&amp;TenderOID=54321-Tender-16d49431e1c-6a9b536ded516989</cbc:URI>
+          </cac:ExternalReference>
+        </cac:Attachment>
+      </cac:CallForTendersDocumentReference>
+      <cac:TenderRecipientParty>
+        <cbc:EndpointID>https://www.vergabe.bremen.de</cbc:EndpointID>
+        <cac:PartyIdentification>
+          <cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+        </cac:PartyIdentification>
+      </cac:TenderRecipientParty>
+      <cac:TenderValidityPeriod>
+        <cbc:DurationMeasure unitCode="MONTH">1</cbc:DurationMeasure>
+      </cac:TenderValidityPeriod>
+      <cac:AppealTerms>
+        <cac:AppealReceiverParty>
+          <cac:PartyIdentification>
+            <cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+          </cac:PartyIdentification>
+        </cac:AppealReceiverParty>
+      </cac:AppealTerms>
+      <!-- BT-97 (Mandatory according to Eforms-sdk 1.5)  -->
+      <cac:Language>
+        <cbc:ID>DEU</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+      <!-- Adding more than one (BT-97 (Mandatory according to Eforms-sdk 1.5))  -->
+      <cac:Language>
+        <cbc:ID>FIN</cbc:ID>
+      </cac:Language>
+    </cac:TenderingTerms>
+    <cac:TenderingProcess>
+      <!-- BT-17 (Mandatory according to Eforms-sdk 1.5) -->
+      <cbc:SubmissionMethodCode listName="esubmission"
+        >allowed</cbc:SubmissionMethodCode>
+      <cac:TenderSubmissionDeadlinePeriod>
+        <cbc:EndDate>2019-10-15+02:00</cbc:EndDate>
+        <cbc:EndTime>10:00:00+02:00</cbc:EndTime>
+      </cac:TenderSubmissionDeadlinePeriod>
+      <cac:OpenTenderEvent>
+        <cbc:OccurrenceDate>2019-10-15+02:00</cbc:OccurrenceDate>
+        <cbc:OccurrenceTime>10:00:00+02:00</cbc:OccurrenceTime>
+        <cac:OccurenceLocation>
+          <cbc:Description languageID="DEU"
+            >Immobilien Bremen Vergabemanagement</cbc:Description>
+        </cac:OccurenceLocation>
+      </cac:OpenTenderEvent>
+    </cac:TenderingProcess>
+    <cac:ProcurementProject>
+      <cbc:ID schemeName="InternalID">UBB-2019-0035</cbc:ID>
+      <!-- BT-21 -->
+      <cbc:Name languageID="DEU"
+        >Landschaftsbauarbeiten hier Baumpflegemaßnahmen</cbc:Name>
+      <!-- BT-24 -->
+      <cbc:Description languageID="DEU">Los 4 181 Bäume</cbc:Description>
+      <!-- BT-23 (using eforms-sdk code list) -->
+      <cbc:ProcurementTypeCode listName="contract-nature"
+        >works</cbc:ProcurementTypeCode>
+      <!-- BT-726 Add SMESuitableIndicator -->
+      <cbc:SMESuitableIndicator>true</cbc:SMESuitableIndicator>
+      <!-- BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement" (using eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-06 Add ProcurementAdditionalType and ProcurementTypeCode with "strategic-procurement") -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="strategic-procurement"
+          >env-imp</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <!-- Adding additional (BT-531 Add ProcurementAdditionalType and ProcurementTypeCode with "contract-nature" (using Eforms-sdk code list)) -->
+      <cac:ProcurementAdditionalType>
+        <cbc:ProcurementTypeCode listName="contract-nature"
+          >services</cbc:ProcurementTypeCode>
+      </cac:ProcurementAdditionalType>
+      <cac:MainCommodityClassification>
+        <cbc:ItemClassificationCode listName="cpv"
+          >45000000</cbc:ItemClassificationCode>
+      </cac:MainCommodityClassification>
+      <cac:RealizedLocation>
+        <cbc:Description languageID="DEU"
+          >Bremen-Nord lt Straßenliste</cbc:Description>
+        <cac:Address>
+          <!-- BT-5071 Optional for EForms-sdk 1.5 -->
+          <cbc:CountrySubentityCode listName="nuts"
+            >DE501</cbc:CountrySubentityCode>
+          <cac:Country>
+            <!-- BT-5141 Optional for EForms-sdk 1.5 -->
+            <cbc:IdentificationCode listName="country"
+              >DEU</cbc:IdentificationCode>
+          </cac:Country>
+        </cac:Address>
+      </cac:RealizedLocation>
+      <cac:PlannedPeriod>
+        <cbc:StartDate>2019-11-04+01:00</cbc:StartDate>
+        <cbc:EndDate>2019-12-31+01:00</cbc:EndDate>
+      </cac:PlannedPeriod>
+      <cac:ContractExtension>
+        <cbc:OptionsDescription languageID="DEU">Keine</cbc:OptionsDescription>
+      </cac:ContractExtension>
+    </cac:ProcurementProject>
+  </cac:ProcurementProjectLot>
+</ContractNotice>

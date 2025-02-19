@@ -77,6 +77,7 @@ Externalisieren von mutator "content" (da womit ein  mutator arbeiten soll) in e
 
 ## Features
 
+* Scan the XML documents to generate a report with all the rules
 * Generate persisted mutations i.e. files of mutations
 * Check valid mutator declarations
 * Mutators can be written in XSLT
@@ -85,10 +86,49 @@ Externalisieren von mutator "content" (da womit ein  mutator arbeiten soll) in e
 
 There are four app runtime modes:
 
-1. Generate mutations mode (the default): Generate mutations only
-2. Generate mutations and test expectations mode: Generate mutations and test the resulting instances if they meet expectations
-3. Check mode: Check that xmute instructions are syntactically correct and executable
-4. Generate Test Management Report
+1. Scan xml and print report
+2. Generate mutations mode (the default): Generate mutations only
+3. Generate mutations and test expectations mode: Generate mutations and test the resulting instances if they meet expectations
+4. Check mode: Check that xmute instructions are syntactically correct and executable
+5. Generate Test Management Report
+
+### Scan xml
+
+You can scan one or more documents to list the rules contained within them.
+If you add the --snippets option, you will get in the result the snippets of the XML element that the xmute refers to.
+
+Scanning is implemented using FSM state machine which is described in state_machine.md
+
+Example command for running scan:
+```shell
+java -jar target/xml-mutate-1.0-SNAPSHOT.jar \
+   ./eforms_CN_E3_max-DE_valid_codelists.xml ./forms_CN_E3_max-DE.xml \
+  scan \
+  --snippets
+```
+Example result:
+
+Without snippet(s):
+```
+File: C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml
+	Rule: efde:CL-DE-BT-11
+		Expectations: invalid
+		Mutation: code
+			Mutation Parameters: 
+				Values: not-valid-code, kbeh
+```
+
+With snippet(s):
+
+```
+File: C:\KoSIT\eforms_CN_E3_max-DE_valid_codelists.xml
+    Rule: efde:CL-DE-BT-11
+            Expectations: invalid
+            Mutation: code
+                Mutation Parameters: 
+                    Values: not-valid-code, kbeh
+        <cbc:PartyTypeCode listName="buyer-legal-type">def-cont</cbc:PartyTypeCode>
+```
 
 ### Mutation mode
 
