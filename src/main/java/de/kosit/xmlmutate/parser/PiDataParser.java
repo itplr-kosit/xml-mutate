@@ -218,7 +218,6 @@ public class PiDataParser {
 
                             context.nextState(ParserState.ERROR);
                             return;
-                        // break;
                     }
 
                 }

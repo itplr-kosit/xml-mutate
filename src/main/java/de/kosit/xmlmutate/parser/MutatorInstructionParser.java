@@ -23,7 +23,7 @@ public class MutatorInstructionParser {
         // first parse pi data and get defined properties therein
         Properties props = new Properties();
         PiDataParser piParser = new PiDataParser();
-        props.putAll(piParser.parsePiData(pi.getTextContent()));
+        props.putAll(piParser.parsePiData(pi.getData()));
 
         XMuteInstruction instruction = new XMuteInstruction(pi, props);
 

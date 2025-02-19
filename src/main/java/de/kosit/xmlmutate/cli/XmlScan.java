@@ -31,6 +31,7 @@ public class XmlScan implements Callable<Integer> {
   private static final String UNKNOWN_RULE = "Unknown Rule";
   private static final String VALID = "valid";
   private static final String INVALID = "invalid";
+  private static final String SPACER = " ";
 
   @Option(names = "--snippets", description = "Shows xml snippets", defaultValue = "false")
   boolean snippets;
@@ -39,7 +40,6 @@ public class XmlScan implements Callable<Integer> {
   XmlMutate xmlMutate;
 
   private final MutatorInstructionParser parser = new MutatorInstructionParser();
-  private String SPACER = " "; //default indent cahracter is simple whitespace
 
   @Override
   public Integer call() throws Exception {
@@ -134,7 +134,7 @@ public class XmlScan implements Callable<Integer> {
         .append("\n");
 
     if (values != null && !values.isEmpty()) {
-      report.append(SPACER + SPACER = SPACER).append(ResultKeys.MUTATION_PARAMETERS).append(ResultKeys.COLON)
+      report.append(SPACER + SPACER + SPACER).append(ResultKeys.MUTATION_PARAMETERS).append(ResultKeys.COLON)
           .append("\n")
           .append(SPACER + SPACER + SPACER + SPACER).append(ResultKeys.VALUES).append(ResultKeys.COLON).append(values)
           .append("\n");

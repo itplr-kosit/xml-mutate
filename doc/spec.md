@@ -97,7 +97,7 @@ There are four app runtime modes:
 You can scan one or more documents to list the rules contained within them.
 If you add the --snippets option, you will get in the result the snippets of the XML element that the xmute refers to.
 
-Scanning is implemented using FSH state machine which is described in state_machine.md
+Scanning is implemented using FSM state machine which is described in state_machine.md
 
 Example command for running scan:
 ```shell

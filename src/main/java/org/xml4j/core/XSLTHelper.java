@@ -13,19 +13,19 @@ public class XSLTHelper {
     /**
      * Creates an Identity Transformer.
      * 
-     * @param i
+     * @param indentSize
      * @return
      * @throws TransformerConfigurationException
      */
-    public static Transformer createTransformer(int i) throws TransformerConfigurationException {
+    public static Transformer createTransformer(int indentSize) throws TransformerConfigurationException {
 
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        if (i > 0) {
+        if (indentSize > 0) {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", Integer.toString(i));
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", Integer.toString(indentSize));
         }
 
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");

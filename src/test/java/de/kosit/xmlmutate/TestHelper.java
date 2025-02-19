@@ -48,7 +48,7 @@ public class TestHelper {
     private static final Consumer<Element> NOOP = whatever -> {
     };
 
-    private static final Path DOCUMENT_PATH = Paths.get("Dummy.xml");
+    public static final Path DOCUMENT_PATH = Paths.get("Dummy.xml");
 
     /**
      * Creates a simple mutation context for testing
