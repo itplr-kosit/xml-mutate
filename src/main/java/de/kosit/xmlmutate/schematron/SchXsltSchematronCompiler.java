@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
@@ -18,6 +19,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -86,6 +88,35 @@ public class SchXsltSchematronCompiler implements SchematronCompiler {
 
     @Override
     public URI compile(Path target, URI schematronFile) {
+        // FIX: Check if file is already compiled XSLT
+        String extension = FilenameUtils.getExtension(schematronFile.getPath());
+
+        // Handle pre-compiled XSLT files
+        if (extension.equalsIgnoreCase("xsl") || extension.equalsIgnoreCase("xslt")) {
+            log.debug("File {} is already compiled XSLT, skipping compilation", schematronFile);
+
+            // Load the XSLT document for rule ID extraction
+            try {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                this.compiledXSLT = factory.newDocumentBuilder().parse(new File(schematronFile));
+                log.debug("Successfully loaded pre-compiled XSLT from {}", schematronFile);
+            } catch (Exception e) {
+                throw new IllegalStateException("Cannot load pre-compiled XSLT file= " + schematronFile, e);
+            }
+
+            return schematronFile;
+        }
+
+        // Only compile if it's a .sch file
+        if (!extension.equalsIgnoreCase("sch")) {
+            log.warn("Unknown file extension '{}' for file {}. Expected .sch, .xsl, or .xslt",
+                    extension, schematronFile);
+            log.warn("Attempting to process as schematron file anyway...");
+        }
+        // Proceed with compilation for .sch files
+        log.debug("Compiling schematron file {} using SchXslt", schematronFile);
+
         Compiler schXsltcompiler = new Compiler();
         javax.xml.transform.Source source = new StreamSource(new File(schematronFile));
         // for now without any options

@@ -168,7 +168,8 @@ public class EvaluateSchematronExpectationsAction implements RunAction {
 
         private boolean ifMutationHasRulesNotDefinedInSchematron(SchematronRuleExpectation expectation,
                         Map<Schematron, SchematronOutput> schematronResult) {
-                return schematronResult.keySet().stream().anyMatch(schematron -> !schematron.hasRule(expectation));
+            // Rule is unknown only if it's not found in ANY of the schematron files
+            return schematronResult.keySet().stream().noneMatch(schematron -> schematron.hasRule(expectation));
         }
 
         // Evalutes if result matches expectation
