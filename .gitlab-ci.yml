@@ -18,35 +18,33 @@ cache:
 build-job:
   stage: build
   script:
-    - echo "Building xml-mutate version from pom.xml"
-    - mvn $MAVEN_CLI_OPTS verify
+    - |
+      # On a tag build, drive ${revision} from the tag so the four
+      # reactor modules publish at de.kosit:xml-mutate-*:$CI_COMMIT_TAG.
+      REVISION_OVERRIDE=""
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        REVISION_OVERRIDE="-Drevision=$CI_COMMIT_TAG"
+      fi
+    - echo "Building xml-mutate reactor ${REVISION_OVERRIDE}"
+    - mvn $MAVEN_CLI_OPTS $REVISION_OVERRIDE verify
     - echo "Generating deployment metadata"
     - mkdir -p build
     - |
-      # Extract version, groupId, and artifactId from pom.xml
-      PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-      GROUP_ID=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)
-      ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
-      PACKAGE_BINARY="${ARTIFACT_ID}-${PROJECT_VERSION}.jar"
-      MAVEN_PACKAGE_NAME=$(echo ${GROUP_ID} | sed 's/\./\//g')/${ARTIFACT_ID}
-      
-      # Write to build.env
+      GROUP_ID=$(mvn $REVISION_OVERRIDE help:evaluate -Dexpression=project.groupId -q -DforceStdout -N)
+      PROJECT_VERSION=$(mvn $REVISION_OVERRIDE help:evaluate -Dexpression=project.version -q -DforceStdout -N)
       echo "GROUP_ID=${GROUP_ID}" > build/build.env
-      echo "ARTIFACT_ID=${ARTIFACT_ID}" >> build/build.env
       echo "PACKAGE_VERSION=${PROJECT_VERSION}" >> build/build.env
-      echo "PACKAGE_BINARY=${PACKAGE_BINARY}" >> build/build.env
-      echo "MAVEN_PACKAGE_NAME=${MAVEN_PACKAGE_NAME}" >> build/build.env
     - cat build/build.env
   artifacts:
     name: xml-mutate-${CI_COMMIT_REF_NAME}
     paths:
-      - target/*.jar
+      - "**/target/*.jar"
       - build/
     expire_in: 1 day
     reports:
       junit:
-        - target/surefire-reports/*.xml
-        - target/failsafe-reports/*.xml
+        - "**/target/surefire-reports/*.xml"
+        - "**/target/failsafe-reports/*.xml"
       dotenv: build/build.env
 
 deploy-to-xse-component-repository:
@@ -54,24 +52,19 @@ deploy-to-xse-component-repository:
   image: maven:3.8.5-openjdk-17
   variables:
     REPO_ID: "xse-component-repository"
-    FILE_PATH: "target/${PACKAGE_BINARY}"
   rules:
     - if: $CI_COMMIT_TAG
   dependencies:
     - build-job
   script:
-    - echo "Deploying ${PACKAGE_BINARY} to xse-component-repository"
-    - echo "GROUP_ID=${GROUP_ID}, ARTIFACT_ID=${ARTIFACT_ID}, VERSION=${PACKAGE_VERSION}"
+    - echo "Deploying xml-mutate ${PACKAGE_VERSION} reactor artifacts to ${REPO_ID}"
     - |
       echo "<settings><servers><server><id>${REPO_ID}</id><configuration><httpHeaders><property><name>Job-Token</name><value>${CI_JOB_TOKEN}</value></property></httpHeaders></configuration></server></servers></settings>" > /tmp/settings.xml
-    - mvn deploy:deploy-file
-      -Durl=${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}
-      -DrepositoryId=${REPO_ID}
-      -Dfile=${FILE_PATH}
-      -DgroupId=${GROUP_ID}
-      -DartifactId=${ARTIFACT_ID}
-      -Dversion=${PACKAGE_VERSION}
-      -Dpackaging=jar
+    # Reactor deploy: parent pom + xml-mutate-{mutator,validator,runner,cli}
+    # in one pass. flatten-maven-plugin resolves ${revision} into the
+    # installed/deployed poms.
+    - mvn $MAVEN_CLI_OPTS -Drevision=$CI_COMMIT_TAG -DskipTests deploy
+      -DaltDeploymentRepository=${REPO_ID}::default::${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}
       --settings /tmp/settings.xml
 
 release_job:
@@ -90,6 +83,15 @@ release_job:
     ref: '$CI_COMMIT_TAG'
     assets:
       links:
-        - name: 'JAR Binary'
-          url: '${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}/${MAVEN_PACKAGE_NAME}/${PACKAGE_VERSION}/${PACKAGE_BINARY}'
+        - name: 'xml-mutate-cli (executable fat JAR)'
+          url: '${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}/de/kosit/xml-mutate-cli/${PACKAGE_VERSION}/xml-mutate-cli-${PACKAGE_VERSION}.jar'
+          link_type: 'package'
+        - name: 'xml-mutate-mutator (library)'
+          url: '${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}/de/kosit/xml-mutate-mutator/${PACKAGE_VERSION}/xml-mutate-mutator-${PACKAGE_VERSION}.jar'
+          link_type: 'package'
+        - name: 'xml-mutate-validator (library)'
+          url: '${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}/de/kosit/xml-mutate-validator/${PACKAGE_VERSION}/xml-mutate-validator-${PACKAGE_VERSION}.jar'
+          link_type: 'package'
+        - name: 'xml-mutate-runner (library)'
+          url: '${XSE_COMPONENT_PACKAGE_REGISTRY_URL_PREFIX}/de/kosit/xml-mutate-runner/${PACKAGE_VERSION}/xml-mutate-runner-${PACKAGE_VERSION}.jar'
           link_type: 'package'
