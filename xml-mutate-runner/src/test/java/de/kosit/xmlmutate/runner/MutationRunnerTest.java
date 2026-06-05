@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import de.kosit.xmlmutate.RunnerTestHelper;
 import de.kosit.xmlmutate.TestHelper;
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -34,7 +35,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with same id declared for different PI")
     public void testPIidsNotUnique() {
         final URI uri = TestResource.BookResources.DUPLICATE_IDS;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -52,7 +53,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail fast failure mode and a parsing error in the 1st mutation of total of 2")
     public void testFailFastParserError1stMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -63,7 +64,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail fast failure mode and a parsing error in the 2nd mutation of total of 2")
     public void testFailFastParserError2ndMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_2ND_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -74,7 +75,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail at end failure mode and a parsing error in the 1st mutation of total of 2")
     public void testFailAtEndParserError1stMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -85,7 +86,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail at end failure mode and a parsing error in the 2nd mutation of total of 2")
     public void testFailAtEndParserError2ndMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_2ND_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -96,7 +97,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail never failure mode and a parsing error in the 1st mutation of total of 2")
     public void testFailNeverParserError1stMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -107,7 +108,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail never failure mode and a parsing error in the 2nd mutation of total of 2")
     public void testFailNeverParserError2ndMutation() {
         final URI uri = TestResource.BookResources.PARSER_ERROR_2ND_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         final List<Mutation> mutations = runner.parseMutations(DocumentParser.readDocument(runnerConfig.getDocuments().get(0)),
                 Paths.get(uri));
@@ -118,7 +119,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail fast failure mode and an action error in the 1st mutation of total of 2")
     public void testFailFastActionError1stMutation() {
         final URI uri = TestResource.BookResources.ACTION_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -133,7 +134,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail fast failure mode and an action error with the 2nd failed mutation of total of 2")
     public void testFailFastActionError2ndMutation() {
         final URI uri = TestResource.BookResources.ACTION_ERROR_2ND_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -148,7 +149,7 @@ public class MutationRunnerTest {
     @DisplayName("Should fail fast right with the very first invalid mutator definition skipping all subsequent mutators")
     public void testFailFastActionErrorWith3rdErroneousMutator() {
         final URI uri = TestResource.BookResources.ACTION_ERROR_3RD_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_FAST);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -177,7 +178,7 @@ public class MutationRunnerTest {
     @DisplayName("Should parse all mutators including erroneous and running all only valid mutators")
     public void testFailAtEndActionErrorWith3rdErroneousMutator() {
         final URI uri = TestResource.BookResources.ACTION_ERROR_3RD_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -208,7 +209,7 @@ public class MutationRunnerTest {
     public void testFailAtEndActionError1stMutation() {
 
         final URI uri = TestResource.BookResources.ACTION_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -223,7 +224,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with fail never failure mode and an action error in the 1st mutation of total of 2")
     public void testFailNeverActionError1stMutation() {
         final URI uri = TestResource.BookResources.ACTION_ERROR_1ST_MUTATION;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
         final Future<Pair<Path, List<Mutation>>> resultFuture = runner.process(Paths.get(uri));
@@ -239,7 +240,7 @@ public class MutationRunnerTest {
     public void testOriginalXmlNotValidNotIgnore() {
         final String documentName = "book_original_invalid_schema.xml";
         final URI uri = TestResource.BookResources.ORIGINAL_SCHEMA_INVALID;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         assertThrows(MutationException.class, runner::run, "Original document " + documentName + " is not schema valid");
     }
@@ -248,7 +249,7 @@ public class MutationRunnerTest {
     @DisplayName("Test with an schema invalid original document that should be ignored")
     public void testOriginalXmlNotValidIgnore() {
         final URI uri = TestResource.BookResources.ORIGINAL_SCHEMA_INVALID;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, true);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, true);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         assertThatCode(runner::run).doesNotThrowAnyException();
     }
@@ -257,7 +258,7 @@ public class MutationRunnerTest {
     @DisplayName("Test without a schema in CLI but with an expectation of schema in a PI")
     public void testSchemaInPInotInCLI() {
         final URI uri = TestResource.BookResources.SIMPLE;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
         runnerConfig.setSchema(null);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         assertThrows(MutationException.class,
@@ -269,7 +270,7 @@ public class MutationRunnerTest {
     @DisplayName("Test without a schematron in CLI but with an expectation of schematron in a PI")
     public void testSchematronInPInotInCLI() {
         final URI uri = TestResource.BookResources.SIMPLE;
-        final RunnerConfig runnerConfig = TestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
+        final RunnerConfig runnerConfig = RunnerTestHelper.createRunnerConfig(uri, FailureMode.FAIL_NEVER);
         runnerConfig.setSchematronRules(Collections.emptyList());
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
         assertThrows(MutationException.class,

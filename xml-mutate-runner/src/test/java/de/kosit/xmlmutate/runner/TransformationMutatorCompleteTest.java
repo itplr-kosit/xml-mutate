@@ -2,6 +2,7 @@ package de.kosit.xmlmutate.runner;
 
 import static de.kosit.xmlmutate.TestResource.asPath;
 import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
+import static de.kosit.xmlmutate.assertions.RunnerAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;

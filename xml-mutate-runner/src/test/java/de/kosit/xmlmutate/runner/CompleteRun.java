@@ -7,8 +7,8 @@ import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
 
+import de.kosit.xmlmutate.RunnerTestHelper;
 import de.kosit.xmlmutate.TestResource;
-import de.kosit.xmlmutate.TestResource.BookResources;
 
 /**
  * This is a base class for tests running the complete process except the CLI-Parsing.
@@ -27,7 +27,7 @@ public abstract class CompleteRun {
     }
 
     protected RunnerConfig createConfig(final URI p) {
-        return RunnerConfig.Builder.forDocuments(asPath(p)).checkSchema(BookResources.getSchema())
+        return RunnerConfig.Builder.forDocuments(asPath(p)).checkSchema(RunnerTestHelper.getBookSchema())
                 .targetFolder(asPath(TestResource.TEST_TARGET)).build();
     }
 

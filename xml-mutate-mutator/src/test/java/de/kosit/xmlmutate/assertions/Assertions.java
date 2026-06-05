@@ -1,7 +1,6 @@
 package de.kosit.xmlmutate.assertions;
 
 import de.kosit.xmlmutate.mutation.Mutation;
-import de.kosit.xmlmutate.runner.RunnerResult;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -32,16 +31,6 @@ public class Assertions {
      */
     public static NodeListAssert assertThat(final NodeList actual) {
         return new NodeListAssert(actual);
-    }
-
-    /**
-     * Assertion for {@link RunnerResult}, which allows deeply inspect the mutator resut.
-     *
-     * @param actual the result object
-     * @return the {@link RunnerResultAssert}
-     */
-    public static RunnerResultAssert assertThat(final RunnerResult actual) {
-        return new RunnerResultAssert(actual);
     }
 
     /**

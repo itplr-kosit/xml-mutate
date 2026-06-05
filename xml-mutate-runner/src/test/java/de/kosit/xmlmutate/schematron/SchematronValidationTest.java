@@ -3,7 +3,7 @@ package de.kosit.xmlmutate.schematron;
 import static de.kosit.xmlmutate.TestHelper.createContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.kosit.xmlmutate.TestHelper;
+import de.kosit.xmlmutate.RunnerTestHelper;
 import de.kosit.xmlmutate.TestResource;
 import de.kosit.xmlmutate.TestResource.EformWithSchematronFailures;
 import de.kosit.xmlmutate.TestResource.EformWithSchematronRuleFailureAndTheRuleInMutator;
@@ -65,7 +65,7 @@ public class SchematronValidationTest {
     void specificMutationSchematronAssertionShouldFailAsOriginalDocumentHasExactRuleFailuresNotRelatedToTheMutation() {
         final URI testXmlResource = EformWithSchematronRuleFailureAndTheRuleInMutator.XML;
         List<Schematron> knownSchematronRules = getSchematronXslWithKnownUboRules();
-        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+        final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
             knownSchematronRules, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -94,7 +94,7 @@ public class SchematronValidationTest {
     public void shouldWarnRegardingFailingSchematronAssertOnOriginalXmlDocument() {
         final URI testXmlResource = EformWithSchematronFailures.XML_WITH_FAILING_SCHEMATRON_RULES;
         List<Schematron> knownSchematronRules = getSchematronXslWithKnownRules();
-        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+        final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
             knownSchematronRules, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -131,7 +131,7 @@ public class SchematronValidationTest {
     public void shouldWarnRegardingFailingSchematronAssertWhenItIsNotExpected() {
         final URI testXmlResource = TestResource.EformWrongRuleResources.XML_WITH_WRONG_SCH_RULE_REF;
         List<Schematron> knownSchematronRules = getEformTransformedToXslSchematron_BT510_UBO_Rules();
-        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+        final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
             knownSchematronRules, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -187,7 +187,7 @@ public class SchematronValidationTest {
     public void shouldParseXmuteEmptyOnTargetAlreadyHavingNoValue() {
         final URI uri = TestResource.UblResources.XML;
         final List<Schematron> schematronRules = getUblInvoiceAllowanceChargeAmountSchematronRules();
-        final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(uri,
+        final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(uri,
             schematronRules, FailureMode.FAIL_AT_END);
         final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -446,7 +446,7 @@ public class SchematronValidationTest {
     private ValidateAction createValidationAction() {
         final List<Schematron> schematronFiles = new ArrayList<>();
         final Path targetFolder = Paths.get(TestResource.TEST_ROOT);
-        final Schema schema = TestResource.BookResources.getSchema();
+        final Schema schema = RunnerTestHelper.getBookSchema();
 
         // Only extracted rule names BR-DE-1 and BR-DE-2 for this specific testing
         final Schematron schematron = new Schematron("schematron", TestResource.BookResources.XSL, Arrays.asList("Book-1", "Book-2"));

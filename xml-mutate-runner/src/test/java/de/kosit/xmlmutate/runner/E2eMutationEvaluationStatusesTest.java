@@ -3,7 +3,7 @@ package de.kosit.xmlmutate.runner;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.kosit.xmlmutate.TestHelper;
+import de.kosit.xmlmutate.RunnerTestHelper;
 import de.kosit.xmlmutate.TestResource.E2ESchematronWithoutAnyShadowedRules;
 import de.kosit.xmlmutate.expectation.SchematronRuleExpectation;
 import de.kosit.xmlmutate.mutation.Mutation;
@@ -34,7 +34,7 @@ class E2eMutationEvaluationStatusesTest {
   void shouldDistinctBetweenFailuresAndErrors() {
     final URI testXmlResource = E2ESchematronWithoutAnyShadowedRules.XML_WITH_INVALID_MUTATOR;
     List<Schematron> schematronWithShadowedRules = getSchematronXslRules();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematronWithShadowedRules, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig,
         Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
@@ -113,7 +113,7 @@ class E2eMutationEvaluationStatusesTest {
   void shouldNotBeAnyShadowedRuleEvaluations() {
     final URI testXmlResource = E2ESchematronWithoutAnyShadowedRules.XML_SHADOWING_SOLVED;
     List<Schematron> schematronWithShadowedRules = getSchematronXslRules();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematronWithShadowedRules, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig,
         Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));

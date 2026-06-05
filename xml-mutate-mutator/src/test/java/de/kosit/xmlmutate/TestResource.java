@@ -1,13 +1,11 @@
 package de.kosit.xmlmutate;
 
-import de.kosit.xmlmutate.runner.ValidatorServices;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.xml.validation.Schema;
 
 /**
  * Static access to named resources for testing.
@@ -52,10 +50,6 @@ public class TestResource {
         public static final URI SCHEMATRON_BOOK1_BOOK2_FAILED = ROOT.resolve("book_with_failed_Book-1_and_Book-2.xml");
 
         public static final URI SCAN = SCAN_ROOT.resolve("eforms_CN_E3_max-DE_valid_codelists.xml");
-
-        public static Schema getSchema() {
-            return ValidatorServices.getSchemaRepository().createSchema(SCHEMA);
-        }
     }
 
     public static class EformWrongRuleResources {

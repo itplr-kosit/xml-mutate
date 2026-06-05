@@ -1,6 +1,7 @@
 package de.kosit.xmlmutate.runner;
 
 import static de.kosit.xmlmutate.assertions.Assertions.assertThat;
+import static de.kosit.xmlmutate.assertions.RunnerAssertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 

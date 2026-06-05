@@ -3,7 +3,7 @@ package de.kosit.xmlmutate.runner;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.kosit.xmlmutate.TestHelper;
+import de.kosit.xmlmutate.RunnerTestHelper;
 import de.kosit.xmlmutate.TestResource.E2ESchematronWithShadowedRules;
 import de.kosit.xmlmutate.mutation.Mutation;
 import de.kosit.xmlmutate.mutation.Mutation.State;
@@ -29,7 +29,7 @@ class E2eMutationShadowedRulesTest {
   void shouldPassTheHappyPathScenarioAllValidSchematronRules() {
     final URI testXmlResource = E2ESchematronWithShadowedRules.XML_HAPPY_PATH;
     List<Schematron> schematronWithShadowedRules = getSchematronXslWithShadowedRulesHappyPathScenario();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematronWithShadowedRules, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -56,7 +56,7 @@ class E2eMutationShadowedRulesTest {
   void shouldFailOneSchematronRule() {
     final URI testXmlResource = E2ESchematronWithShadowedRules.XML_MAGAZINE_FAILURE_SHADOWED;
     List<Schematron> schematrons = getSchematronXslWithShadowedRules();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematrons, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -90,7 +90,7 @@ class E2eMutationShadowedRulesTest {
   void shouldFailOneSchematronRuleButActuallyPasses() {
     final URI testXmlResource = E2ESchematronWithShadowedRules.XML_MAGAZINE_FAILURE_SHADOWED_INVALID;
     List<Schematron> schematrons = getSchematronXslWithShadowedRules();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematrons, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
@@ -125,7 +125,7 @@ class E2eMutationShadowedRulesTest {
   void shouldFailOneSchematronRuleButActuallyPasses1() {
     final URI testXmlResource = E2ESchematronWithShadowedRules.XML_MULTIPLE_XPATHS_ONE_FAILS;
     List<Schematron> schematrons = getSchematronXslWithShadowedRules();
-    final RunnerConfig runnerConfig = TestHelper.createSchematronRunnerConfig(testXmlResource,
+    final RunnerConfig runnerConfig = RunnerTestHelper.createSchematronRunnerConfig(testXmlResource,
         schematrons, FailureMode.FAIL_AT_END);
     final MutationRunner runner = new MutationRunner(runnerConfig, this.executor);
 
