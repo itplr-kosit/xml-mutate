@@ -1,5 +1,6 @@
 target/
 .antlr/
+.flattened-pom.xml
 
 # Personal Claude Code instructions (not shared)
 CLAUDE.local.md
