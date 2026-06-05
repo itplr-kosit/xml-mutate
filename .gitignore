@@ -1,9 +1,5 @@
 target/
 .antlr/
-
-# Personal Claude Code instructions (not shared)
-CLAUDE.local.md
-.claude/settings.local.json
 # Compiled class file
 *.class
 
@@ -33,6 +29,8 @@ hs_err_pid*
 .vscode/tasks.json
 *.code-workspace
 
+# other ide
+*.xpr
 
 mutate-out.xml
 .factorypath
