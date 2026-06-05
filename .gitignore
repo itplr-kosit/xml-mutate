@@ -29,6 +29,8 @@ hs_err_pid*
 .vscode/tasks.json
 *.code-workspace
 
+# other ide
+*.xpr
 
 mutate-out.xml
 .factorypath

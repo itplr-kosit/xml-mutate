@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.ValidationEventLocator;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEventLocator;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;

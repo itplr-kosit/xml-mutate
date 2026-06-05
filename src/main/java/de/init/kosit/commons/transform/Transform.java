@@ -4,7 +4,7 @@ package de.init.kosit.commons.transform;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.URIResolver;
 import javax.xml.validation.Schema;
 
