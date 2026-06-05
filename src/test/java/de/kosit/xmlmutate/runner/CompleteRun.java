@@ -32,7 +32,7 @@ public abstract class CompleteRun {
     }
 
     protected RunnerConfig createConfig(final URI document, final URI schema) {
-        return RunnerConfig.Builder.forDocuments(asPath(document)).checkSchema(Services.getSchemaRepository().createSchema(schema))
+        return RunnerConfig.Builder.forDocuments(asPath(document)).checkSchema(ValidatorServices.getSchemaRepository().createSchema(schema))
                 .targetFolder(asPath(TestResource.TEST_TARGET)).build();
     }
 }

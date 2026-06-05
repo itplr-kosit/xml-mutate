@@ -73,7 +73,7 @@ public class MutationRunner {
         for (final Path documentPath : documents) {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false).parse(documentPath.toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.configuration.getSchema(), document);
+                final Result<Boolean, SyntaxError> result = ValidatorServices.getSchemaValidatonService().validate(this.configuration.getSchema(), document);
                 if (result.isInvalid()) {
                     throw new MutationException(ErrorCode.ORIGINAL_XML_NOT_SCHEMA_VALID, documentPath.getFileName().toString(), result.getErrorDescription());
                 }
@@ -163,7 +163,7 @@ public class MutationRunner {
     private Map<String, Set<String>> findXmlSchematronValidationFailures(
         Collection<XdmDestination> xdmDestinations) {
         List<Map<String, Set<String>>> multiSchematronAssertionFailures =  xdmDestinations.stream()
-            .map(Services.getSchematronValidationService()::findFailuresWithXPaths)
+            .map(ValidatorServices.getSchematronValidationService()::findFailuresWithXPaths)
             .toList();
         return mergeSvrlResultsFromMultipleSchematrons(multiSchematronAssertionFailures);
     }
@@ -178,7 +178,7 @@ public class MutationRunner {
     private Map<String, XdmDestination> validateDocumentWithSchematron(Path path) {
         return this.configuration.getSchematronRules().stream()
             .collect(toMap(schematron -> svrlName(path, schematron),
-                schematron -> Services.getSchematronValidationService()
+                schematron -> ValidatorServices.getSchematronValidationService()
                     .validate(path.toUri(), schematron)));
     }
 
