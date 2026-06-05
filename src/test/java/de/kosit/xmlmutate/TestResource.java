@@ -1,6 +1,6 @@
 package de.kosit.xmlmutate;
 
-import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.runner.ValidatorServices;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,7 +54,7 @@ public class TestResource {
         public static final URI SCAN = SCAN_ROOT.resolve("eforms_CN_E3_max-DE_valid_codelists.xml");
 
         public static Schema getSchema() {
-            return Services.getSchemaRepository().createSchema(SCHEMA);
+            return ValidatorServices.getSchemaRepository().createSchema(SCHEMA);
         }
     }
 

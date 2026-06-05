@@ -12,7 +12,7 @@ import de.kosit.xmlmutate.runner.RunMode;
 import de.kosit.xmlmutate.runner.RunnerConfig;
 import de.kosit.xmlmutate.runner.RunnerResult;
 import de.kosit.xmlmutate.runner.SavingMode;
-import de.kosit.xmlmutate.runner.Services;
+import de.kosit.xmlmutate.runner.ValidatorServices;
 import de.kosit.xmlmutate.schematron.SchXsltSchematronCompiler;
 import de.kosit.xmlmutate.schematron.SchematronCompiler;
 import java.io.FileInputStream;
@@ -225,7 +225,7 @@ public class XmlMutate implements Callable<Integer> {
 
   private Schema prepareSchema() {
     if (this.schemaLocation != null) {
-      return Services.getSchemaRepository().createSchema(this.schemaLocation.toUri());
+      return ValidatorServices.getSchemaRepository().createSchema(this.schemaLocation.toUri());
     }
     return null;
   }

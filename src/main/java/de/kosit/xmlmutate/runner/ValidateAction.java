@@ -57,7 +57,7 @@ public class ValidateAction implements RunAction {
             // Add unknown rules to this schematron file
             unknownRules.addAll(mutation.getConfiguration().getSchematronExpectations().stream().filter(n -> !schematron.hasRule(n)).toList());
             try {
-                final SchematronOutput out = Services.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
+                final SchematronOutput out = ValidatorServices.getSchematronService().validate(schematron.getUri(), mutation.getContext().getDocument());
                 this.log.debug("Mutation {} result={}", piId, out.getText());
                 // add failed rules that were also declared, to this schematron file
                 if (mutation.getConfiguration().getSchematronEnterityExpectation() == null) {
@@ -100,7 +100,7 @@ public class ValidateAction implements RunAction {
         if (this.schema != null) {
             try {
                 final Document document = ObjectFactory.createDocumentBuilder(false).parse(this.targetFolder.resolve(mutation.getResultDocument()).toFile());
-                final Result<Boolean, SyntaxError> result = Services.getSchemaValidatonService().validate(this.schema, document);
+                final Result<Boolean, SyntaxError> result = ValidatorServices.getSchemaValidatonService().validate(this.schema, document);
                 mutation.addSchemaErrorMessages(result.getErrors());
                 if (result.isInvalid()) {
                     mutation.setState(State.ERROR);
