@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>de.kosit</groupId>
-            <artifactId>xml-mutate-mutator</artifactId>
+            <artifactId>xml-mutate-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>de.kosit</groupId>
@@ -53,7 +53,7 @@
 
         <dependency>
             <groupId>de.kosit</groupId>
-            <artifactId>xml-mutate-mutator</artifactId>
+            <artifactId>xml-mutate-generator</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

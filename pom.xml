@@ -9,7 +9,7 @@
     <description>A declarative XML instance mutator and test tool</description>
 
     <modules>
-        <module>xml-mutate-mutator</module>
+        <module>xml-mutate-generator</module>
         <module>xml-mutate-validator</module>
         <module>xml-mutate-runner</module>
         <module>xml-mutate-cli</module>
@@ -60,12 +60,12 @@
             <!-- internal modules -->
             <dependency>
                 <groupId>de.kosit</groupId>
-                <artifactId>xml-mutate-mutator</artifactId>
+                <artifactId>xml-mutate-generator</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.kosit</groupId>
-                <artifactId>xml-mutate-mutator</artifactId>
+                <artifactId>xml-mutate-generator</artifactId>
                 <version>${revision}</version>
                 <type>test-jar</type>
                 <scope>test</scope>

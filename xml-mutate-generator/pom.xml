@@ -8,8 +8,8 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>xml-mutate-mutator</artifactId>
-    <name>xml-mutate mutator</name>
+    <artifactId>xml-mutate-generator</artifactId>
+    <name>xml-mutate generator</name>
     <description>XML mutation logic and configuration. Produces mutated XML documents from declarative processing instructions; reusable independently of validation.</description>
 
     <dependencies>
