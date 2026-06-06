@@ -1,5 +1,10 @@
 target/
 .antlr/
+.flattened-pom.xml
+
+# Personal Claude Code instructions (not shared)
+CLAUDE.local.md
+.claude/settings.local.json
 # Compiled class file
 *.class
 

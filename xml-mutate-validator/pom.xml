@@ -1,0 +1,78 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.kosit</groupId>
+        <artifactId>xml-mutate-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>xml-mutate-validator</artifactId>
+    <name>xml-mutate validator</name>
+    <description>XSD and Schematron validation applied to mutated XML documents.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.kosit</groupId>
+            <artifactId>xml-mutate-generator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>name.dmaus.schxslt</groupId>
+            <artifactId>java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.kosit</groupId>
+            <artifactId>xml-mutate-generator</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <testResources>
+            <testResource>
+                <directory>${maven.multiModuleProjectDirectory}/src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+</project>
